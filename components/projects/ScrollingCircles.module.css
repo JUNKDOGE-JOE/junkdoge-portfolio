@@ -18,9 +18,10 @@
   overflow: hidden;
   cursor: pointer;
   pointer-events: auto;
+  /* transform + opacity are written imperatively every rAF (see ScrollingCircles.tsx);
+     a CSS transition here would "chase" each frame's new target and cause the jitter/
+     flicker. will-change keeps both on their own GPU layer. */
   will-change: transform, opacity;
-  /* Short transition smooths per-rAF jitter */
-  transition: transform 0.05s linear, opacity 0.15s ease;
 }
 
 .circle:focus-visible {
