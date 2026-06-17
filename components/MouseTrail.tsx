@@ -79,13 +79,13 @@ function TrailImg({ item, onDone }: { item: TrailItem; onDone: (id: string) => v
     const img   = imgRef.current
     if (!outer || !img) return
 
-    // Outer frame: pops in then shrinks away
+    // Outer frame: pops in then shrinks away quickly (~0.5s total)
     const tl = gsap.timeline({ onComplete: () => onDone(item.id) })
-    tl.fromTo(outer, { scale: 0, autoAlpha: 1 }, { scale: 1, duration: 0.16, ease: 'circ.out' }, 0)
-      .to(outer, { scale: 0, autoAlpha: 0, duration: 0.5, ease: 'circ.in' }, 0.5)
+    tl.fromTo(outer, { scale: 0, autoAlpha: 1 }, { scale: 1, duration: 0.12, ease: 'circ.out' }, 0)
+      .to(outer, { scale: 0, autoAlpha: 0, duration: 0.32, ease: 'circ.in' }, 0.18)
 
     // Inner image: zooms in at a different (slower) rate
-    gsap.fromTo(img, { scale: 1.6 }, { scale: 1, duration: 1.0, ease: 'power2.out' })
+    gsap.fromTo(img, { scale: 1.6 }, { scale: 1, duration: 0.55, ease: 'power2.out' })
 
     return () => { tl.kill() }
   // eslint-disable-next-line react-hooks/exhaustive-deps

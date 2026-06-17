@@ -3,7 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '@/content/projects'
 import { nextIndex, prevIndex } from '@/lib/carousel'
+import { galleryFor } from '@/lib/projects'
 import { Slide } from './Slide'
+import { MouseTrail } from './MouseTrail'
 import { ProjectCounter } from './ProjectCounter'
 import { SlideBackground } from './SlideBackground'
 import { isGalleryOpen } from './Gallery'
@@ -68,6 +70,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
   }
 
   const current = projects[index]
+  const trailImgs = galleryFor(current).length ? galleryFor(current) : [current.cover]
   return (
     <section
       ref={sectionRef}
@@ -99,6 +102,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
         onPrev={() => go(-1)}
         onNext={() => go(1)}
       />
+      <MouseTrail images={trailImgs} />
     </section>
   )
 }
