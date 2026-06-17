@@ -32,7 +32,7 @@ export function Slide({ project }: { project: Project }) {
   return (
     <div ref={rootRef} data-testid="slide" className={dark ? 'text-[var(--paper-text)]' : 'text-[var(--ink)]'}>
       {image ? <MediaImageSkin project={project} /> : <DevSkin project={project} />}
-      <div className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl -translate-x-1/2 -translate-y-1/2 text-center">
+      <div aria-live="polite" className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl -translate-x-1/2 -translate-y-1/2 text-center">
         <h2 data-anim="title" className="display-italic text-5xl font-medium leading-[0.95] md:text-7xl">{t(project.title)}</h2>
         <p data-anim="meta" className="ui-label mt-3 opacity-80">{t(project.role)} / {project.year}</p>
         <div className="mt-4 flex items-start justify-center gap-8">
@@ -44,7 +44,7 @@ export function Slide({ project }: { project: Project }) {
           </a>
         </div>
       </div>
-      <div className="absolute bottom-4 right-4">
+      <div className="absolute bottom-3 right-3 scale-90 sm:scale-100">
         <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
       </div>
       <span className="sr-only">{lang}</span>
