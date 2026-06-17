@@ -31,11 +31,21 @@ export function RevealGroup({ children, className = '', stagger = 0.09, delay = 
   { children: React.ReactNode; className?: string; stagger?: number; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null)
   useIsoLayoutEffect(() => {
+    const root = ref.current
+    if (!root) return
     const ctx = gsap.context(() => {
-      gsap.set('[data-reveal] > *', { yPercent: 140 })
-      gsap.set('[data-reveal-up]', { autoAlpha: 0, y: 28 })
-      gsap.to('[data-reveal] > *', { yPercent: 0, duration: 0.85, ease: 'power3.out', stagger, delay })
-      gsap.to('[data-reveal-up]', { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger, delay: delay + 0.2 })
+      // Query scoped to this group and only tween targets that exist here — a group
+      // with no [data-reveal-up] shouldn't emit GSAP "target not found" console noise.
+      const reveals = root.querySelectorAll('[data-reveal] > *')
+      const ups = root.querySelectorAll('[data-reveal-up]')
+      if (reveals.length) {
+        gsap.set(reveals, { yPercent: 140 })
+        gsap.to(reveals, { yPercent: 0, duration: 0.85, ease: 'power3.out', stagger, delay })
+      }
+      if (ups.length) {
+        gsap.set(ups, { autoAlpha: 0, y: 28 })
+        gsap.to(ups, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger, delay: delay + 0.2 })
+      }
     }, ref)
     return () => ctx.revert()
   }, [])
