@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 
 const SPACING = 90 // minimum px between spawned trail items
+const MAX = 6     // maximum live trail items
 
 interface TrailItem { id: string; x: number; y: number; src: string }
 
@@ -48,7 +49,7 @@ export function MouseTrail({ images }: { images: string[] }) {
       }
 
       if (newItems.length) {
-        setItems(p => [...p, ...newItems])
+        setItems(p => [...p, ...newItems].slice(-MAX))
       }
     }
 
@@ -93,7 +94,7 @@ function TrailImg({ item, onDone }: { item: TrailItem; onDone: (id: string) => v
   return (
     <div
       ref={outerRef}
-      className="absolute h-24 w-24 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-white/25 shadow-lg"
+      className="absolute h-24 w-36 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-white/25 shadow-lg"
       style={{ left: item.x, top: item.y }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}

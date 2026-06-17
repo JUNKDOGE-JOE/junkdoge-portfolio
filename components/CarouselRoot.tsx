@@ -1,5 +1,6 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '@/content/projects'
 import { nextIndex, prevIndex } from '@/lib/carousel'
 import { Slide } from './Slide'
@@ -79,8 +80,18 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
       {/* Persistent background: crossfades between projects with overlapping opacity */}
       <SlideBackground project={current} />
 
-      {/* Slide content: keyed by slug so it remounts and replays GSAP cascade */}
-      <Slide key={current.slug} project={current} />
+      {/* Slide content: exit blur-fade out; enter is GSAP cascade (no framer enter anim) */}
+      <AnimatePresence>
+        <motion.div
+          key={current.slug}
+          initial={false}
+          exit={{ opacity: 0, filter: 'blur(14px)' }}
+          transition={{ duration: 0.55, ease: 'easeIn' }}
+          className="absolute inset-0"
+        >
+          <Slide project={current} />
+        </motion.div>
+      </AnimatePresence>
 
       <ProjectCounter
         index={index}
