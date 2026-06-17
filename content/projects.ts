@@ -47,15 +47,15 @@ export const projects: Project[] = [
     desc: { zh: '春日限原创曲《二十九行诗》影像。', en: 'Visual for the original spring-themed song "Sonnet 29".' },
     cover: '/covers/sonnet-29.jpg', accent: '#2e3233', links: { bilibili: 'https://www.bilibili.com/video/BV1yZKNecEp9/' } },
 
-  { slug: 'lagtrain', type: 'pv', featured: true, order: 7, year: '2023',
-    title: { zh: '延误列车', en: 'Lagtrain / ラグトレイン' }, role: { zh: '文字PV', en: 'Lyric / Kinetic PV' },
-    desc: { zh: '《延误列车（ラグトレイン）》文字PV。', en: 'Kinetic-typography PV for "Lagtrain".' },
-    cover: '/covers/lagtrain.jpg', accent: '#2b2b30', links: { bilibili: '' } },
+  { slug: 'shoujo', type: 'pv', featured: true, order: 7, year: '2024',
+    title: { zh: '少女終幕', en: 'Aru Shoujo no Shimatsu' }, role: { zh: 'PV · 原创曲', en: 'PV · Original Song' },
+    desc: { zh: '少女終幕｜ある少女の始末（原创曲）影像。', en: 'Visual for the original song "Aru Shoujo no Shimatsu".' },
+    cover: '/covers/shoujo.jpg', accent: '#9e6d9d', links: {} },
 
-  { slug: 'onpa', type: 'vj', featured: true, order: 8, year: '2024',
-    title: { zh: '音波狂潮', en: 'Onpa Kyoushuu' }, role: { zh: 'VJ', en: 'VJ Set' },
-    desc: { zh: '音波狂潮：荧光宇宙 & TANO*C TOUR 的 VJ 素材。', en: 'VJ visuals for Onpa Kyoushuu × TANO*C TOUR.' },
-    cover: '/covers/onpa.jpg', accent: '#2b2b30', links: { bilibili: 'https://www.bilibili.com/video/BV1jU411S7w3/' } },
+  { slug: 'fusheng', type: 'vj', featured: true, order: 8, year: '2024',
+    title: { zh: '浮生', en: 'Fusheng' }, role: { zh: 'VJ · 文字动画', en: 'VJ · Lyric Motion' },
+    desc: { zh: '陈致逸作品音乐会 ——《浮生》文字动画。', en: 'Kinetic-lyric animation for the Chen Zhiyi concert — "Fusheng".' },
+    cover: '/covers/fusheng.jpg', accent: '#999297', links: { bilibili: 'https://www.bilibili.com/video/BV178k1YuEXo/' } },
 
   { slug: 'after-effects-mcp', type: 'dev', featured: true, order: 9, year: '2026',
     title: { zh: 'after-effects-mcp', en: 'after-effects-mcp' }, role: { zh: 'Dev · AE 自动化', en: 'Dev · AE Automation' },
