@@ -4,15 +4,27 @@ import { useLang, ui } from '@/lib/i18n'
 import { Clock } from './Clock'
 import { LetterSwap } from '@/components/LetterSwap'
 
-export function CornerFurniture() {
+const uiProjects = { zh: '作品', en: 'PROJECTS' }
+
+/**
+ * variant="light" → uses dark ink for the light-bg /projects page.
+ * variant="dark" (default) → uses paper-text colours for the dark home page.
+ */
+export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
   const { lang, toggle, t } = useLang()
+  const inkStyle = variant === 'light'
+    ? { color: 'rgba(28,22,20,0.75)' }
+    : {}
+
   return (
-    <div className="pointer-events-none absolute inset-0 z-20">
+    <div className="pointer-events-none absolute inset-0 z-20" style={inkStyle}>
       <div className="pointer-events-auto absolute left-5 top-4 flex items-center gap-3">
         <Link href="/" className="text-sm font-bold tracking-[0.18em]"><LetterSwap label="J / D" /></Link>
         <Clock />
       </div>
       <nav className="pointer-events-auto absolute right-5 top-4 flex items-center gap-3 ui-label">
+        <Link href="/projects"><LetterSwap label={t(uiProjects)} /></Link>
+        <span>/</span>
         <Link href="/about"><LetterSwap label={t(ui.about)} /></Link>
         <span>/</span>
         <Link href="/commission"><LetterSwap label={t(ui.commission)} /></Link>

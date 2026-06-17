@@ -1,0 +1,97 @@
+/* Mouse-reactive fluid gradient backdrop for /projects */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  background: #f1d7dd;
+}
+
+/* Slow-drifting blob layer */
+.blobs {
+  position: absolute;
+  inset: -20%;
+  width: 140%;
+  height: 140%;
+  filter: blur(70px);
+  opacity: 0.85;
+  will-change: transform;
+  animation: blobDrift 22s ease-in-out infinite alternate;
+}
+
+.blob1 {
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  top: 5%;
+  left: 10%;
+  background: radial-gradient(circle at 50% 50%, #f5a59a 0%, transparent 70%);
+  animation: blob1Move 18s ease-in-out infinite alternate;
+}
+
+.blob2 {
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  top: 30%;
+  right: 0%;
+  background: radial-gradient(circle at 50% 50%, #ffc0d6 0%, transparent 70%);
+  animation: blob2Move 24s ease-in-out infinite alternate;
+}
+
+.blob3 {
+  position: absolute;
+  width: 55%;
+  height: 55%;
+  bottom: 0%;
+  left: 25%;
+  background: radial-gradient(circle at 50% 50%, #ffd8bf 0%, transparent 70%);
+  animation: blob3Move 20s ease-in-out infinite alternate;
+}
+
+/* Cursor-following bloom — driven by CSS vars --gx/--gy (percent) */
+.bloom {
+  position: absolute;
+  inset: 0;
+  /* radial-gradient center follows mouse via inline style */
+  background: radial-gradient(
+    ellipse 55% 45% at var(--gx, 50%) var(--gy, 50%),
+    rgba(245, 160, 154, 0.55) 0%,
+    rgba(255, 192, 214, 0.25) 35%,
+    transparent 65%
+  );
+  /* No blur here — keeps it crisp; blobs beneath provide softness */
+  pointer-events: none;
+  transition: none; /* lerp is done in JS rAF */
+}
+
+/* Subtle vignette to ground the page */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 120% 100% at 50% 50%, transparent 50%, rgba(200, 130, 140, 0.12) 100%);
+  pointer-events: none;
+}
+
+/* ---- Keyframes ---- */
+
+@keyframes blobDrift {
+  from { transform: rotate(0deg) scale(1); }
+  to   { transform: rotate(6deg) scale(1.06); }
+}
+
+@keyframes blob1Move {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(8%, 12%) scale(1.12); }
+}
+
+@keyframes blob2Move {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-12%, 8%) scale(0.92); }
+}
+
+@keyframes blob3Move {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(10%, -10%) scale(1.08); }
+}

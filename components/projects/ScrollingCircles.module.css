@@ -1,0 +1,75 @@
+/* Dual-track scrolling-circle gallery */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none; /* individual circles opt-in */
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+  /* smooth the per-rAF inline transform slight jitter */
+  transition: transform 0.05s ease-out;
+}
+
+.circle:focus-visible {
+  outline: 2px solid rgba(60, 30, 40, 0.5);
+  outline-offset: 3px;
+}
+
+/* Text circles */
+.textCircle {
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  font-family: Georgia, serif;
+  color: #1a1a1a;
+  backdrop-filter: blur(4px);
+}
+
+.textNo {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(40, 40, 40, 0.55);
+  margin-bottom: 0.9rem;
+}
+
+.textTitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.22;
+}
+
+.textYear {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(40, 40, 40, 0.55);
+  margin-top: 0.9rem;
+}
+
+/* Image circles */
+.imgCircle {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.imgCircle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
