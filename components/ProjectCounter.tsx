@@ -33,8 +33,8 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
         </AnimatePresence>
       </span>
       <span className="ui-label text-[0.6rem] opacity-70">{t(ui.number)}</span>
-      <button aria-label="previous" onClick={onPrev} className="absolute -left-2 top-1/2 -translate-y-1/2 p-2">←</button>
-      <button aria-label="next" onClick={onNext} className="absolute -right-2 top-1/2 -translate-y-1/2 p-2">→</button>
+      <button aria-label="previous" onClick={onPrev} className="absolute -left-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-200 hover:-translate-x-1">←</button>
+      <button aria-label="next" onClick={onNext} className="absolute -right-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-200 hover:translate-x-1">→</button>
     </div>
   )
 }

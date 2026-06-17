@@ -7,7 +7,7 @@ export function LetterSwap({ label, className = '' }: { label: string; className
       <span className="sr-only">{label}</span>
       <span aria-hidden className={styles.row}>
         {label.split('').map((ch, i) => (
-          <span className={styles.col} key={i} style={{ transitionDelay: `${i * 28}ms` }}>
+          <span className={styles.col} key={i} style={{ transitionDelay: `${(label.length - 1 - i) * 28}ms` }}>
             <span className={styles.a}>{ch === ' ' ? ' ' : ch}</span>
             <span className={styles.b}>{ch === ' ' ? ' ' : ch}</span>
           </span>
