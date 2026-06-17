@@ -60,6 +60,6 @@ export const projects: Project[] = [
   { slug: 'after-effects-mcp', type: 'dev', featured: true, order: 9, year: '2026',
     title: { zh: 'after-effects-mcp', en: 'after-effects-mcp' }, role: { zh: 'Dev · AE 自动化', en: 'Dev · AE Automation' },
     desc: { zh: 'Agent 驱动的 AE 自动化：MCP + CEP，让 AI 用 30+ 工具操控 After Effects。⭐22', en: 'Agent-driven After Effects automation: MCP + CEP plugin, 30+ ae.* tools. ⭐22' },
-    cover: '/covers/aemcp.jpg', devVisual: '/covers/aemcp.jpg', accent: '#b5263f',
+    cover: '/covers/aemcp.jpg', devVisual: '/covers/aemcp.jpg', accent: '#7b61ff',
     links: { github: 'https://github.com/JUNKDOGE-JOE/after-effects-mcp' } },
 ]

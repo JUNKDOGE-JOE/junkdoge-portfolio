@@ -228,7 +228,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
             aria-label={titleText}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={project.cover} alt={titleText} />
+            <img src={project.cover} alt={titleText} style={project.type === 'dev' ? { objectPosition: 'top' } : undefined} />
           </button>,
         ]
       })}

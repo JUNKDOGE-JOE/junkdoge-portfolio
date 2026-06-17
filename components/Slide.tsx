@@ -130,6 +130,7 @@ export function Slide({ project }: { project: Project }) {
               src={circleSrc}
               alt=""
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              style={project.type === 'dev' ? { objectPosition: 'top' } : undefined}
             />
           </button>
         ) : (

@@ -28,6 +28,7 @@ export function Gallery({
   const morphRef = useRef<HTMLDivElement>(null)
   const { t } = useLang()
   const imgs = galleryFor(project)
+  const isDev = project.type === 'dev'  // portrait UI shots → vertical card grid, not 16:9
 
   useEffect(() => {
     _galleryCount++
@@ -113,21 +114,28 @@ export function Gallery({
           <Reveal className="mt-5"><p className="max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p></Reveal>
         </RevealGroup>
 
-        <div className="flex-1 space-y-6 overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
+        <div
+          className={
+            isDev
+              ? 'flex-1 grid grid-cols-2 content-start gap-4 overflow-y-auto pr-1 md:grid-cols-3'
+              : 'flex-1 space-y-6 overflow-y-auto pr-1'
+          }
+          style={{ scrollbarWidth: 'none' }}
+        >
           {/* First card — the morph targets `firstCardRef` (the inner card div).
               TiltCard is applied to an INNER wrapper so GSAP only measures/animates
               the card itself; the tilt transform lives on a separate layer and
               doesn't fight the absolute positioning the morph sets. */}
-          <div ref={firstCardRef} className="aspect-video w-full overflow-hidden border border-white/15 shadow-2xl" style={{ borderRadius: 16 }}>
+          <div ref={firstCardRef} className={`${isDev ? 'aspect-[5/11]' : 'aspect-video'} w-full overflow-hidden border border-white/15 shadow-2xl`} style={{ borderRadius: 16 }}>
             <TiltCard className="h-full w-full">
-              <img src={project.cover} alt="" className="h-full w-full object-cover" />
+              <img src={project.cover} alt="" className="h-full w-full object-cover" style={isDev ? { objectPosition: 'top' } : undefined} />
             </TiltCard>
           </div>
 
           {/* ── ⑫ Rest cards: each wrapped in TiltCard ─────────────────────── */}
           {imgs.map((src, i) => (
-            <TiltCard key={i} className="card-rest-item aspect-video w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
-              <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
+            <TiltCard key={i} className={`card-rest-item ${isDev ? 'aspect-[5/11]' : 'aspect-video'} w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl`}>
+              <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" style={isDev ? { objectPosition: 'top' } : undefined} />
             </TiltCard>
           ))}
         </div>
@@ -136,7 +144,7 @@ export function Gallery({
       {/* Morph element — fixed, object-cover, invisible unless an originRect drives it.
           Uses the project cover (same image as the circle) so the shape morph is seamless. */}
       <div ref={morphRef} className="pointer-events-none fixed overflow-hidden" style={{ zIndex: 60, opacity: 0 }}>
-        <img src={project.cover} alt="" className="h-full w-full object-cover" />
+        <img src={project.cover} alt="" className="h-full w-full object-cover" style={isDev ? { objectPosition: 'top' } : undefined} />
       </div>
     </div>
   )
