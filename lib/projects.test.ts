@@ -19,6 +19,7 @@ describe('isImageSkin', () => {
   it('is true for pv/vj/collab, false for dev', () => {
     expect(isImageSkin(mk('x', 1, true, 'pv'))).toBe(true)
     expect(isImageSkin(mk('x', 1, true, 'vj'))).toBe(true)
+    expect(isImageSkin(mk('x', 1, true, 'collab'))).toBe(true)
     expect(isImageSkin(mk('x', 1, true, 'dev'))).toBe(false)
   })
 })
