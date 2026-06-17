@@ -17,14 +17,6 @@ body { background: var(--night); color: var(--paper-text); }
 .ui-label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; }
 .display-italic { font-style: italic; }
 
-/* LetterSwap kinetic text */
-.letterswap { display: inline-flex; line-height: 1; }
-.letterswap .ls-col { position: relative; display: inline-block; overflow: hidden; transition-delay: inherit; }
-.letterswap .ls-col > span { display: block; transition: transform .42s cubic-bezier(.2,.9,.2,1); transition-delay: inherit; }
-.letterswap .ls-col .ls-b { position: absolute; left: 0; top: 0; transform: translateY(100%); }
-.letterswap:hover .ls-col .ls-a { transform: translateY(-100%); }
-.letterswap:hover .ls-col .ls-b { transform: translateY(0); }
-
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
