@@ -19,10 +19,13 @@
   transform: translateX(-100%);
 }
 
-/* Right arrow: slides right on hover (exit right, enter from left) */
+/* Right arrow: rests showing 2nd copy; hover shifts back so 2nd exits right, 1st enters from left */
+.arrowRight .arrowRow {
+  transform: translateX(-100%);
+}
 .arrowRight:hover .arrowRow {
   transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
-  transform: translateX(100%);
+  transform: translateX(0);
 }
 
 .arrowRow {

@@ -159,14 +159,34 @@ export default function ProjectsPage() {
           />
         </svg>
         <span className="ui-label text-[0.55rem] opacity-60 mb-1">PROJECTS</span>
-        {/* Two-number stack: focal+1 / total */}
-        <div className="flex flex-col items-center leading-none">
-          <span style={{ fontSize: '1.3rem', fontWeight: 500, transition: 'opacity 0.3s' }}>
-            {padCount(focalIndex + 1)}
-          </span>
-          <span style={{ fontSize: '1.3rem', fontWeight: 500 }}>{padCount(count)}</span>
-        </div>
         <span className="ui-label text-[0.55rem] opacity-60 mt-1">NAVIGATION</span>
+        {/* Current number: upper-left of circle */}
+        <span
+          className="absolute"
+          style={{
+            top: '22%',
+            left: '18%',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            lineHeight: 1,
+            transition: 'opacity 0.3s',
+          }}
+        >
+          {padCount(focalIndex + 1)}
+        </span>
+        {/* Total: lower-right of circle */}
+        <span
+          className="absolute"
+          style={{
+            bottom: '22%',
+            right: '18%',
+            fontSize: '1.1rem',
+            fontWeight: 500,
+            lineHeight: 1,
+          }}
+        >
+          {padCount(count)}
+        </span>
       </div>
 
       {/* ── Right-centre: year range — nudged UP to clear the right circle track ── */}

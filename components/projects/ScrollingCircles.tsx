@@ -64,7 +64,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       if (pausedRef.current) return
-      velRef.current += e.deltaY * 0.5
+      velRef.current += e.deltaY * 0.18
     }
     const onTouchStart = (e: TouchEvent) => {
       touchStartRef.current = e.touches[0].clientY
@@ -73,7 +73,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
       if (pausedRef.current) return
       const delta = touchStartRef.current - e.touches[0].clientY
       touchStartRef.current = e.touches[0].clientY
-      velRef.current += delta * 1
+      velRef.current += delta * 0.36
     }
 
     window.addEventListener('wheel',      onWheel,      { passive: true })

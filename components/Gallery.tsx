@@ -5,6 +5,7 @@ import { useLang } from '@/lib/i18n'
 import type { Project } from '@/content/projects'
 import { galleryFor } from '@/lib/projects'
 import { Reveal, RevealGroup } from '@/components/Reveal'
+import { TiltCard } from '@/components/TiltCard'
 
 // Module-level open-gallery counter — shared across all Gallery instances so
 // CarouselRoot / ScrollingCircles can bail out of their wheel handlers even if a
@@ -12,33 +13,6 @@ import { Reveal, RevealGroup } from '@/components/Reveal'
 let _galleryCount = 0
 export function isGalleryOpen(): boolean { return _galleryCount > 0 }
 
-// ── ⑫ 3-D tilt card ───────────────────────────────────────────────────────────
-function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const onMove = (e: React.MouseEvent) => {
-    const el = ref.current; if (!el) return
-    const r = el.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width - 0.5   // -0.5..0.5
-    const py = (e.clientY - r.top) / r.height - 0.5
-    const MAX = 10 // degrees
-    // corner under the cursor comes toward the viewer
-    el.style.transform = `perspective(900px) rotateX(${-py * MAX}deg) rotateY(${px * MAX}deg)`
-  }
-  const onLeave = () => {
-    if (ref.current) ref.current.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)'
-  }
-  return (
-    <div
-      ref={ref}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      className={className}
-      style={{ transformStyle: 'preserve-3d', transition: 'transform 0.2s ease-out', willChange: 'transform' }}
-    >
-      {children}
-    </div>
-  )
-}
 
 export function Gallery({
   project,

@@ -3,6 +3,7 @@ import { SmoothScroll } from '@/components/SmoothScroll'
 import { CornerFurniture } from '@/components/furniture/CornerFurniture'
 import { useLang } from '@/lib/i18n'
 import { Reveal, RevealUp, RevealGroup } from '@/components/Reveal'
+import { TiltCard } from '@/components/TiltCard'
 
 export default function About() {
   const { t } = useLang()
@@ -22,13 +23,19 @@ export default function About() {
           </Reveal>
           <div className="mt-10 flex flex-wrap gap-3 ui-label">
             <RevealUp>
-              <a className="inline-block rounded-full border border-current px-4 py-2" href="https://space.bilibili.com/73910418" target="_blank" rel="noreferrer">BILIBILI ↗</a>
+              <TiltCard maxDeg={14}>
+                <a className="inline-block rounded-full border border-current px-4 py-2" href="https://space.bilibili.com/73910418" target="_blank" rel="noreferrer">BILIBILI ↗</a>
+              </TiltCard>
             </RevealUp>
             <RevealUp>
-              <a className="inline-block rounded-full border border-current px-4 py-2" href="https://github.com/JUNKDOGE-JOE" target="_blank" rel="noreferrer">GITHUB ↗</a>
+              <TiltCard maxDeg={14}>
+                <a className="inline-block rounded-full border border-current px-4 py-2" href="https://github.com/JUNKDOGE-JOE" target="_blank" rel="noreferrer">GITHUB ↗</a>
+              </TiltCard>
             </RevealUp>
             <RevealUp>
-              <a className="inline-block rounded-full border border-current px-4 py-2" href="mailto:2814374544@qq.com">EMAIL ↗</a>
+              <TiltCard maxDeg={14}>
+                <a className="inline-block rounded-full border border-current px-4 py-2" href="mailto:2814374544@qq.com">EMAIL ↗</a>
+              </TiltCard>
             </RevealUp>
           </div>
         </RevealGroup>
