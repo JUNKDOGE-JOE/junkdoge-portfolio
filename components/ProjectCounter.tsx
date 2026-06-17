@@ -96,11 +96,11 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
       >
         <span className={styles.arrowMask}>
           <span className={styles.arrowRow}>
-            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+            <svg viewBox="0 0 30 17" fill="none" className="w-full h-auto" aria-hidden="true">
               <path className="stroke-current" strokeWidth="1.5" d="M8.54736 16.6364L1.38827 8.26321L7.83145 0.727323"/>
               <path className="stroke-current" strokeWidth="1.5" d="M1.38817 8.28388L30.0245 8.28387"/>
             </svg>
-            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+            <svg viewBox="0 0 30 17" fill="none" className="w-full h-auto" aria-hidden="true">
               <path className="stroke-current" strokeWidth="1.5" d="M8.54736 16.6364L1.38827 8.26321L7.83145 0.727323"/>
               <path className="stroke-current" strokeWidth="1.5" d="M1.38817 8.28388L30.0245 8.28387"/>
             </svg>
@@ -114,11 +114,11 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
       >
         <span className={styles.arrowMask}>
           <span className={styles.arrowRow}>
-            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+            <svg viewBox="0 0 30 17" fill="none" className="w-full h-auto" aria-hidden="true">
               <path className="stroke-current" strokeWidth="1.5" d="M21.7229 0.363708L28.882 8.73691L22.4388 16.2728"/>
               <path className="stroke-current" strokeWidth="1.5" d="M28.8821 8.71619L0.245728 8.71619"/>
             </svg>
-            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+            <svg viewBox="0 0 30 17" fill="none" className="w-full h-auto" aria-hidden="true">
               <path className="stroke-current" strokeWidth="1.5" d="M21.7229 0.363708L28.882 8.73691L22.4388 16.2728"/>
               <path className="stroke-current" strokeWidth="1.5" d="M28.8821 8.71619L0.245728 8.71619"/>
             </svg>

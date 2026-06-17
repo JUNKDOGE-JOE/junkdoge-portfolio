@@ -1,9 +1,12 @@
 .arrowMask {
+  display: inline-block;
+  width: 1.6rem;       /* one icon wide — clips the 2nd (swap) copy */
   overflow: hidden;
 }
 
 .arrowRow {
   display: flex;
+  width: 100%;
 }
 
 .arrowRow > * {
