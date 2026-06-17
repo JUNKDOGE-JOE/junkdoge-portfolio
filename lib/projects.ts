@@ -7,3 +7,7 @@ export function getHomeProjects(all: Project[] = projects): Project[] {
 export function isImageSkin(p: Project): boolean {
   return p.type !== 'dev'
 }
+
+export function galleryFor(p: Project): string[] {
+  return p.type !== 'dev' ? [1, 2, 3, 4].map((n) => `/gallery/${p.slug}/${n}.jpg`) : []
+}

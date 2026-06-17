@@ -1,13 +1,14 @@
 'use client'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import gsap from 'gsap'
 import type { Project } from '@/content/projects'
-import { isImageSkin } from '@/lib/projects'
+import { isImageSkin, galleryFor } from '@/lib/projects'
 import { useLang } from '@/lib/i18n'
 import { MediaImageSkin } from './skins/MediaImageSkin'
 import { DevSkin } from './skins/DevSkin'
 import { CircleCrop } from './CircleCrop'
 import { LetterSwap } from './LetterSwap'
+import { Gallery } from './Gallery'
 
 function visitHref(p: Project): string {
   return p.links.bilibili || p.links.github || p.links.external || '#'
@@ -20,8 +21,13 @@ export function Slide({ project }: { project: Project }) {
   const circleSrc = project.devVisual ?? project.cover
   const verb = project.type === 'dev' ? t({ zh: '查看', en: 'VIEW' }) : t({ zh: '观看', en: 'WATCH' })
   const href = visitHref(project)
+  const hasGallery = galleryFor(project).length > 0
+  const [galleryOpen, setGalleryOpen] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const replaying = useRef(false)
+
   useEffect(() => {
     if (!rootRef.current) return
     const ctx = gsap.context(() => {
@@ -31,11 +37,17 @@ export function Slide({ project }: { project: Project }) {
     return () => ctx.revert()
   }, [project.slug])
 
+  const replayTitle = () => {
+    if (replaying.current || !titleRef.current) return
+    replaying.current = true
+    gsap.fromTo(titleRef.current, { yPercent: 8, opacity: 0.35 }, { yPercent: 0, opacity: 1, duration: 0.5, ease: 'power3.out', onComplete: () => { replaying.current = false } })
+  }
+
   return (
     <div ref={rootRef} data-testid="slide" className={dark ? 'text-[var(--paper-text)]' : 'text-[var(--ink)]'}>
       {image ? <MediaImageSkin project={project} /> : <DevSkin project={project} />}
       <div aria-live="polite" className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl -translate-x-1/2 -translate-y-1/2 text-center">
-        <h2 data-anim="title" className="display-italic text-5xl font-medium leading-[0.95] md:text-7xl">{t(project.title)}</h2>
+        <h2 ref={titleRef} data-anim="title" className="display-italic text-5xl font-medium leading-[0.95] md:text-7xl" onMouseEnter={replayTitle}>{t(project.title)}</h2>
         <p data-anim="meta" className="ui-label mt-3 opacity-80">{t(project.role)} / {project.year}</p>
         <div className="mt-4 flex items-start justify-center gap-8">
           <p className="max-w-[15rem] text-left text-sm leading-relaxed opacity-90">{t(project.desc)}</p>
@@ -49,9 +61,16 @@ export function Slide({ project }: { project: Project }) {
         </div>
       </div>
       <div className="absolute bottom-3 right-3 scale-90 sm:scale-100">
-        <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
+        {hasGallery ? (
+          <button onClick={() => setGalleryOpen(true)} aria-label="open gallery" className="cursor-pointer">
+            <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
+          </button>
+        ) : (
+          <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
+        )}
       </div>
       <span className="sr-only">{lang}</span>
+      {galleryOpen && <Gallery project={project} onClose={() => setGalleryOpen(false)} />}
     </div>
   )
 }
