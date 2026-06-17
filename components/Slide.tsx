@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import gsap from 'gsap'
 import type { Project } from '@/content/projects'
 import { isImageSkin, galleryFor } from '@/lib/projects'
@@ -81,19 +82,28 @@ export function Slide({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* Circle: no mask, just appears */}
+      {/* Circle: morph trigger for image projects, plain circle for dev */}
       <div className="absolute bottom-3 right-3 scale-90 sm:scale-100">
-        {hasGallery ? (
-          <button onClick={() => setGalleryOpen(true)} aria-label="open gallery" className="cursor-pointer">
-            <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
-          </button>
-        ) : (
+        {hasGallery && !galleryOpen ? (
+          <motion.div
+            layoutId="gallery-hero"
+            onClick={() => setGalleryOpen(true)}
+            className="cursor-pointer overflow-hidden border border-white/40"
+            style={{ width: 140, height: 140, borderRadius: 9999 }}
+            aria-label="open gallery"
+            role="button"
+          >
+            <img src={circleSrc} alt={t(project.title)} className="h-full w-full object-cover" />
+          </motion.div>
+        ) : !hasGallery ? (
           <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
-        )}
+        ) : null}
       </div>
 
       <span className="sr-only">{lang}</span>
-      {galleryOpen && <Gallery project={project} onClose={() => setGalleryOpen(false)} />}
+      <AnimatePresence>
+        {galleryOpen && <Gallery project={project} onClose={() => setGalleryOpen(false)} />}
+      </AnimatePresence>
     </div>
   )
 }

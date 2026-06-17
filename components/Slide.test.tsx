@@ -6,6 +6,17 @@ import type { Project } from '@/content/projects'
 
 vi.mock('next/image', () => ({ default: (p: Record<string, unknown>) => <img alt={(p.alt as string) ?? ''} /> }))
 
+vi.mock('framer-motion', () => {
+  const S = ({ children, ...r }: any) => {
+    const { layoutId, initial, animate, exit, transition, variants, custom, layout, ...rest } = r
+    return <div {...rest}>{children}</div>
+  }
+  return {
+    AnimatePresence: ({ children }: any) => children,
+    motion: new Proxy({}, { get: () => S }),
+  }
+})
+
 const pv: Project = { slug: 'fusang', type: 'pv', featured: true, order: 1, year: '2024',
   title: { zh: '扶桑', en: 'THE FUSOR ARBOR' }, role: { zh: 'PV', en: 'PV' }, desc: { zh: '描述', en: 'desc' },
   cover: '/covers/fusang.jpg', links: { bilibili: 'https://b.example/x' } }

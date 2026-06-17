@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { motion } from 'framer-motion'
 import gsap from 'gsap'
 import { useLang } from '@/lib/i18n'
 import type { Project } from '@/content/projects'
@@ -30,9 +31,10 @@ export function Gallery({ project, onClose }: { project: Project; onClose: () =>
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('[data-g="backdrop"]', { autoAlpha: 0, duration: 0.35 })
-      gsap.from('[data-g="panel"]',    { autoAlpha: 0, y: 28, duration: 0.5, ease: 'power3.out' })
-      gsap.from('[data-g="card"]',     { autoAlpha: 0, y: 42, duration: 0.55, stagger: 0.08, delay: 0.12, ease: 'power3.out' })
+      gsap.from('[data-g="backdrop"]',    { autoAlpha: 0, duration: 0.35 })
+      gsap.from('[data-g="panel"]',       { autoAlpha: 0, y: 28, duration: 0.5, ease: 'power3.out' })
+      // Only stagger cards index ≥ 1 — the first card is framer-motion driven
+      gsap.from('[data-g="card-rest"]',   { autoAlpha: 0, y: 42, duration: 0.55, stagger: 0.08, delay: 0.22, ease: 'power3.out' })
     }, root)
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -58,8 +60,19 @@ export function Gallery({ project, onClose }: { project: Project; onClose: () =>
           <p className="mt-5 max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p>
         </div>
         <div className="flex-1 space-y-6 overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
-          {imgs.map((src, i) => (
-            <div key={i} data-g="card" className="overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
+          {/* First card: framer-motion shared-element morph target */}
+          {imgs[0] && (
+            <motion.div
+              layoutId="gallery-hero"
+              className="overflow-hidden border border-white/15 shadow-2xl"
+              style={{ borderRadius: 16 }}
+            >
+              <img src={imgs[0]} alt="" className="w-full object-cover" />
+            </motion.div>
+          )}
+          {/* Remaining cards: GSAP stagger entrance */}
+          {imgs.slice(1).map((src, i) => (
+            <div key={i + 1} data-g="card-rest" className="overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
               <img src={src} alt="" className="w-full object-cover" loading="lazy" />
             </div>
           ))}
