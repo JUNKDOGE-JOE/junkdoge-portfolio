@@ -18,6 +18,7 @@ export function Slide({ project }: { project: Project }) {
   const dark = image
   const circleSrc = project.devVisual ?? project.cover
   const verb = project.type === 'dev' ? t({ zh: '查看', en: 'VIEW' }) : t({ zh: '观看', en: 'WATCH' })
+  const href = visitHref(project)
 
   const rootRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -37,11 +38,13 @@ export function Slide({ project }: { project: Project }) {
         <p data-anim="meta" className="ui-label mt-3 opacity-80">{t(project.role)} / {project.year}</p>
         <div className="mt-4 flex items-start justify-center gap-8">
           <p className="max-w-[15rem] text-left text-sm leading-relaxed opacity-90">{t(project.desc)}</p>
-          <a href={visitHref(project)} target="_blank" rel="noreferrer"
-            className="whitespace-nowrap rounded-full border px-4 py-1.5 text-xs tracking-wider"
-            style={{ borderColor: dark ? '#fff' : 'var(--ink)' }}>
-            {verb} ↗
-          </a>
+          {href !== '#' && (
+            <a href={href} target="_blank" rel="noreferrer"
+              className="whitespace-nowrap rounded-full border px-4 py-1.5 text-xs tracking-wider"
+              style={{ borderColor: dark ? '#fff' : 'var(--ink)' }}>
+              {verb} ↗
+            </a>
+          )}
         </div>
       </div>
       <div className="absolute bottom-3 right-3 scale-90 sm:scale-100">

@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
 import type { Localized } from '@/content/projects'
 
 export type Lang = 'zh' | 'en'
@@ -22,6 +22,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Lang>('zh')
   const toggle = () => setLang((l) => (l === 'zh' ? 'en' : 'zh'))
   const t = (s: Localized) => s[lang]
+  useEffect(() => { document.documentElement.lang = lang }, [lang])
   return <Ctx.Provider value={{ lang, setLang, toggle, t }}>{children}</Ctx.Provider>
 }
 

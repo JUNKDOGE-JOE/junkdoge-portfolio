@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# JUNK_DOGE 个人主页
 
-## Getting Started
+Federicopian-style bilingual (zh/en) portfolio carousel for a 映像创作者 + developer.
 
-First, run the development server:
+## Stack
+
+- Next.js App Router (TypeScript)
+- Tailwind CSS v4
+- GSAP + Lenis (scroll / animation)
+- Vitest (unit tests)
+
+## Scripts
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev      # local dev server
+npm run build    # production build (also used as runtime check)
+npm test         # Vitest unit tests
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/             # Next.js routes (page, layout, globals)
+components/      # UI components (Slide, Carousel, skins, …)
+content/
+  projects.ts    # single source of truth for all project data
+lib/             # i18n, carousel logic, time helpers, selection logic
+public/
+  covers/        # cover images (one per project, <slug>.jpg)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Add a project
 
-## Learn More
+1. Append an entry to `content/projects.ts` following the existing shape.
+2. Drop a cover image at `public/covers/<slug>.jpg`.
 
-To learn more about Next.js, take a look at the following resources:
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `public/covers/*` are currently 1×1 placeholder images — replace with real cover frames.
+- Two projects (`centripetal-force`, `lagtrain`) are missing real Bilibili `bvid`s; their visit links are hidden until filled in.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deferred (later)
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/works` index page
+- `/work/[slug]` detail pages with Bilibili embeds
+- Magnetic cursor
+- Optional WebGL upgrade
