@@ -65,8 +65,10 @@ export function Gallery({
       duration: 0.6,
       ease: 'power3.inOut',
       onComplete: () => {
-        gsap.to(card, { opacity: 1, duration: 0.18 })
-        gsap.to(m, { opacity: 0, duration: 0.18 })
+        // Instant hand-off (same image, same rect) — a crossfade here would dip
+        // combined opacity to ~0.75 mid-fade and flicker.
+        gsap.set(card, { opacity: 1 })
+        gsap.set(m, { opacity: 0 })
       },
     })
   }, [originRect])
@@ -106,13 +108,13 @@ export function Gallery({
           <p className="mt-5 max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p>
         </div>
         <div className="flex-1 space-y-6 overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
-          {imgs[0] && (
-            <div ref={firstCardRef} className="aspect-video w-full overflow-hidden border border-white/15 shadow-2xl" style={{ borderRadius: 16 }}>
-              <img src={imgs[0]} alt="" className="h-full w-full object-cover" />
-            </div>
-          )}
-          {imgs.slice(1).map((src, i) => (
-            <div key={i + 1} data-g="card-rest" className="aspect-video w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
+          {/* First card = the SAME image as the bottom-right circle (project.cover),
+              so the morph hands off to an identical frame — no content swap. */}
+          <div ref={firstCardRef} className="aspect-video w-full overflow-hidden border border-white/15 shadow-2xl" style={{ borderRadius: 16 }}>
+            <img src={project.cover} alt="" className="h-full w-full object-cover" />
+          </div>
+          {imgs.map((src, i) => (
+            <div key={i} data-g="card-rest" className="aspect-video w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
               <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
             </div>
           ))}
