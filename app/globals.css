@@ -11,6 +11,12 @@
   --furniture-dark: #9fb1c6;/* corner labels on dark */
 }
 html, body { height: 100%; }
-body { background: var(--night); color: var(--paper-text); overflow: hidden; }
+body { background: var(--night); color: var(--paper-text); }
+/* overflow: hidden removed — home carousel constrains itself via h-screen overflow-hidden section;
+   /about and /commission need to scroll freely. */
 .ui-label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; }
 .display-italic { font-style: italic; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
