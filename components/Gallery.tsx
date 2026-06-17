@@ -1,47 +1,93 @@
 'use client'
-import { useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { useLang } from '@/lib/i18n'
 import type { Project } from '@/content/projects'
 import { galleryFor } from '@/lib/projects'
 
-// ---------------------------------------------------------------------------
-// Module-level open-gallery counter — shared across all Gallery instances on
-// the page.  Both CarouselRoot and ScrollingCircles read this via isGalleryOpen()
-// so they can bail out of their wheel handlers even when a DOM event slips
-// through the overlay's stopPropagation.
-// ---------------------------------------------------------------------------
+// Module-level open-gallery counter — shared across all Gallery instances so
+// CarouselRoot / ScrollingCircles can bail out of their wheel handlers even if a
+// DOM event slips through the overlay's stopPropagation.
 let _galleryCount = 0
 export function isGalleryOpen(): boolean { return _galleryCount > 0 }
 
-// ---------------------------------------------------------------------------
-// Gallery
-// ---------------------------------------------------------------------------
-export function Gallery({ project, onClose }: { project: Project; onClose: () => void }) {
+export function Gallery({
+  project,
+  originRect,
+  onClose,
+}: {
+  project: Project
+  originRect?: DOMRect | null
+  onClose: () => void
+}) {
   const root = useRef<HTMLDivElement>(null)
+  const firstCardRef = useRef<HTMLDivElement>(null)
+  const morphRef = useRef<HTMLDivElement>(null)
   const { t } = useLang()
   const imgs = galleryFor(project)
 
-  // Track open count
   useEffect(() => {
     _galleryCount++
-    return () => { _galleryCount-- }
+    return () => {
+      _galleryCount--
+    }
   }, [])
+
+  // Shared-element morph: animate REAL top/left/width/height/borderRadius from the
+  // origin circle to the first card. object-cover re-crops each frame so the image
+  // never distorts (unlike a transform-scale / framer-layoutId morph).
+  useLayoutEffect(() => {
+    const m = morphRef.current
+    const card = firstCardRef.current
+    if (!m || !card) return
+    if (!originRect) {
+      gsap.set(card, { opacity: 1 })
+      gsap.set(m, { opacity: 0 })
+      return
+    }
+    const c = card.getBoundingClientRect()
+    gsap.set(card, { opacity: 0 })
+    gsap.set(m, {
+      opacity: 1,
+      position: 'fixed',
+      top: originRect.top,
+      left: originRect.left,
+      width: originRect.width,
+      height: originRect.height,
+      borderRadius: 9999,
+    })
+    gsap.to(m, {
+      top: c.top,
+      left: c.left,
+      width: c.width,
+      height: c.height,
+      borderRadius: 16,
+      duration: 0.6,
+      ease: 'power3.inOut',
+      onComplete: () => {
+        gsap.to(card, { opacity: 1, duration: 0.18 })
+        gsap.to(m, { opacity: 0, duration: 0.18 })
+      },
+    })
+  }, [originRect])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('[data-g="backdrop"]',    { autoAlpha: 0, duration: 0.35 })
-      gsap.from('[data-g="panel"]',       { autoAlpha: 0, y: 28, duration: 0.5, ease: 'power3.out' })
-      // Only stagger cards index ≥ 1 — the first card is framer-motion driven
-      gsap.from('[data-g="card-rest"]',   { autoAlpha: 0, y: 42, duration: 0.55, stagger: 0.08, delay: 0.22, ease: 'power3.out' })
+      gsap.from('[data-g="backdrop"]', { autoAlpha: 0, duration: 0.35 })
+      // fade only (no y) so the first card stays put for the morph to target
+      gsap.from('[data-g="panel"]', { autoAlpha: 0, duration: 0.5, ease: 'power3.out' })
+      gsap.from('[data-g="card-rest"]', { autoAlpha: 0, y: 42, duration: 0.55, stagger: 0.08, delay: 0.4, ease: 'power3.out' })
     }, root)
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
     window.addEventListener('keydown', onKey)
-    return () => { ctx.revert(); window.removeEventListener('keydown', onKey) }
+    return () => {
+      ctx.revert()
+      window.removeEventListener('keydown', onKey)
+    }
   }, [onClose])
 
-  // Swallow wheel/touch events so they cannot reach underlying page handlers
   const stopWheel = (e: React.WheelEvent) => e.stopPropagation()
 
   return (
@@ -60,23 +106,23 @@ export function Gallery({ project, onClose }: { project: Project; onClose: () =>
           <p className="mt-5 max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p>
         </div>
         <div className="flex-1 space-y-6 overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
-          {/* First card: framer-motion shared-element morph target */}
           {imgs[0] && (
-            <motion.div
-              layoutId="gallery-hero"
-              className="overflow-hidden border border-white/15 shadow-2xl"
-              style={{ borderRadius: 16 }}
-            >
-              <img src={imgs[0]} alt="" className="w-full object-cover" />
-            </motion.div>
+            <div ref={firstCardRef} className="aspect-video w-full overflow-hidden border border-white/15 shadow-2xl" style={{ borderRadius: 16 }}>
+              <img src={imgs[0]} alt="" className="h-full w-full object-cover" />
+            </div>
           )}
-          {/* Remaining cards: GSAP stagger entrance */}
           {imgs.slice(1).map((src, i) => (
-            <div key={i + 1} data-g="card-rest" className="overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
-              <img src={src} alt="" className="w-full object-cover" loading="lazy" />
+            <div key={i + 1} data-g="card-rest" className="aspect-video w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
+              <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Morph element — fixed, object-cover, invisible unless an originRect drives it.
+          Uses the project cover (same image as the circle) so the shape morph is seamless. */}
+      <div ref={morphRef} className="pointer-events-none fixed overflow-hidden" style={{ zIndex: 60, opacity: 0 }}>
+        <img src={project.cover} alt="" className="h-full w-full object-cover" />
       </div>
     </div>
   )

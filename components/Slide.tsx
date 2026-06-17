@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import gsap from 'gsap'
 import type { Project } from '@/content/projects'
 import { isImageSkin, galleryFor } from '@/lib/projects'
@@ -21,7 +20,14 @@ export function Slide({ project }: { project: Project }) {
   const href = visitHref(project)
   const hasGallery = galleryFor(project).length > 0
   const [galleryOpen, setGalleryOpen] = useState(false)
+  const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
+  const circleRef = useRef<HTMLButtonElement>(null)
+
+  const openGallery = () => {
+    if (circleRef.current) setOriginRect(circleRef.current.getBoundingClientRect())
+    setGalleryOpen(true)
+  }
 
   // Masked sentence-stagger reveal — runs on every remount (i.e. every slug change)
   useEffect(() => {
@@ -84,26 +90,33 @@ export function Slide({ project }: { project: Project }) {
 
       {/* Circle: morph trigger for image projects, plain circle for dev */}
       <div className="absolute bottom-3 right-3 scale-90 sm:scale-100">
-        {hasGallery && !galleryOpen ? (
-          <motion.div
-            layoutId="gallery-hero"
-            onClick={() => setGalleryOpen(true)}
-            className="cursor-pointer overflow-hidden border border-white/40"
-            style={{ width: 140, height: 140, borderRadius: 9999 }}
+        {hasGallery ? (
+          <button
+            ref={circleRef}
+            onClick={openGallery}
             aria-label="open gallery"
-            role="button"
+            className="group absolute bottom-0 right-0 h-[140px] w-[140px] overflow-hidden rounded-full border border-white/40 cursor-pointer"
+            style={{ visibility: galleryOpen ? 'hidden' : 'visible' }}
           >
-            <img src={circleSrc} alt={t(project.title)} className="h-full w-full object-cover" />
-          </motion.div>
-        ) : !hasGallery ? (
+            <img
+              src={circleSrc}
+              alt=""
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </button>
+        ) : (
           <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
-        ) : null}
+        )}
       </div>
 
       <span className="sr-only">{lang}</span>
-      <AnimatePresence>
-        {galleryOpen && <Gallery project={project} onClose={() => setGalleryOpen(false)} />}
-      </AnimatePresence>
+      {galleryOpen && (
+        <Gallery
+          project={project}
+          originRect={originRect}
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
     </div>
   )
 }
