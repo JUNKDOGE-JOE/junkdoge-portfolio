@@ -1,13 +1,22 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '@/content/projects'
 import { nextIndex, prevIndex } from '@/lib/carousel'
 import { Slide } from './Slide'
 import { ProjectCounter } from './ProjectCounter'
 
+const pageVariants = {
+  initial: { opacity: 0, y: 50 },
+  animate: { opacity: 1, y: 0 },
+  exit:    { opacity: 0, y: -50 },
+}
+
 export function CarouselRoot({ projects }: { projects: Project[] }) {
   const [index, setIndex] = useState(0)
   const lock = useRef(false)
+  const lastScroll = useRef(0)
+  const accum = useRef(0)
   const dragX = useRef<number | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const go = useCallback((dir: 1 | -1) => {
@@ -20,12 +29,22 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
       if (e.key === 'ArrowLeft') go(-1)
     }
     const onWheel = (e: WheelEvent) => {
-      if (lock.current) return
-      const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY
-      if (Math.abs(d) < 12) return
-      lock.current = true
-      go(d > 0 ? 1 : -1)
-      setTimeout(() => { lock.current = false }, 700)
+      const now = performance.now()
+      if (lock.current || now - lastScroll.current < 500) return
+      accum.current += e.deltaY
+      if (accum.current > 100) {
+        accum.current = 0
+        lastScroll.current = now
+        lock.current = true
+        go(1)
+        setTimeout(() => { lock.current = false }, 800)
+      } else if (accum.current < -100) {
+        accum.current = 0
+        lastScroll.current = now
+        lock.current = true
+        go(-1)
+        setTimeout(() => { lock.current = false }, 800)
+      }
     }
     window.addEventListener('keydown', onKey)
     window.addEventListener('wheel', onWheel, { passive: true })
@@ -56,7 +75,19 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
     <section ref={sectionRef} aria-roledescription="carousel" className="relative h-screen w-screen touch-pan-y overflow-hidden"
       style={{ '--accent': current.accent ?? '#2b2b30', '--mx': '0.5', '--my': '0.5' } as React.CSSProperties}
       onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-      <Slide key={current.slug} project={current} />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current.slug}
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          <Slide project={current} />
+        </motion.div>
+      </AnimatePresence>
       <ProjectCounter index={index} total={projects.length}
         onPrev={() => go(-1)} onNext={() => go(1)} />
     </section>

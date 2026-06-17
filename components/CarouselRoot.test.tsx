@@ -7,6 +7,12 @@ import type { Project } from '@/content/projects'
 
 vi.mock('next/image', () => ({ default: (p: Record<string, unknown>) => <img alt={(p.alt as string) ?? ''} /> }))
 
+vi.mock('framer-motion', () => {
+  const Strip = ({ children, variants, initial, animate, exit, transition, custom, layout, ...rest }: any) =>
+    <div {...rest}>{children}</div>
+  return { AnimatePresence: ({ children }: any) => children, motion: new Proxy({}, { get: () => Strip }) }
+})
+
 const mk = (slug: string, order: number): Project => ({ slug, type: 'pv', featured: true, order, year: '2024',
   title: { zh: slug, en: slug }, role: { zh: '', en: '' }, desc: { zh: '', en: '' }, cover: `/c/${slug}.jpg`, links: {} })
 
