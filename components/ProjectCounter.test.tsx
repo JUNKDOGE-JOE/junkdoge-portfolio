@@ -4,6 +4,17 @@ import userEvent from '@testing-library/user-event'
 import { ProjectCounter } from './ProjectCounter'
 import { LangProvider } from '@/lib/i18n'
 
+vi.mock('framer-motion', () => {
+  const S = ({ children, ...r }: any) => {
+    const { initial, animate, exit, transition, variants, custom, layout, ...rest } = r
+    return <span {...rest}>{children}</span>
+  }
+  return {
+    AnimatePresence: ({ children }: any) => children,
+    motion: new Proxy({}, { get: () => S }),
+  }
+})
+
 describe('ProjectCounter', () => {
   it('shows padded number and fires callbacks', async () => {
     const onNext = vi.fn(); const onPrev = vi.fn()

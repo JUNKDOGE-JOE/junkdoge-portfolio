@@ -1,17 +1,11 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
 import type { Project } from '@/content/projects'
 import { nextIndex, prevIndex } from '@/lib/carousel'
 import { Slide } from './Slide'
 import { ProjectCounter } from './ProjectCounter'
+import { SlideBackground } from './SlideBackground'
 import { isGalleryOpen } from './Gallery'
-
-const pageVariants = {
-  initial: { opacity: 0, y: 50 },
-  animate: { opacity: 1, y: 0 },
-  exit:    { opacity: 0, y: -50 },
-}
 
 export function CarouselRoot({ projects }: { projects: Project[] }) {
   const [index, setIndex] = useState(0)
@@ -74,24 +68,26 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
 
   const current = projects[index]
   return (
-    <section ref={sectionRef} aria-roledescription="carousel" className="relative h-screen w-screen touch-pan-y overflow-hidden"
+    <section
+      ref={sectionRef}
+      aria-roledescription="carousel"
+      className="relative h-screen w-screen touch-pan-y overflow-hidden"
       style={{ '--accent': current.accent ?? '#2b2b30', '--mx': '0.5', '--my': '0.5' } as React.CSSProperties}
-      onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current.slug}
-          variants={pageVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0"
-        >
-          <Slide project={current} />
-        </motion.div>
-      </AnimatePresence>
-      <ProjectCounter index={index} total={projects.length}
-        onPrev={() => go(-1)} onNext={() => go(1)} />
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+    >
+      {/* Persistent background: crossfades between projects with overlapping opacity */}
+      <SlideBackground project={current} />
+
+      {/* Slide content: keyed by slug so it remounts and replays GSAP cascade */}
+      <Slide key={current.slug} project={current} />
+
+      <ProjectCounter
+        index={index}
+        total={projects.length}
+        onPrev={() => go(-1)}
+        onNext={() => go(1)}
+      />
     </section>
   )
 }
