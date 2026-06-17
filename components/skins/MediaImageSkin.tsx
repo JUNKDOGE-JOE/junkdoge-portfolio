@@ -8,9 +8,9 @@ export function MediaImageSkin({ project }: { project: Project }) {
       <Image src={project.cover} alt="" fill priority sizes="100vw"
         className="object-cover opacity-80"
         style={{
-          transform: 'translate(calc((var(--mx, 0.5) - 0.5) * -26px), calc((var(--my, 0.5) - 0.5) * -26px)) scale(1.3)',
+          transform: 'translate(calc((var(--mx, 0.5) - 0.5) * -70px), calc((var(--my, 0.5) - 0.5) * -70px)) scale(1.32)',
           filter: 'blur(38px) saturate(1.5)',
-          transition: 'transform 0.25s ease-out',
+          transition: 'transform 0.4s ease-out',
         }} />
       <div className="absolute inset-0"
         style={{ background: 'radial-gradient(70% 70% at 50% 45%, transparent 55%, rgba(0,0,0,0.6))' }} />
