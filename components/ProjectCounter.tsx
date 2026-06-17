@@ -1,6 +1,7 @@
 'use client'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLang, ui } from '@/lib/i18n'
+import styles from './ProjectCounter.module.css'
 
 // SVG dimensions
 const SZ = 128      // matches w-32 h-32
@@ -88,8 +89,42 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
         </AnimatePresence>
       </span>
       <span className="ui-label text-[0.6rem] opacity-70">{t(ui.number)}</span>
-      <button aria-label="previous" onClick={onPrev} className="absolute -left-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-200 hover:-translate-x-1">←</button>
-      <button aria-label="next" onClick={onNext} className="absolute -right-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-200 hover:translate-x-1">→</button>
+      <button
+        aria-label="previous"
+        onClick={onPrev}
+        className={`absolute -left-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-200 hover:-translate-x-1 ${styles.arrowLeft}`}
+      >
+        <span className={styles.arrowMask}>
+          <span className={styles.arrowRow}>
+            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+              <path className="stroke-current" strokeWidth="1.5" d="M8.54736 16.6364L1.38827 8.26321L7.83145 0.727323"/>
+              <path className="stroke-current" strokeWidth="1.5" d="M1.38817 8.28388L30.0245 8.28387"/>
+            </svg>
+            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+              <path className="stroke-current" strokeWidth="1.5" d="M8.54736 16.6364L1.38827 8.26321L7.83145 0.727323"/>
+              <path className="stroke-current" strokeWidth="1.5" d="M1.38817 8.28388L30.0245 8.28387"/>
+            </svg>
+          </span>
+        </span>
+      </button>
+      <button
+        aria-label="next"
+        onClick={onNext}
+        className={`absolute -right-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-200 hover:translate-x-1 ${styles.arrowRight}`}
+      >
+        <span className={styles.arrowMask}>
+          <span className={styles.arrowRow}>
+            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+              <path className="stroke-current" strokeWidth="1.5" d="M21.7229 0.363708L28.882 8.73691L22.4388 16.2728"/>
+              <path className="stroke-current" strokeWidth="1.5" d="M28.8821 8.71619L0.245728 8.71619"/>
+            </svg>
+            <svg viewBox="0 0 30 17" fill="none" className="h-[14px] w-auto" aria-hidden="true">
+              <path className="stroke-current" strokeWidth="1.5" d="M21.7229 0.363708L28.882 8.73691L22.4388 16.2728"/>
+              <path className="stroke-current" strokeWidth="1.5" d="M28.8821 8.71619L0.245728 8.71619"/>
+            </svg>
+          </span>
+        </span>
+      </button>
     </div>
   )
 }

@@ -1,0 +1,28 @@
+.arrowMask {
+  overflow: hidden;
+}
+
+.arrowRow {
+  display: flex;
+}
+
+.arrowRow > * {
+  flex: 0 0 100%;
+}
+
+/* Left arrow: slides left on hover (exit left, enter from right) */
+.arrowLeft:hover .arrowRow {
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
+  transform: translateX(-100%);
+}
+
+/* Right arrow: slides right on hover (exit right, enter from left) */
+.arrowRight:hover .arrowRow {
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
+  transform: translateX(100%);
+}
+
+.arrowRow {
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.2, 1);
+  transform: translateX(0);
+}

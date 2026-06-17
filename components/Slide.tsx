@@ -30,11 +30,20 @@ export function Slide({ project }: { project: Project }) {
     setGalleryOpen(true)
   }
 
-  // Masked sentence-stagger reveal — runs on every remount (i.e. every slug change).
+  // Masked reveal — runs on every remount (i.e. every slug change).
   // useIsoLayoutEffect (layout effect) sets the hidden start state BEFORE paint, so
   // there's no one-frame flash of the content at its natural position on switch.
   useIsoLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      // Per-letter stagger for the title chars
+      gsap.set('[data-reveal-char]', { yPercent: 110 })
+      gsap.to('[data-reveal-char]', {
+        yPercent: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+        stagger: 0.035,
+      })
+      // Sentence-mask stagger for meta / desc / button (unchanged)
       gsap.set('[data-reveal] > *', { yPercent: 110 })
       gsap.to('[data-reveal] > *', {
         yPercent: 0,
@@ -42,6 +51,10 @@ export function Slide({ project }: { project: Project }) {
         ease: 'power3.out',
         stagger: 0.09,
       })
+      // Circle button: fade in so it doesn't flash on project switch
+      if (circleRef.current) {
+        gsap.from(circleRef.current, { autoAlpha: 0, duration: 0.6, delay: 0.25, ease: 'power2.out' })
+      }
     }, rootRef)
     return () => ctx.revert()
   }, [project.slug])
@@ -53,12 +66,23 @@ export function Slide({ project }: { project: Project }) {
       className={`relative h-full w-full ${dark ? 'text-[var(--paper-text)]' : 'text-[var(--ink)]'}`}
     >
       <div aria-live="polite" className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl -translate-x-1/2 -translate-y-1/2 text-center">
-        {/* Title mask */}
-        <span className="block overflow-hidden" data-reveal>
-          <h2 className="display-italic block text-5xl font-medium leading-[0.95] md:text-7xl">
-            {t(project.title)}
-          </h2>
-        </span>
+        {/* Title: per-letter masked stagger — pb+leading give room for descenders/italic */}
+        <h2
+          className="display-italic text-5xl font-medium md:text-7xl"
+          aria-label={t(project.title)}
+        >
+          {t(project.title).split('').map((char, i) => (
+            <span
+              key={i}
+              className="inline-block overflow-hidden align-bottom leading-[1.25] pb-[0.12em]"
+              aria-hidden="true"
+            >
+              <span className="inline-block" data-reveal-char>
+                {char === ' ' ? ' ' : char}
+              </span>
+            </span>
+          ))}
+        </h2>
 
         {/* Meta mask */}
         <span className="block overflow-hidden" data-reveal>
