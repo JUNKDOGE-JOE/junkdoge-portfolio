@@ -11,7 +11,7 @@ const SIZE  = 210   // circle diameter px
 const GAP   = 56    // vertical gap between circles
 const TRACK = 190   // horizontal offset from viewport centre to each track centre
 
-const FRICTION         = 0.93
+const FRICTION         = 0.92
 const SETTLE_THRESHOLD = 0.01
 
 // mod that always returns positive result
@@ -64,7 +64,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       if (pausedRef.current) return
-      velRef.current += e.deltaY * 0.18
+      velRef.current += e.deltaY * 0.12
     }
     const onTouchStart = (e: TouchEvent) => {
       touchStartRef.current = e.touches[0].clientY
@@ -73,7 +73,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
       if (pausedRef.current) return
       const delta = touchStartRef.current - e.touches[0].clientY
       touchStartRef.current = e.touches[0].clientY
-      velRef.current += delta * 0.36
+      velRef.current += delta * 0.24
     }
 
     window.addEventListener('wheel',      onWheel,      { passive: true })
