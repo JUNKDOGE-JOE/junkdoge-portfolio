@@ -35,8 +35,8 @@ export function Slide({ project }: { project: Project }) {
   // there's no one-frame flash of the content at its natural position on switch.
   useIsoLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Per-letter stagger for the title chars
-      gsap.set('[data-reveal-char]', { yPercent: 110 })
+      // Per-letter stagger for the title chars (130% so the clipped char is fully hidden)
+      gsap.set('[data-reveal-char]', { yPercent: 130 })
       gsap.to('[data-reveal-char]', {
         yPercent: 0,
         duration: 0.7,
@@ -74,7 +74,8 @@ export function Slide({ project }: { project: Project }) {
           {t(project.title).split('').map((char, i) => (
             <span
               key={i}
-              className="inline-block overflow-hidden align-bottom leading-[1.25] pb-[0.12em]"
+              className="inline-block align-bottom leading-[1.25] pb-[0.12em]"
+              style={{ clipPath: 'inset(0 -0.45em 0 -0.45em)' }}
               aria-hidden="true"
             >
               <span className="inline-block" data-reveal-char>
@@ -96,8 +97,8 @@ export function Slide({ project }: { project: Project }) {
           </span>
 
           {href !== '#' && (
-            /* Visit button mask */
-            <span className="block overflow-hidden" data-reveal>
+            /* Visit button — no overflow-hidden so the accent glow isn't clipped into a rectangle */
+            <span className="block" data-reveal>
               <a
                 href={href}
                 target="_blank"
