@@ -1,6 +1,7 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import gsap from 'gsap'
+import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
 
 /** Wrap a TEXT node so it can rise from an overflow-hidden mask (sentence reveal).
     Do NOT use for bordered/boxed elements — the mask clips them; use RevealUp. */
@@ -26,7 +27,7 @@ export function RevealUp({ children, className = '' }: { children: React.ReactNo
 export function RevealGroup({ children, className = '', stagger = 0.09, delay = 0 }:
   { children: React.ReactNode; className?: string; stagger?: number; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.set('[data-reveal] > *', { yPercent: 110 })
       gsap.set('[data-reveal-up]', { autoAlpha: 0, y: 28 })

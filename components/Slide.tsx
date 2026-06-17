@@ -1,8 +1,9 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import gsap from 'gsap'
 import type { Project } from '@/content/projects'
 import { isImageSkin, galleryFor } from '@/lib/projects'
+import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
 import { useLang } from '@/lib/i18n'
 import { CircleCrop } from './CircleCrop'
 import { LetterSwap } from './LetterSwap'
@@ -29,8 +30,10 @@ export function Slide({ project }: { project: Project }) {
     setGalleryOpen(true)
   }
 
-  // Masked sentence-stagger reveal — runs on every remount (i.e. every slug change)
-  useEffect(() => {
+  // Masked sentence-stagger reveal — runs on every remount (i.e. every slug change).
+  // useIsoLayoutEffect (layout effect) sets the hidden start state BEFORE paint, so
+  // there's no one-frame flash of the content at its natural position on switch.
+  useIsoLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.set('[data-reveal] > *', { yPercent: 110 })
       gsap.to('[data-reveal] > *', {
