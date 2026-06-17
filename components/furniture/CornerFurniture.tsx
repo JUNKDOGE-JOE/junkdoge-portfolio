@@ -39,7 +39,7 @@ export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'ligh
         <span className="absolute left-5 top-1/2 -translate-y-1/2 ui-label opacity-70">portfolio 2026</span>
       )}
       <span className="absolute right-5 top-1/2 -translate-y-1/2 ui-label opacity-70">{t(ui.scroll)}</span>
-      <span className="absolute bottom-6 left-[9.5rem] max-w-[12rem] ui-label leading-relaxed opacity-70">
+      <span className="absolute bottom-[4.6rem] left-[12.5rem] whitespace-nowrap ui-label opacity-55">
         PV · VJ · 映像创作 × 创意开发
       </span>
     </div>
