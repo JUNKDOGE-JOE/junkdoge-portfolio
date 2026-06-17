@@ -14,25 +14,40 @@ const allProjects = getHomeProjects()
 // Zero-pad count, e.g. 09
 const padCount = (n: number) => String(n).padStart(2, '0')
 
+// SVG constants for the progress-ring counter (mirrors ProjectCounter)
+const COUNTER_SZ   = 112   // px — 7rem
+const COUNTER_R    = 53    // arc radius (leaves ~3px margin inside 112px)
+const COUNTER_CIRC = 2 * Math.PI * COUNTER_R
+
 export default function ProjectsPage() {
   const { t } = useLang()
-  const [active, setActive]  = useState<Project | null>(null)
-  const [focal,  setFocal]   = useState<Project | null>(null)
+  const [active,      setActive]      = useState<Project | null>(null)
+  const [focalProject, setFocalProject] = useState<Project | null>(null)
+  const [focalIndex,   setFocalIndex]  = useState(0)
 
   const count = allProjects.length
+
+  const handleFocal = (p: Project) => {
+    setFocalProject(p)
+    setFocalIndex(allProjects.indexOf(p))
+  }
+
+  // progress arc driven by focal index
+  const progress   = count > 0 ? (focalIndex + 1) / count : 0
+  const dashOffset = COUNTER_CIRC * (1 - progress)
 
   return (
     <main className="relative h-screen w-screen overflow-hidden"
           style={{ background: 'transparent', color: '#1a1a1a' }}>
 
       {/* ── Fixed gradient backdrop (with focal theme-colour tint) ── */}
-      <MouseGradient color={focal?.accent} />
+      <MouseGradient color={focalProject?.accent} />
 
       {/* ── Dual-track scrolling circles ── */}
       <ScrollingCircles
         projects={allProjects}
         onCircleClick={(p) => setActive(p)}
-        onFocal={setFocal}
+        onFocal={handleFocal}
         paused={active !== null}
       />
 
@@ -91,23 +106,64 @@ export default function ProjectsPage() {
         </RevealGroup>
       </div>
 
-      {/* ── Bottom-left navigation circle (decorative, reference-style) ── */}
-      <div className="pointer-events-none absolute bottom-6 left-5 z-10
-                      flex h-[7rem] w-[7rem] flex-col items-center justify-center
-                      rounded-full border border-[rgba(28,22,20,0.25)] text-center"
-           style={{ color: 'rgba(28,22,20,0.75)' }}>
-        {/* Diagonal slash line */}
+      {/* ── Bottom-left navigation circle — progress ring (⑧) ── */}
+      <div
+        className="pointer-events-none absolute bottom-6 left-5 z-10
+                   flex h-[7rem] w-[7rem] flex-col items-center justify-center
+                   rounded-full text-center"
+        style={{ color: 'rgba(28,22,20,0.75)' }}
+      >
+        {/* SVG layer: faint track + progress arc + diagonal deco line */}
         <svg
-          viewBox="0 0 80 80"
-          className="absolute inset-0 w-full h-full opacity-20"
-          aria-hidden
+          viewBox={`0 0 ${COUNTER_SZ} ${COUNTER_SZ}`}
+          width={COUNTER_SZ}
+          height={COUNTER_SZ}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ rotate: '-90deg' }}
         >
-          <line x1="25" y1="55" x2="55" y2="25" stroke="currentColor" strokeWidth="1" />
+          {/* Faint full-circle track */}
+          <circle
+            cx={COUNTER_SZ / 2}
+            cy={COUNTER_SZ / 2}
+            r={COUNTER_R}
+            fill="none"
+            stroke="currentColor"
+            strokeOpacity={0.15}
+            strokeWidth={1.5}
+          />
+          {/* Progress arc */}
+          <circle
+            cx={COUNTER_SZ / 2}
+            cy={COUNTER_SZ / 2}
+            r={COUNTER_R}
+            fill="none"
+            stroke="currentColor"
+            strokeOpacity={0.85}
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeDasharray={COUNTER_CIRC}
+            strokeDashoffset={dashOffset}
+            style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+          />
+          {/* Decorative diagonal line — counter-rotated to appear upright */}
+          <line
+            x1={COUNTER_SZ * 0.7}
+            y1={COUNTER_SZ * 0.2}
+            x2={COUNTER_SZ * 0.3}
+            y2={COUNTER_SZ * 0.8}
+            stroke="currentColor"
+            strokeOpacity={0.3}
+            strokeWidth={0.8}
+            style={{ transformOrigin: `${COUNTER_SZ / 2}px ${COUNTER_SZ / 2}px`, rotate: '90deg' }}
+          />
         </svg>
         <span className="ui-label text-[0.55rem] opacity-60 mb-1">PROJECTS</span>
-        {/* Two-number stack: top = 1, bottom = total */}
+        {/* Two-number stack: focal+1 / total */}
         <div className="flex flex-col items-center leading-none">
-          <span style={{ fontSize: '1.3rem', fontWeight: 500 }}>1</span>
+          <span style={{ fontSize: '1.3rem', fontWeight: 500, transition: 'opacity 0.3s' }}>
+            {padCount(focalIndex + 1)}
+          </span>
           <span style={{ fontSize: '1.3rem', fontWeight: 500 }}>{padCount(count)}</span>
         </div>
         <span className="ui-label text-[0.55rem] opacity-60 mt-1">NAVIGATION</span>

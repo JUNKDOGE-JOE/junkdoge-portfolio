@@ -97,7 +97,7 @@
   pointer-events: none;
 }
 
-/* The decorative SVG ring */
+/* The decorative SVG ring — ⑦ half-turn on hover */
 .ringDeco {
   position: absolute;
   inset: 0;
@@ -107,8 +107,7 @@
   pointer-events: none;
 }
 
-/* Spin on hover of the sibling text circle — use :has() on the wrapper,
-   or a group-hover approach. We use a parent .textCircleGroup that hosts both. */
+/* Group wrapper for name-circle + ring */
 .textCircleGroup {
   position: absolute;
   left: 50%;
@@ -119,7 +118,18 @@
   pointer-events: none;
 }
 
-/* Forward-spin on hover of the text circle inside the group */
+/* ⑥ Inner disc wrapper — scales down slightly on hover */
+.innerDisc {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.4s ease;
+}
+
+.textCircleGroup:hover .innerDisc {
+  transform: scale(0.94);
+}
+
+/* ⑦ Ring spins HALF a turn on hover, reverses on leave */
 .textCircleGroup:hover .ringDeco {
-  transform: rotate(360deg);
+  transform: rotate(180deg);
 }

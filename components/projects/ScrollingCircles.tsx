@@ -11,8 +11,8 @@ const SIZE  = 210   // circle diameter px
 const GAP   = 56    // vertical gap between circles
 const TRACK = 190   // horizontal offset from viewport centre to each track centre
 
-const FRICTION         = 0.6
-const SETTLE_THRESHOLD = 0.05
+const FRICTION         = 0.93
+const SETTLE_THRESHOLD = 0.01
 
 // mod that always returns positive result
 const mod = (n: number, m: number) => ((n % m) + m) % m
@@ -134,11 +134,11 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
         const year      = `Y.${project.year}`
         const titleText = t(project.title)
 
-        // 8 dots evenly spaced at 45° on a ring of r=48 inside viewBox 0 0 100 100
-        const ringDots = Array.from({ length: 8 }, (_, k) => {
-          const angle = (k * Math.PI * 2) / 8
-          return { cx: 50 + 48 * Math.cos(angle), cy: 50 + 48 * Math.sin(angle) }
-        })
+        // 2 dots at 9 o'clock (π) and 3 o'clock (0) on a ring of r=48
+        const ringDots = [
+          { cx: 50 + 48 * Math.cos(Math.PI),  cy: 50 },  // left  (9 o'clock)
+          { cx: 50 + 48 * Math.cos(0),          cy: 50 },  // right (3 o'clock)
+        ]
 
         return [
           // ── Left: name circle (wrapped to enable ring hover) ───────────────
@@ -151,7 +151,21 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
               pointerEvents: 'auto',
             }}
           >
-            {/* Decorative spinning ring — pointer-events:none, sits over the circle */}
+            {/* Inner disc + text — scales down on hover (⑥) */}
+            <div className={styles.innerDisc}>
+              <button
+                className={`${styles.circle} ${styles.textCircle}`}
+                style={{ position: 'absolute', inset: 0, transform: 'none' }}
+                onClick={() => onCircleClick(project)}
+                aria-label={titleText}
+              >
+                <span className={styles.textNo}>{no}</span>
+                <span className={styles.textTitle}>{titleText}</span>
+                <span className={styles.textYear}>{year}</span>
+              </button>
+            </div>
+
+            {/* Decorative spinning ring — pointer-events:none, sits over the circle (⑦ half-turn) */}
             <svg
               viewBox="0 0 100 100"
               className={styles.ringDeco}
@@ -168,17 +182,6 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
                 <circle key={k} cx={d.cx} cy={d.cy} r={0.8} fill="currentColor" fillOpacity={0.35} />
               ))}
             </svg>
-
-            <button
-              className={`${styles.circle} ${styles.textCircle}`}
-              style={{ position: 'absolute', inset: 0, transform: 'none' }}
-              onClick={() => onCircleClick(project)}
-              aria-label={titleText}
-            >
-              <span className={styles.textNo}>{no}</span>
-              <span className={styles.textTitle}>{titleText}</span>
-              <span className={styles.textYear}>{year}</span>
-            </button>
           </div>,
 
           // ── Right: image circle ────────────────────────────────────────────
