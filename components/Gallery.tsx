@@ -4,12 +4,41 @@ import gsap from 'gsap'
 import { useLang } from '@/lib/i18n'
 import type { Project } from '@/content/projects'
 import { galleryFor } from '@/lib/projects'
+import { Reveal, RevealGroup } from '@/components/Reveal'
 
 // Module-level open-gallery counter — shared across all Gallery instances so
 // CarouselRoot / ScrollingCircles can bail out of their wheel handlers even if a
 // DOM event slips through the overlay's stopPropagation.
 let _galleryCount = 0
 export function isGalleryOpen(): boolean { return _galleryCount > 0 }
+
+// ── ⑫ 3-D tilt card ───────────────────────────────────────────────────────────
+function TiltCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const onMove = (e: React.MouseEvent) => {
+    const el = ref.current; if (!el) return
+    const r = el.getBoundingClientRect()
+    const px = (e.clientX - r.left) / r.width - 0.5   // -0.5..0.5
+    const py = (e.clientY - r.top) / r.height - 0.5
+    const MAX = 10 // degrees
+    // corner under the cursor comes toward the viewer
+    el.style.transform = `perspective(900px) rotateX(${-py * MAX}deg) rotateY(${px * MAX}deg)`
+  }
+  const onLeave = () => {
+    if (ref.current) ref.current.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)'
+  }
+  return (
+    <div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      className={className}
+      style={{ transformStyle: 'preserve-3d', transition: 'transform 0.2s ease-out', willChange: 'transform' }}
+    >
+      {children}
+    </div>
+  )
+}
 
 export function Gallery({
   project,
@@ -78,7 +107,7 @@ export function Gallery({
       gsap.from('[data-g="backdrop"]', { autoAlpha: 0, duration: 0.35 })
       // fade only (no y) so the first card stays put for the morph to target
       gsap.from('[data-g="panel"]', { autoAlpha: 0, duration: 0.5, ease: 'power3.out' })
-      gsap.from('[data-g="card-rest"]', { autoAlpha: 0, y: 42, duration: 0.55, stagger: 0.08, delay: 0.4, ease: 'power3.out' })
+      gsap.from('.card-rest-item', { autoAlpha: 0, y: 42, duration: 0.55, stagger: 0.08, delay: 0.4, ease: 'power3.out' })
     }, root)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -101,22 +130,31 @@ export function Gallery({
     >
       <div data-g="backdrop" onClick={onClose} className="absolute inset-0 bg-black/85 backdrop-blur-2xl" />
       <div data-g="panel" className="absolute inset-0 flex flex-col gap-8 overflow-hidden p-8 md:flex-row md:p-16">
-        <div className="shrink-0 md:w-1/3">
+
+        {/* ── ⑪ Left column: masked stagger reveal ────────────────────────── */}
+        <RevealGroup className="shrink-0 md:w-1/3" delay={0.15}>
           <button onClick={onClose} aria-label="close gallery" className="ui-label mb-10 opacity-70 transition-opacity hover:opacity-100">✕ CLOSE</button>
-          <h2 className="display-italic text-4xl font-medium leading-[0.95] md:text-6xl">{t(project.title)}</h2>
-          <p className="ui-label mt-4 opacity-70">{t(project.role)} / {project.year}</p>
-          <p className="mt-5 max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p>
-        </div>
+          <Reveal><h2 className="display-italic text-4xl font-medium leading-[0.95] md:text-6xl">{t(project.title)}</h2></Reveal>
+          <Reveal className="mt-4"><p className="ui-label opacity-70">{t(project.role)} / {project.year}</p></Reveal>
+          <Reveal className="mt-5"><p className="max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p></Reveal>
+        </RevealGroup>
+
         <div className="flex-1 space-y-6 overflow-y-auto pr-1" style={{ scrollbarWidth: 'none' }}>
-          {/* First card = the SAME image as the bottom-right circle (project.cover),
-              so the morph hands off to an identical frame — no content swap. */}
+          {/* First card — the morph targets `firstCardRef` (the inner card div).
+              TiltCard is applied to an INNER wrapper so GSAP only measures/animates
+              the card itself; the tilt transform lives on a separate layer and
+              doesn't fight the absolute positioning the morph sets. */}
           <div ref={firstCardRef} className="aspect-video w-full overflow-hidden border border-white/15 shadow-2xl" style={{ borderRadius: 16 }}>
-            <img src={project.cover} alt="" className="h-full w-full object-cover" />
+            <TiltCard className="h-full w-full">
+              <img src={project.cover} alt="" className="h-full w-full object-cover" />
+            </TiltCard>
           </div>
+
+          {/* ── ⑫ Rest cards: each wrapped in TiltCard ─────────────────────── */}
           {imgs.map((src, i) => (
-            <div key={i} data-g="card-rest" className="aspect-video w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
+            <TiltCard key={i} className="card-rest-item aspect-video w-full overflow-hidden rounded-2xl border border-white/15 shadow-2xl">
               <img src={src} alt="" className="h-full w-full object-cover" loading="lazy" />
-            </div>
+            </TiltCard>
           ))}
         </div>
       </div>
