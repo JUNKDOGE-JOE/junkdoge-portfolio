@@ -6,6 +6,7 @@ import { CornerFurniture } from '@/components/furniture/CornerFurniture'
 import { Gallery } from '@/components/Gallery'
 import { getHomeProjects } from '@/lib/projects'
 import { useLang } from '@/lib/i18n'
+import { Reveal, RevealGroup } from '@/components/Reveal'
 import type { Project } from '@/content/projects'
 
 const allProjects = getHomeProjects()
@@ -43,41 +44,51 @@ export default function ProjectsPage() {
       {/* ── Left-centre label: "Featured (09) projects" ── */}
       <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-0.5"
            style={{ fontFamily: 'Georgia, serif' }}>
-        <span
-          style={{
-            fontSize: '2.8rem',
-            fontWeight: 500,
-            lineHeight: 1,
-            color: 'rgba(28,22,20,0.82)',
-          }}
-        >
-          Featured
-        </span>
-        <span
-          style={{
-            fontSize: '0.72rem',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'rgba(28,22,20,0.45)',
-            fontFamily: 'system-ui, sans-serif',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-          }}
-        >
-          ({padCount(count)})
-        </span>
-        <span
-          style={{
-            fontSize: '2.8rem',
-            fontWeight: 500,
-            fontStyle: 'italic',
-            lineHeight: 1,
-            color: 'rgba(28,22,20,0.82)',
-          }}
-        >
-          projects
-        </span>
+        <RevealGroup>
+          <Reveal>
+            <span
+              style={{
+                fontSize: '2.8rem',
+                fontWeight: 500,
+                lineHeight: 1,
+                color: 'rgba(28,22,20,0.82)',
+                display: 'block',
+              }}
+            >
+              Featured
+            </span>
+          </Reveal>
+          <Reveal>
+            <span
+              style={{
+                fontSize: '0.72rem',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: 'rgba(28,22,20,0.45)',
+                fontFamily: 'system-ui, sans-serif',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              ({padCount(count)})
+            </span>
+          </Reveal>
+          <Reveal>
+            <span
+              style={{
+                fontSize: '2.8rem',
+                fontWeight: 500,
+                fontStyle: 'italic',
+                lineHeight: 1,
+                color: 'rgba(28,22,20,0.82)',
+                display: 'block',
+              }}
+            >
+              projects
+            </span>
+          </Reveal>
+        </RevealGroup>
       </div>
 
       {/* ── Bottom-left navigation circle (decorative, reference-style) ── */}
@@ -108,25 +119,34 @@ export default function ProjectsPage() {
       <div className="pointer-events-none absolute right-5 top-8 z-10
                       flex flex-col items-end gap-1"
            style={{ fontFamily: 'Georgia, serif', color: 'rgba(28,22,20,0.7)' }}>
-        {/* Year range with diagonal slash */}
-        <span
-          style={{
-            fontSize: '1.05rem',
-            fontStyle: 'italic',
-            letterSpacing: '0.04em',
-          }}
-        >
-          2021&thinsp;/&thinsp;2026
-        </span>
+        <RevealGroup>
+          <Reveal>
+            <span
+              style={{
+                fontSize: '1.05rem',
+                fontStyle: 'italic',
+                letterSpacing: '0.04em',
+                display: 'block',
+              }}
+            >
+              2021&thinsp;/&thinsp;2026
+            </span>
+          </Reveal>
+        </RevealGroup>
       </div>
 
       {/* ── Bottom-right tagline ── */}
       <div className="pointer-events-none absolute bottom-6 right-5 z-10
                       text-right ui-label leading-snug"
            style={{ color: 'rgba(28,22,20,0.5)', maxWidth: '14rem' }}>
-        <span>A FEATURED SELECTION.</span>
-        <br />
-        <span>映像创作 × 创意开发</span>
+        <RevealGroup>
+          <Reveal>
+            <span>A FEATURED SELECTION.</span>
+          </Reveal>
+          <Reveal>
+            <span>映像创作 × 创意开发</span>
+          </Reveal>
+        </RevealGroup>
       </div>
 
       {/* ── Gallery overlay ── */}

@@ -1,5 +1,5 @@
 'use client'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 import { useLang, ui } from '@/lib/i18n'
 import { Clock } from './Clock'
 import { LetterSwap } from '@/components/LetterSwap'
