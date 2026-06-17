@@ -6,24 +6,29 @@ import styles from './MouseGradient.module.css'
  * Fixed full-screen fluid-gradient backdrop for /projects.
  * - Base: warm #f1d7dd with 3 slow-drifting blob layers (blur 70px).
  * - Cursor bloom: large radial-gradient whose centre is driven by CSS vars
- *   --gx/--gy (in %). Updated each rAF via lerp(cur, target, 0.08) for the
- *   characteristic "soft follow" of federicopian.com.
+ *   --gx/--gy (in %). Updated each rAF via lerp(cur, target, 0.08).
+ * - color: optional accent hex — blended via mix-blend-mode:color tint layer.
+ *   As focal project changes, hue shifts smoothly (CSS transition 0.7s).
  */
-export function MouseGradient() {
+interface Props {
+  color?: string
+}
+
+export function MouseGradient({ color }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   // lerp state kept as plain refs — no re-renders needed
-  const gxRef = useRef(50)
-  const gyRef = useRef(50)
+  const gxRef      = useRef(50)
+  const gyRef      = useRef(50)
   const targetXRef = useRef(50)
   const targetYRef = useRef(50)
-  const rafRef = useRef<number | null>(null)
+  const rafRef     = useRef<number | null>(null)
 
   useEffect(() => {
     const el = rootRef.current
     if (!el) return
 
     const onMouseMove = (e: MouseEvent) => {
-      targetXRef.current = (e.clientX / window.innerWidth) * 100
+      targetXRef.current = (e.clientX / window.innerWidth)  * 100
       targetYRef.current = (e.clientY / window.innerHeight) * 100
     }
 
@@ -52,6 +57,17 @@ export function MouseGradient() {
         <div className={styles.blob2} />
         <div className={styles.blob3} />
       </div>
+      {/* Focal project theme-colour tint — sits above blobs, below bloom */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundColor:  color ?? 'transparent',
+          mixBlendMode:     'color',
+          opacity:          0.55,
+          transition:       'background-color 0.7s ease',
+          pointerEvents:    'none',
+        }}
+      />
       <div className={styles.bloom} />
       <div className={styles.vignette} />
     </div>

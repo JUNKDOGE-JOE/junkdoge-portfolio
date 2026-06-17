@@ -5,6 +5,7 @@ import type { Project } from '@/content/projects'
 import { nextIndex, prevIndex } from '@/lib/carousel'
 import { Slide } from './Slide'
 import { ProjectCounter } from './ProjectCounter'
+import { isGalleryOpen } from './Gallery'
 
 const pageVariants = {
   initial: { opacity: 0, y: 50 },
@@ -29,6 +30,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
       if (e.key === 'ArrowLeft') go(-1)
     }
     const onWheel = (e: WheelEvent) => {
+      if (isGalleryOpen()) return
       const now = performance.now()
       if (lock.current || now - lastScroll.current < 500) return
       accum.current += e.deltaY

@@ -5,192 +5,168 @@ import type { Project } from '@/content/projects'
 import { useLang } from '@/lib/i18n'
 
 // ---------------------------------------------------------------------------
-// CONFIG — matches the BerlinBackground reference (size/gap/trackOffset)
+// CONFIG
 // ---------------------------------------------------------------------------
-const CONFIG = {
-  size: 210,          // circle diameter px
-  gap: 40,            // vertical gap between circles px
-  trackOffset: 155,   // horizontal distance from centre to each track's centre px
-  friction: 0.6,      // velocity multiplier per rAF frame (identical to reference)
-  settleThreshold: 0.05,
-}
+const SIZE  = 210   // circle diameter px
+const GAP   = 56    // vertical gap between circles
+const TRACK = 190   // horizontal offset from viewport centre to each track centre
 
-// mod that always returns a positive result (handles negative wrap)
+const FRICTION         = 0.6
+const SETTLE_THRESHOLD = 0.05
+
+// mod that always returns positive result
 const mod = (n: number, m: number) => ((n % m) + m) % m
 
+// Wrap v into the range [-H/2, H/2)
+// This centres the ring on y=0 so circles above and below viewport centre are symmetric.
+function wrap(v: number, H: number): number {
+  return mod(v, H) - H / 2
+}
+
 // ---------------------------------------------------------------------------
-// Circle item shape
+// Props
 // ---------------------------------------------------------------------------
-interface CircleItem {
-  project: Project
-  isText: boolean   // true = text circle, false = image circle
-  /** Sequential index in the full circle list (for N.0X label) */
-  listIndex: number
+interface Props {
+  projects:    Project[]
+  onCircleClick: (p: Project) => void
+  /** Called whenever the focal (closest-to-centre) project changes */
+  onFocal?:    (p: Project) => void
+  /** When true, wheel/touch velocity intake is suspended (gallery open) */
+  paused?:     boolean
 }
 
 // ---------------------------------------------------------------------------
 // ScrollingCircles
 // ---------------------------------------------------------------------------
-interface Props {
-  projects: Project[]
-  onCircleClick: (p: Project) => void
-}
-
-export function ScrollingCircles({ projects, onCircleClick }: Props) {
+export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: Props) {
   const { t } = useLang()
 
-  // Build the interleaved circle list:
-  // For each project we create TWO circles (text + image).
-  // We interleave them so tracks have mixed text/image, matching the reference
-  // pattern: left track at even indices, right track at odd indices.
-  // Within each project pair: first = text, second = image.
-  const circles: CircleItem[] = []
-  projects.forEach((project, pi) => {
-    // text circle first, then image circle
-    circles.push({ project, isText: true,  listIndex: pi })
-    circles.push({ project, isText: false, listIndex: pi })
-  })
+  const N    = projects.length
+  const STEP = SIZE + GAP
+  const H    = N * STEP
 
-  const N = circles.length // total circle count across both tracks
+  // Shared continuous scroll position in project-units (float)
+  const sRef   = useRef(0)
+  const velRef = useRef(0)
 
-  // Split into left (even indices) and right (odd indices) tracks, matching
-  // the reference's "isText = i % 2" stagger.
-  const leftItems  = circles.filter((_, i) => i % 2 === 0)
-  const rightItems = circles.filter((_, i) => i % 2 !== 0)
+  const touchStartRef = useRef(0)
 
-  const nLeft  = leftItems.length
-  const nRight = rightItems.length
+  // Trigger re-render each rAF; keeps read of sRef/velRef consistent
+  const [tick, setTick] = useState(0)
 
-  // positions[i] is a fractional index in [0, N) that maps to a y-position.
-  // Left and right tracks start offset by 0.5 so they don't align horizontally.
-  const [leftPos,  setLeftPos]  = useState<number[]>(() => leftItems.map((_, i) => i))
-  const [rightPos, setRightPos] = useState<number[]>(() => rightItems.map((_, i) => i + 0.5))
+  // Track focal index to fire onFocal only on change
+  const focalRef = useRef(-1)
 
-  const velocityRef    = useRef(0)
-  const touchStartRef  = useRef(0)
-  const rafRef         = useRef<number | null>(null)
+  // Paused ref to avoid stale closure inside rAF
+  const pausedRef = useRef(paused ?? false)
+  useEffect(() => { pausedRef.current = paused ?? false }, [paused])
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      velocityRef.current += e.deltaY * 0.5
+      if (pausedRef.current) return
+      velRef.current += e.deltaY * 0.5
     }
     const onTouchStart = (e: TouchEvent) => {
       touchStartRef.current = e.touches[0].clientY
     }
     const onTouchMove = (e: TouchEvent) => {
+      if (pausedRef.current) return
       const delta = touchStartRef.current - e.touches[0].clientY
       touchStartRef.current = e.touches[0].clientY
-      velocityRef.current += delta * 1
+      velRef.current += delta * 1
     }
 
-    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('wheel',      onWheel,      { passive: true })
     window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchmove', onTouchMove, { passive: true })
+    window.addEventListener('touchmove',  onTouchMove,  { passive: true })
 
-    const step = CONFIG.size + CONFIG.gap
-
+    let rafId: number
     const animate = () => {
-      // Apply friction identical to reference
-      velocityRef.current *= CONFIG.friction
+      velRef.current *= FRICTION
+      if (Math.abs(velRef.current) < SETTLE_THRESHOLD) velRef.current = 0
 
-      // Settle threshold
-      if (Math.abs(velocityRef.current) < CONFIG.settleThreshold) {
-        velocityRef.current = 0
+      sRef.current += velRef.current / STEP
+
+      // Compute focal index and fire callback when it changes
+      const focal = ((Math.round(sRef.current) % N) + N) % N
+      if (focal !== focalRef.current) {
+        focalRef.current = focal
+        onFocal?.(projects[focal])
       }
 
-      const vel = velocityRef.current
-
-      setLeftPos(prev =>
-        prev.map(pos => mod(pos + vel / step + nLeft, nLeft))
-      )
-      setRightPos(prev =>
-        prev.map(pos => mod(pos - vel / step + nRight, nRight))
-      )
-
-      rafRef.current = requestAnimationFrame(animate)
+      setTick(t => t + 1)
+      rafId = requestAnimationFrame(animate)
     }
 
-    rafRef.current = requestAnimationFrame(animate)
+    rafId = requestAnimationFrame(animate)
 
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
-      window.removeEventListener('wheel', onWheel)
+      cancelAnimationFrame(rafId)
+      window.removeEventListener('wheel',      onWheel)
       window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove', onTouchMove)
+      window.removeEventListener('touchmove',  onTouchMove)
     }
-  }, [nLeft, nRight])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [N]) // re-init only if number of projects changes
 
-  // Render a single circle
-  const renderCircle = (
-    item: CircleItem,
-    track: 'left' | 'right',
-    position: number,   // fractional index
-    trackLen: number,
-    key: string,
-  ) => {
-    const { project, isText, listIndex } = item
-    const vel = velocityRef.current
-
-    const step     = CONFIG.size + CONFIG.gap
-    const totalH   = trackLen * step
-    const baseY    = position * step
-    const x        = track === 'left' ? -CONFIG.trackOffset : CONFIG.trackOffset
-    const y        = baseY - totalH / 2
-
-    // Velocity-driven tilt: nudge translateY and slight scale, same as reference
-    const dy    = vel * 0.15
-    const scale = 1 + Math.abs(vel) * 0.0008
-
-    const circleStyle: React.CSSProperties = {
-      width:  CONFIG.size,
-      height: CONFIG.size,
-      left:   `calc(50% + ${x}px - ${CONFIG.size / 2}px)`,
-      top:    `calc(50% + ${y}px - ${CONFIG.size / 2}px)`,
-      transform: `translateY(${dy}px) scale(${scale})`,
-    }
-
-    const no   = `N.${String(listIndex + 1).padStart(2, '0')}`
-    const year = `Y.${project.year}`
-    const titleText = t(project.title)
-
-    if (isText) {
-      return (
-        <button
-          key={key}
-          className={`${styles.circle} ${styles.textCircle}`}
-          style={circleStyle}
-          onClick={() => onCircleClick(project)}
-          aria-label={titleText}
-        >
-          <span className={styles.textNo}>{no}</span>
-          <span className={styles.textTitle}>{titleText}</span>
-          <span className={styles.textYear}>{year}</span>
-        </button>
-      )
-    } else {
-      return (
-        <button
-          key={key}
-          className={`${styles.circle} ${styles.imgCircle}`}
-          style={circleStyle}
-          onClick={() => onCircleClick(project)}
-          aria-label={titleText}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={project.cover} alt={titleText} />
-        </button>
-      )
-    }
-  }
+  const s = sRef.current
 
   return (
     <div className={styles.stage} aria-label="Projects gallery">
-      {leftItems.map((item, i) =>
-        renderCircle(item, 'left', leftPos[i] ?? i, nLeft, `L-${i}-${item.project.slug}`)
-      )}
-      {rightItems.map((item, i) =>
-        renderCircle(item, 'right', rightPos[i] ?? i, nRight, `R-${i}-${item.project.slug}`)
-      )}
+      {projects.map((project, i) => {
+        // Left column: name circles
+        // y approaches 0 when s ≈ i; moves UP as s increases
+        const yName = wrap((i - s) * STEP, H)
+
+        // Right column: image circles
+        // y approaches 0 when s ≈ i; moves DOWN as s increases (opposite)
+        const yImg  = wrap((s - i) * STEP, H)
+
+        // "In focus" emphasis: distance from centre
+        const distName = Math.abs(yName)
+        const distImg  = Math.abs(yImg)
+        const focusScaleName = 1 + Math.max(0, 1 - distName / (STEP * 1.5)) * 0.06
+        const focusScaleImg  = 1 + Math.max(0, 1 - distImg  / (STEP * 1.5)) * 0.06
+        const focusOpacName  = 0.55 + Math.max(0, 1 - distName / (STEP * 2)) * 0.45
+        const focusOpacImg   = 0.55 + Math.max(0, 1 - distImg  / (STEP * 2)) * 0.45
+
+        const no        = `N.${String(i + 1).padStart(2, '0')}`
+        const year      = `Y.${project.year}`
+        const titleText = t(project.title)
+
+        return [
+          // ── Left: name circle ──────────────────────────────────────────────
+          <button
+            key={`name-${project.slug}`}
+            className={`${styles.circle} ${styles.textCircle}`}
+            style={{
+              transform: `translate(-50%, -50%) translate(${-TRACK}px, ${yName}px) scale(${focusScaleName})`,
+              opacity: focusOpacName,
+            }}
+            onClick={() => onCircleClick(project)}
+            aria-label={titleText}
+          >
+            <span className={styles.textNo}>{no}</span>
+            <span className={styles.textTitle}>{titleText}</span>
+            <span className={styles.textYear}>{year}</span>
+          </button>,
+
+          // ── Right: image circle ────────────────────────────────────────────
+          <button
+            key={`img-${project.slug}`}
+            className={`${styles.circle} ${styles.imgCircle}`}
+            style={{
+              transform: `translate(-50%, -50%) translate(${TRACK}px, ${yImg}px) scale(${focusScaleImg})`,
+              opacity: focusOpacImg,
+            }}
+            onClick={() => onCircleClick(project)}
+            aria-label={titleText}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={project.cover} alt={titleText} />
+          </button>,
+        ]
+      })}
     </div>
   )
 }

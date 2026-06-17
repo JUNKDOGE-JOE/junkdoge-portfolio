@@ -15,7 +15,8 @@ const padCount = (n: number) => String(n).padStart(2, '0')
 
 export default function ProjectsPage() {
   const { t } = useLang()
-  const [active, setActive] = useState<Project | null>(null)
+  const [active, setActive]  = useState<Project | null>(null)
+  const [focal,  setFocal]   = useState<Project | null>(null)
 
   const count = allProjects.length
 
@@ -23,17 +24,21 @@ export default function ProjectsPage() {
     <main className="relative h-screen w-screen overflow-hidden"
           style={{ background: 'transparent', color: '#1a1a1a' }}>
 
-      {/* ── Fixed gradient backdrop ── */}
-      <MouseGradient />
+      {/* ── Fixed gradient backdrop (with focal theme-colour tint) ── */}
+      <MouseGradient color={focal?.accent} />
 
       {/* ── Dual-track scrolling circles ── */}
       <ScrollingCircles
         projects={allProjects}
         onCircleClick={(p) => setActive(p)}
+        onFocal={setFocal}
+        paused={active !== null}
       />
 
-      {/* ── Corner furniture (nav links) ── */}
-      <CornerFurniture variant="light" />
+      {/* ── Corner furniture (nav links).
+            variant="projects": same ink as "light" but hides the "portfolio 2026"
+            mid-left label that would collide with the "Featured NN projects" header. ── */}
+      <CornerFurniture variant="projects" />
 
       {/* ── Left-centre label: "Featured (09) projects" ── */}
       <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-0.5"
@@ -97,8 +102,10 @@ export default function ProjectsPage() {
         <span className="ui-label text-[0.55rem] opacity-60 mt-1">NAVIGATION</span>
       </div>
 
-      {/* ── Right-centre: year range + tagline ── */}
-      <div className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 z-10
+      {/* ── Right-centre: year range — nudged UP to clear the right circle track ── */}
+      {/* Fix 4: was at top-1/2, the right circles sit at +TRACK=190px from centre;
+          moving this label to top-8 clears the circle column entirely.           */}
+      <div className="pointer-events-none absolute right-5 top-8 z-10
                       flex flex-col items-end gap-1"
            style={{ fontFamily: 'Georgia, serif', color: 'rgba(28,22,20,0.7)' }}>
         {/* Year range with diagonal slash */}

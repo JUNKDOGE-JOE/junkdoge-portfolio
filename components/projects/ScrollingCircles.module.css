@@ -8,14 +8,19 @@
 }
 
 .circle {
+  /* Anchor at viewport centre — transform handles both track offset and y scroll */
   position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 210px;
+  height: 210px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
   pointer-events: auto;
-  will-change: transform;
-  /* smooth the per-rAF inline transform slight jitter */
-  transition: transform 0.05s ease-out;
+  will-change: transform, opacity;
+  /* Short transition smooths per-rAF jitter */
+  transition: transform 0.05s linear, opacity 0.15s ease;
 }
 
 .circle:focus-visible {
@@ -23,7 +28,7 @@
   outline-offset: 3px;
 }
 
-/* Text circles */
+/* Text (name) circles */
 .textCircle {
   background: rgba(255, 255, 255, 0.35);
   border: 1px solid rgba(0, 0, 0, 0.15);
