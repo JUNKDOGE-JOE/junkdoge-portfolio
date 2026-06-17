@@ -83,3 +83,43 @@
 .imgCircle:hover img {
   transform: scale(1.08);
 }
+
+/* ── Spinning ring decoration on text circles ─────────────────────────────── */
+
+/* Wrapper that positions the ring relative to the circle */
+.circleWrapper {
+  position: absolute;
+  /* slightly larger than the 210px circle so the ring sits just outside */
+  width: 224px;
+  height: 224px;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+}
+
+/* The decorative SVG ring */
+.ringDeco {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 1.2s ease;
+  pointer-events: none;
+}
+
+/* Spin on hover of the sibling text circle — use :has() on the wrapper,
+   or a group-hover approach. We use a parent .textCircleGroup that hosts both. */
+.textCircleGroup {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* width/height must match the button so transforms align */
+  width: 210px;
+  height: 210px;
+  pointer-events: none;
+}
+
+/* Forward-spin on hover of the text circle inside the group */
+.textCircleGroup:hover .ringDeco {
+  transform: rotate(360deg);
+}

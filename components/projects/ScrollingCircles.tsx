@@ -134,22 +134,52 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
         const year      = `Y.${project.year}`
         const titleText = t(project.title)
 
+        // 8 dots evenly spaced at 45° on a ring of r=48 inside viewBox 0 0 100 100
+        const ringDots = Array.from({ length: 8 }, (_, k) => {
+          const angle = (k * Math.PI * 2) / 8
+          return { cx: 50 + 48 * Math.cos(angle), cy: 50 + 48 * Math.sin(angle) }
+        })
+
         return [
-          // ── Left: name circle ──────────────────────────────────────────────
-          <button
+          // ── Left: name circle (wrapped to enable ring hover) ───────────────
+          <div
             key={`name-${project.slug}`}
-            className={`${styles.circle} ${styles.textCircle}`}
+            className={styles.textCircleGroup}
             style={{
               transform: `translate(-50%, -50%) translate(${-TRACK}px, ${yName}px) scale(${focusScaleName})`,
               opacity: focusOpacName,
+              pointerEvents: 'auto',
             }}
-            onClick={() => onCircleClick(project)}
-            aria-label={titleText}
           >
-            <span className={styles.textNo}>{no}</span>
-            <span className={styles.textTitle}>{titleText}</span>
-            <span className={styles.textYear}>{year}</span>
-          </button>,
+            {/* Decorative spinning ring — pointer-events:none, sits over the circle */}
+            <svg
+              viewBox="0 0 100 100"
+              className={styles.ringDeco}
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: '-7px',           /* (224-210)/2 = 7 px extra on each side */
+                width: 'calc(100% + 14px)',
+                height: 'calc(100% + 14px)',
+              }}
+            >
+              <circle cx={50} cy={50} r={48} fill="none" stroke="currentColor" strokeOpacity={0.3} strokeWidth={0.4} />
+              {ringDots.map((d, k) => (
+                <circle key={k} cx={d.cx} cy={d.cy} r={0.8} fill="currentColor" fillOpacity={0.35} />
+              ))}
+            </svg>
+
+            <button
+              className={`${styles.circle} ${styles.textCircle}`}
+              style={{ position: 'absolute', inset: 0, transform: 'none' }}
+              onClick={() => onCircleClick(project)}
+              aria-label={titleText}
+            >
+              <span className={styles.textNo}>{no}</span>
+              <span className={styles.textTitle}>{titleText}</span>
+              <span className={styles.textYear}>{year}</span>
+            </button>
+          </div>,
 
           // ── Right: image circle ────────────────────────────────────────────
           <button

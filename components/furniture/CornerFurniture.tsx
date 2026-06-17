@@ -3,6 +3,7 @@ import { Link } from 'next-view-transitions'
 import { useLang, ui } from '@/lib/i18n'
 import { Clock } from './Clock'
 import { LetterSwap } from '@/components/LetterSwap'
+import styles from './Nav.module.css'
 
 const uiProjects = { zh: '作品', en: 'PROJECTS' }
 
@@ -25,11 +26,11 @@ export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'ligh
         <Clock />
       </div>
       <nav className="pointer-events-auto absolute right-5 top-4 flex items-center gap-3 ui-label">
-        <Link href="/projects"><LetterSwap label={t(uiProjects)} /></Link>
+        <Link href="/projects" className={styles.link}>{t(uiProjects)}</Link>
         <span>/</span>
-        <Link href="/about"><LetterSwap label={t(ui.about)} /></Link>
+        <Link href="/about" className={styles.link}>{t(ui.about)}</Link>
         <span>/</span>
-        <Link href="/commission"><LetterSwap label={t(ui.commission)} /></Link>
+        <Link href="/commission" className={styles.link}>{t(ui.commission)}</Link>
         <button onClick={toggle} aria-label="toggle language"
           className="ml-1 rounded-full border border-current px-2 py-0.5">{lang === 'zh' ? 'EN' : '中'}</button>
       </nav>
