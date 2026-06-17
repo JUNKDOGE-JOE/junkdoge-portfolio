@@ -7,7 +7,8 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
   const { t } = useLang()
   const n = String(index + 1).padStart(2, '0')
   return (
-    <div className="absolute bottom-5 left-5 flex h-32 w-32 flex-col items-center justify-center rounded-full border border-current/40 text-center">
+    <div className="absolute bottom-5 left-5 flex h-32 w-32 flex-col items-center justify-center rounded-full border border-current/40 text-center"
+      style={{ borderColor: 'color-mix(in srgb, var(--accent) 55%, white)', boxShadow: '0 0 22px color-mix(in srgb, var(--accent) 35%, transparent)', transition: 'border-color .7s ease, box-shadow .7s ease' }}>
       <span className="ui-label text-[0.6rem] opacity-70">{t(ui.project)}</span>
       <span className="text-3xl font-medium leading-none">{n}</span>
       <span className="ui-label text-[0.6rem] opacity-70">{t(ui.number)}</span>

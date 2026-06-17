@@ -42,6 +42,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
   const current = projects[index]
   return (
     <section aria-roledescription="carousel" className="relative h-screen w-screen touch-pan-y overflow-hidden"
+      style={{ ['--accent' as string]: current.accent ?? '#2b2b30' } as React.CSSProperties}
       onPointerDown={onPointerDown} onPointerUp={onPointerUp}>
       <Slide key={current.slug} project={current} />
       <ProjectCounter index={index} total={projects.length}

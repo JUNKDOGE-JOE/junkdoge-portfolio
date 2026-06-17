@@ -2,19 +2,20 @@
 import Link from 'next/link'
 import { useLang, ui } from '@/lib/i18n'
 import { Clock } from './Clock'
+import { LetterSwap } from '@/components/LetterSwap'
 
 export function CornerFurniture() {
   const { lang, toggle, t } = useLang()
   return (
     <div className="pointer-events-none absolute inset-0 z-20">
       <div className="pointer-events-auto absolute left-5 top-4 flex items-center gap-3">
-        <Link href="/" className="text-sm font-bold tracking-[0.18em]">J / D</Link>
+        <Link href="/" className="text-sm font-bold tracking-[0.18em]"><LetterSwap label="J / D" /></Link>
         <Clock />
       </div>
       <nav className="pointer-events-auto absolute right-5 top-4 flex items-center gap-3 ui-label">
-        <Link href="/about">{t(ui.about)}</Link>
+        <Link href="/about"><LetterSwap label={t(ui.about)} /></Link>
         <span>/</span>
-        <Link href="/commission">{t(ui.commission)}</Link>
+        <Link href="/commission"><LetterSwap label={t(ui.commission)} /></Link>
         <button onClick={toggle} aria-label="toggle language"
           className="ml-1 rounded-full border border-current px-2 py-0.5">{lang === 'zh' ? 'EN' : '中'}</button>
       </nav>

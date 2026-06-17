@@ -7,6 +7,7 @@ import { useLang } from '@/lib/i18n'
 import { MediaImageSkin } from './skins/MediaImageSkin'
 import { DevSkin } from './skins/DevSkin'
 import { CircleCrop } from './CircleCrop'
+import { LetterSwap } from './LetterSwap'
 
 function visitHref(p: Project): string {
   return p.links.bilibili || p.links.github || p.links.external || '#'
@@ -41,8 +42,8 @@ export function Slide({ project }: { project: Project }) {
           {href !== '#' && (
             <a href={href} target="_blank" rel="noreferrer"
               className="whitespace-nowrap rounded-full border px-4 py-1.5 text-xs tracking-wider"
-              style={{ borderColor: dark ? '#fff' : 'var(--ink)' }}>
-              {verb} ↗
+              style={{ borderColor: 'color-mix(in srgb, var(--accent) 60%, white)', boxShadow: '0 0 18px color-mix(in srgb, var(--accent) 30%, transparent)' }}>
+              <LetterSwap label={verb} /> ↗
             </a>
           )}
         </div>
