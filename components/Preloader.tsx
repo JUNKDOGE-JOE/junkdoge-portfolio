@@ -27,20 +27,20 @@ export function Preloader() {
         if (nv >= LINES.length) clearInterval(lineTimer)
         return nv
       })
-    }, 300)
+    }, 170)
     const curTimer = setInterval(() => setCursor((c) => !c), 500)
 
     const obj = { v: 0 }
     gsap.to(obj, {
       v: 100,
-      duration: 2.0,
+      duration: 1.2,
       ease: 'power1.inOut',
       onUpdate: () => setPct(Math.round(obj.v)),
       onComplete: () =>
         gsap.to(root.current, {
           autoAlpha: 0,
           duration: 0.5,
-          delay: 0.25,
+          delay: 0.15,
           onComplete: () => root.current && (root.current.style.display = 'none'),
         }),
     })
