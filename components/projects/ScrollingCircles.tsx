@@ -10,10 +10,11 @@ import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
 // ---------------------------------------------------------------------------
 const SIZE  = 210   // circle diameter px
 const GAP   = 56    // vertical gap between circles
-const TRACK = 190   // horizontal offset from viewport centre to each track centre
+const TRACK = 150   // horizontal offset from viewport centre to each track centre (smaller = columns closer)
 
 const FRICTION         = 0.92
 const SETTLE_THRESHOLD = 0.01
+const INTRO_VELOCITY   = 90   // entry kick: fast-scrolls on mount, then friction eases it to rest
 
 // mod that always returns positive result
 const mod = (n: number, m: number) => ((n % m) + m) % m
@@ -135,6 +136,11 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
       rafId = requestAnimationFrame(animate)
     }
 
+    // Intro: start a few projects "behind" the head and fast-scroll forward, so the ring
+    // eases to rest roughly on the first project instead of a random midpoint.
+    // (distance ≈ total travel of an INTRO_VELOCITY kick under this friction)
+    sRef.current = -(INTRO_VELOCITY * FRICTION) / (STEP * (1 - FRICTION))
+    velRef.current = INTRO_VELOCITY
     apply()                       // place circles before first paint (no flash-in)
     rafId = requestAnimationFrame(animate)
 
