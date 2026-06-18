@@ -53,6 +53,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
   }, [go])
 
   useEffect(() => {
+    if (isMobile) return // mobile drives --mx/--my via the gyroscope (written to <html>)
     const onMouseMove = (e: MouseEvent) => {
       const section = sectionRef.current
       if (!section) return
@@ -61,7 +62,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
     }
     window.addEventListener('mousemove', onMouseMove)
     return () => window.removeEventListener('mousemove', onMouseMove)
-  }, [])
+  }, [isMobile])
 
   const onPointerDown = (e: React.PointerEvent) => { dragX.current = e.clientX }
   const onPointerUp = (e: React.PointerEvent) => {
@@ -78,7 +79,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
       ref={sectionRef}
       aria-roledescription="carousel"
       className="relative h-screen w-screen touch-pan-y overflow-hidden"
-      style={{ '--accent': current.accent ?? '#2b2b30', '--mx': '0.5', '--my': '0.5' } as React.CSSProperties}
+      style={{ '--accent': current.accent ?? '#2b2b30', ...(isMobile ? {} : { '--mx': '0.5', '--my': '0.5' }) } as React.CSSProperties}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
     >

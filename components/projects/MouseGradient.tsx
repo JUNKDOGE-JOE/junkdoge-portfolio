@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import styles from './MouseGradient.module.css'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 /**
  * Fixed full-screen fluid-gradient backdrop for /projects.
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function MouseGradient({ color }: Props) {
+  const isMobile = useIsMobile()
   const rootRef = useRef<HTMLDivElement>(null)
   // lerp state kept as plain refs — no re-renders needed
   const gxRef      = useRef(50)
@@ -33,7 +35,13 @@ export function MouseGradient({ color }: Props) {
     }
 
     const tick = () => {
-      // lerp toward mouse with factor 0.08 — gives the "flows behind the cursor" feel
+      if (isMobile) {
+        // mobile: follow the gyroscope's --mx/--my (0..1, written to <html>)
+        const root = document.documentElement
+        targetXRef.current = (parseFloat(root.style.getPropertyValue('--mx')) || 0.5) * 100
+        targetYRef.current = (parseFloat(root.style.getPropertyValue('--my')) || 0.5) * 100
+      }
+      // lerp toward target with factor 0.08 — gives the "flows behind the cursor" feel
       gxRef.current += (targetXRef.current - gxRef.current) * 0.08
       gyRef.current += (targetYRef.current - gyRef.current) * 0.08
       el.style.setProperty('--gx', `${gxRef.current.toFixed(2)}%`)
@@ -41,14 +49,14 @@ export function MouseGradient({ color }: Props) {
       rafRef.current = requestAnimationFrame(tick)
     }
 
-    window.addEventListener('mousemove', onMouseMove, { passive: true })
+    if (!isMobile) window.addEventListener('mousemove', onMouseMove, { passive: true })
     rafRef.current = requestAnimationFrame(tick)
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove)
+      if (!isMobile) window.removeEventListener('mousemove', onMouseMove)
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     }
-  }, [])
+  }, [isMobile])
 
   return (
     <div ref={rootRef} className={styles.root}>

@@ -3,6 +3,7 @@ import { Noto_Sans_SC } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
 import { ViewTransitions } from 'next-view-transitions'
+import { DeviceTilt } from '@/components/DeviceTilt'
 
 const noto = Noto_Sans_SC({ subsets: ['latin'], weight: ['400', '500', '700', '900'], variable: '--font-noto', preload: false })
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             装修中 · 持续完善
           </span>
         </div>
+        <DeviceTilt />
       </body>
     </html>
   )
