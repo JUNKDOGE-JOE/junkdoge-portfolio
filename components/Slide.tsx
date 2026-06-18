@@ -65,7 +65,8 @@ export function Slide({ project }: { project: Project }) {
       data-testid="slide"
       className={`relative h-full w-full ${dark ? 'text-[var(--paper-text)]' : 'text-[var(--ink)]'}`}
     >
-      <div aria-live="polite" className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl -translate-x-1/2 -translate-y-1/2 text-center">
+      <div aria-live="polite" className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl text-center"
+           style={{ transform: 'translate(-50%, -50%) translate(calc((var(--mx,0.5) - 0.5) * 16px), calc((var(--my,0.5) - 0.5) * 16px))', transition: 'transform 0.3s ease-out' }}>
         {/* Title: per-letter masked stagger — pb+leading give room for descenders/italic */}
         <h2
           className="display-italic text-5xl font-medium md:text-7xl"
@@ -117,7 +118,8 @@ export function Slide({ project }: { project: Project }) {
       </div>
 
       {/* Circle: morph trigger for image projects, plain circle for dev */}
-      <div className="absolute bottom-3 right-3 scale-90 sm:scale-100">
+      <div className="absolute bottom-3 right-3"
+           style={{ transform: 'translate(calc((var(--mx,0.5) - 0.5) * 38px), calc((var(--my,0.5) - 0.5) * 38px)) scale(0.95)', transition: 'transform 0.3s ease-out' }}>
         {hasGallery ? (
           <button
             ref={circleRef}

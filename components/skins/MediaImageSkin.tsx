@@ -8,7 +8,7 @@ export function MediaImageSkin({ project }: { project: Project }) {
       <Image src={project.cover} alt="" fill priority sizes="100vw"
         className="object-cover opacity-80"
         style={{
-          transform: 'translate(calc((var(--mx, 0.5) - 0.5) * -70px), calc((var(--my, 0.5) - 0.5) * -70px)) scale(1.32)',
+          transform: 'translate(calc((var(--mx, 0.5) - 0.5) * -110px), calc((var(--my, 0.5) - 0.5) * -110px)) scale(1.32)',
           filter: 'blur(38px) saturate(1.5)',
           transition: 'transform 0.4s ease-out',
         }} />

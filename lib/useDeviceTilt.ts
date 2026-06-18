@@ -34,8 +34,8 @@ export function useDeviceTilt(active: boolean) {
     const dGamma = gamma - baseRef.current.gamma
     const dBeta  = beta  - baseRef.current.beta
     // ±28° of tilt maps to the full 0..1 range
-    target.current.x = clamp(0.5 + dGamma / 56, 0, 1)
-    target.current.y = clamp(0.5 + dBeta  / 56, 0, 1)
+    target.current.x = clamp(0.5 + dGamma / 36, 0, 1)
+    target.current.y = clamp(0.5 + dBeta  / 36, 0, 1)
   }, [])
 
   const startListening = useCallback(() => {
