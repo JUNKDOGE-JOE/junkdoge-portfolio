@@ -56,10 +56,11 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
 
   // Desktop = dual vertical tracks. Mobile = two horizontal rows of image circles,
   // brick-offset, scrolled sideways (like the reference site's phone layout).
-  const SIZE  = isMobile ? 150 : 210
+  const SIZE  = isMobile ? 140 : 210
   const TRACK = isMobile ? 0   : 150   // desktop: column x-offset
-  const ROW   = 84                     // mobile: row y-offset (±ROW = two rows)
-  const STEP  = isMobile ? 92  : (210 + 56)  // mobile: horizontal spacing; desktop: SIZE+GAP
+  const ROW   = 76                     // mobile: row y-offset (±ROW = two rows)
+  // mobile STEP ≥ SIZE so even the N=9 seam (last↔first, same row) never overlaps
+  const STEP  = isMobile ? 148 : (210 + 56)
 
   const N    = projects.length
   const H    = N * STEP
