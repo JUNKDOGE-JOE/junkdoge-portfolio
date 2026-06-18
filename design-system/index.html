@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JUNK_DOGE — Kinetic Portfolio System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#08080a; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--night); color:var(--bone); font-family:var(--sc);
+    padding:3.5rem clamp(1.5rem,5vw,5rem)}
+  header{max-width:60rem; margin:0 auto 3rem}
+  header h1{margin:0; font:700 clamp(1.6rem,4vw,2.6rem)/1.05 var(--sc); letter-spacing:.01em}
+  header h1 em{font-style:italic; font-weight:500; color:var(--muted)}
+  header p{margin:.9rem 0 0; max-width:42rem; color:var(--muted); font-size:.92rem; line-height:1.65}
+  header .meta{margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap}
+  header .pill{font:.62rem/1 var(--mono); letter-spacing:.1em; text-transform:uppercase;
+    border:1px solid var(--line); border-radius:999px; padding:.45rem .8rem; color:var(--muted)}
+  header .pill b{color:var(--bone); font-weight:500}
+  .group{max-width:90rem; margin:0 auto 3.2rem}
+  .group h2{font:600 .72rem/1 var(--mono); letter-spacing:.28em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 1.1rem; padding-bottom:.7rem; border-bottom:1px solid var(--line)}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:1.1rem}
+  .card{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#0a0a0c;
+    transition:border-color .25s ease, transform .25s ease}
+  .card:hover{border-color:#3a3a44; transform:translateY(-3px)}
+  .frame{position:relative; display:block; height:280px; background:#000; overflow:hidden}
+  .frame iframe{width:200%; height:560px; border:0; transform:scale(.5); transform-origin:top left;
+    pointer-events:none}
+  .frame .open{position:absolute; inset:0; display:flex; align-items:flex-end; justify-content:flex-end;
+    padding:.6rem; opacity:0; transition:opacity .25s ease; background:linear-gradient(transparent 60%,rgba(0,0,0,.5))}
+  .card:hover .open{opacity:1}
+  .frame .open span{font:.6rem/1 var(--mono); letter-spacing:.12em; text-transform:uppercase;
+    color:var(--bone); background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+    border-radius:999px; padding:.35rem .65rem; backdrop-filter:blur(6px)}
+  .meta{padding:.75rem .95rem; display:flex; align-items:baseline; justify-content:space-between; gap:.5rem}
+  .meta b{font:500 .92rem/1.2 var(--sc)}
+  .meta span{font:.58rem/1 var(--mono); letter-spacing:.06em; color:#65656e; white-space:nowrap}
+  footer{max-width:60rem; margin:4rem auto 0; padding-top:1.5rem; border-top:1px solid var(--line);
+    color:#5b5b64; font:.7rem/1.6 var(--mono); letter-spacing:.04em}
+</style>
+</head>
+<body>
+  <header>
+    <h1>JUNK_DOGE <em>— Kinetic Portfolio System</em></h1>
+    <p>暗色霓虹 × 映像创作的动效组件系统。从 federicopian 结构的个人主页抽出的 15 个可复用组件,
+       每张卡都是自包含、动效真实可交互的预览。鼠标悬停卡片可放大查看 / 点击新窗口打开全屏。</p>
+    <div class="meta">
+      <span class="pill">15 <b>Components</b></span>
+      <span class="pill">6 <b>Groups</b></span>
+      <span class="pill">Noto Sans SC · <b>mono</b></span>
+      <span class="pill">GSAP · <b>Lenis</b></span>
+    </div>
+  </header>
+
+  <section class="group">
+    <h2>① Foundations</h2>
+    <div class="grid">
+      <article class="card"><a class="frame" href="foundations/colors.html" target="_blank"><iframe src="foundations/colors.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Color</b><span>Dark / Accent / Terminal</span></div></article>
+      <article class="card"><a class="frame" href="foundations/typography.html" target="_blank"><iframe src="foundations/typography.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Typography</b><span>SC · italic · mono</span></div></article>
+      <article class="card"><a class="frame" href="foundations/motion.html" target="_blank"><iframe src="foundations/motion.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Motion</b><span>Easing · inertia</span></div></article>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>② Boot</h2>
+    <div class="grid">
+      <article class="card"><a class="frame" href="boot/preloader.html" target="_blank"><iframe src="boot/preloader.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Preloader</b><span>Terminal boot</span></div></article>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>③ Navigation</h2>
+    <div class="grid">
+      <article class="card"><a class="frame" href="navigation/project-counter.html" target="_blank"><iframe src="navigation/project-counter.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>ProjectCounter</b><span>Ring · arrows</span></div></article>
+      <article class="card"><a class="frame" href="navigation/corner-furniture.html" target="_blank"><iframe src="navigation/corner-furniture.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>CornerFurniture</b><span>Four-corner frame</span></div></article>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>④ Reveal &amp; Motion</h2>
+    <div class="grid">
+      <article class="card"><a class="frame" href="motion/reveal.html" target="_blank"><iframe src="motion/reveal.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Reveal</b><span>Masked stagger</span></div></article>
+      <article class="card"><a class="frame" href="motion/tilt-card.html" target="_blank"><iframe src="motion/tilt-card.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>TiltCard</b><span>3D cursor tilt</span></div></article>
+      <article class="card"><a class="frame" href="motion/letter-swap.html" target="_blank"><iframe src="motion/letter-swap.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>LetterSwap</b><span>Per-letter swap</span></div></article>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>⑤ Showcase</h2>
+    <div class="grid">
+      <article class="card"><a class="frame" href="showcase/slide.html" target="_blank"><iframe src="showcase/slide.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Slide</b><span>Hero slide</span></div></article>
+      <article class="card"><a class="frame" href="showcase/gallery.html" target="_blank"><iframe src="showcase/gallery.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>Gallery</b><span>Morph · vertical cards</span></div></article>
+      <article class="card"><a class="frame" href="showcase/scrolling-circles.html" target="_blank"><iframe src="showcase/scrolling-circles.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>ScrollingCircles</b><span>Dual-track inertia</span></div></article>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>⑥ Background Skins</h2>
+    <div class="grid">
+      <article class="card"><a class="frame" href="skins/media-image-skin.html" target="_blank"><iframe src="skins/media-image-skin.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>MediaImageSkin</b><span>Blur · parallax</span></div></article>
+      <article class="card"><a class="frame" href="skins/dev-skin.html" target="_blank"><iframe src="skins/dev-skin.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>DevSkin</b><span>Gradient blobs</span></div></article>
+      <article class="card"><a class="frame" href="skins/mouse-gradient.html" target="_blank"><iframe src="skins/mouse-gradient.html" loading="lazy" scrolling="no"></iframe><div class="open"><span>Open ↗</span></div></a><div class="meta"><b>MouseGradient</b><span>Cursor-follow</span></div></article>
+    </div>
+  </section>
+
+  <footer>
+    JUNK_DOGE — Kinetic Portfolio System · 映像创作 × 创意开发 · 2026<br>
+    每张卡首行带 @dsCard 标记,可经 DesignSync 整体推到 claude.ai/design。
+  </footer>
+</body>
+</html>

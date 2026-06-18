@@ -1,0 +1,156 @@
+<!-- @dsCard group="① Foundations" name="Motion" subtitle="Easing tokens + inertia" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --paper:#f4f2ee;
+    --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+    /* easing tokens */
+    --ease-inout:cubic-bezier(0.4,0,0.25,1);
+    --ease-power3:cubic-bezier(0.215,0.61,0.355,1);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+  /* component frame */
+  .stage{width:min(720px,94vw); background:var(--ink);
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; position:relative;
+    box-shadow:0 30px 80px -30px #000; padding:1.6rem}
+  .ui-label{font:500 .58rem/1 var(--mono); letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted)}
+  .curves{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+  @media(max-width:560px){.curves{grid-template-columns:1fr}}
+  .curve{border:1px solid var(--line); border-radius:10px; padding:1rem; background:var(--night)}
+  .curve .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:.7rem}
+  .curve .nm{font:500 .8rem/1 var(--sc); color:var(--bone)}
+  .curve svg{width:100%; height:auto; display:block}
+  .curve .fn{font:.56rem/1.4 var(--mono); color:var(--muted); margin-top:.55rem; word-break:break-all}
+  /* moving demo */
+  .track{position:relative; height:6px; margin-top:.95rem; background:rgba(154,154,162,.14);
+    border-radius:3px}
+  .dot{position:absolute; top:50%; left:0; width:16px; height:16px; margin-top:-8px; margin-left:-8px;
+    border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent)}
+  .dot.sq{border-radius:3px; background:var(--green); box-shadow:0 0 12px var(--green)}
+  .dot.a{animation:slideA 2.6s var(--ease-inout) infinite alternate}
+  .dot.b{animation:slideB 2.6s var(--ease-power3) infinite alternate}
+  @keyframes slideA{from{left:0}to{left:100%}}
+  @keyframes slideB{from{left:0}to{left:100%}}
+  /* inertia + stagger row */
+  .extra{margin-top:1.4rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+  @media(max-width:560px){.extra{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--line); border-radius:10px; padding:1rem; background:var(--night)}
+  .panel .big{font:600 1.6rem/1 var(--mono); color:var(--bone); margin:.5rem 0 .15rem}
+  .panel .sub{font:.62rem/1.5 var(--mono); color:var(--muted)}
+  .scrollDemo{position:relative; height:46px; margin-top:.7rem; overflow:hidden;
+    border-radius:6px; background:rgba(123,97,255,.06)}
+  .scrollDemo .glide{position:absolute; left:0; top:50%; transform:translateY(-50%);
+    display:flex; gap:.5rem; animation:glide 3.4s var(--ease-power3) infinite alternate}
+  @keyframes glide{from{transform:translate(0,-50%)}to{transform:translate(-44%,-50%)}}
+  .glide span{flex:0 0 auto; font:500 .62rem/1 var(--mono); letter-spacing:.16em; color:var(--muted);
+    border:1px solid var(--line); border-radius:5px; padding:.42rem .6rem; white-space:nowrap}
+  /* stagger mask */
+  .mask{display:flex; gap:.3rem; margin-top:.7rem}
+  .mask i{display:block; flex:1; height:30px; border-radius:4px; overflow:hidden; position:relative;
+    background:rgba(74,222,128,.08)}
+  .mask i::after{content:''; position:absolute; inset:0; background:var(--green);
+    transform:translateY(100%); animation:reveal 2.6s var(--ease-power3) infinite}
+  .mask i:nth-child(1)::after{animation-delay:0s}
+  .mask i:nth-child(2)::after{animation-delay:.09s}
+  .mask i:nth-child(3)::after{animation-delay:.18s}
+  .mask i:nth-child(4)::after{animation-delay:.27s}
+  .mask i:nth-child(5)::after{animation-delay:.36s}
+  .mask i:nth-child(6)::after{animation-delay:.45s}
+  @keyframes reveal{0%{transform:translateY(100%)}30%,55%{transform:translateY(0)}
+    85%,100%{transform:translateY(-100%)}}
+  .specs{margin-top:1.6rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ① FOUNDATIONS</div>
+  <div class="ds-head">
+    <h1>Motion</h1>
+    <p>两条核心缓动曲线：界面用的对称缓入缓出，与 GSAP power3.out 收尾。配合 friction 0.94 的惯性滚动与 stagger 0.09 的蒙版逐格揭示。</p>
+  </div>
+
+  <div class="stage">
+    <div class="ui-label">Easing curves</div>
+    <div class="curves" style="margin-top:.7rem">
+      <div class="curve">
+        <div class="top"><span class="nm">ease-inout</span><span class="ui-label" style="color:var(--accent)">UI</span></div>
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="120" x2="120" y2="0" stroke="#26262e" stroke-width="1" stroke-dasharray="3 4"/>
+          <line x1="0" y1="120" x2="120" y2="120" stroke="#26262e" stroke-width="1"/>
+          <line x1="0" y1="0" x2="0" y2="120" stroke="#26262e" stroke-width="1"/>
+          <!-- cubic-bezier(0.4,0,0.25,1): P1=(.4,0) P2=(.25,1) on 120-box (y flipped) -->
+          <path d="M0,120 C48,120 30,0 120,0" fill="none" stroke="#7b61ff" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="48" cy="120" r="3" fill="#7b61ff"/>
+          <circle cx="30" cy="0" r="3" fill="#7b61ff"/>
+        </svg>
+        <div class="fn">cubic-bezier(0.4, 0, 0.25, 1)</div>
+        <div class="track"><span class="dot a"></span></div>
+      </div>
+
+      <div class="curve">
+        <div class="top"><span class="nm">power3.out</span><span class="ui-label" style="color:var(--green)">GSAP</span></div>
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="120" x2="120" y2="0" stroke="#26262e" stroke-width="1" stroke-dasharray="3 4"/>
+          <line x1="0" y1="120" x2="120" y2="120" stroke="#26262e" stroke-width="1"/>
+          <line x1="0" y1="0" x2="0" y2="120" stroke="#26262e" stroke-width="1"/>
+          <!-- cubic-bezier(0.215,0.61,0.355,1): P1=(.215,.61) P2=(.355,1) -->
+          <path d="M0,120 C25.8,46.8 42.6,0 120,0" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="25.8" cy="46.8" r="3" fill="#4ade80"/>
+          <circle cx="42.6" cy="0" r="3" fill="#4ade80"/>
+        </svg>
+        <div class="fn">cubic-bezier(0.215, 0.61, 0.355, 1)</div>
+        <div class="track"><span class="dot sq b"></span></div>
+      </div>
+    </div>
+
+    <div class="extra">
+      <div class="panel">
+        <div class="ui-label">Inertia scroll</div>
+        <div class="big">0.94</div>
+        <div class="sub">friction — 平滑滚动每帧速度衰减</div>
+        <div class="scrollDemo">
+          <div class="glide">
+            <span>扶桑</span><span>镜之塔</span><span>CENTRIPETAL</span>
+            <span>破禁</span><span>融っ</span><span>浮生</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ui-label">Stagger mask</div>
+        <div class="big">0.09</div>
+        <div class="sub">每格延迟 — 蒙版逐列揭示</div>
+        <div class="mask"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">ui <b>cubic-bezier(.4,0,.25,1)</b></span>
+    <span class="chip">gsap <b>power3.out</b></span>
+    <span class="chip">friction <b>0.94</b></span>
+    <span class="chip">stagger <b>0.09s</b></span>
+  </div>
+</body>
+</html>

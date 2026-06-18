@@ -1,0 +1,158 @@
+<!-- @dsCard group="⑤ Showcase" name="Slide" subtitle="Project hero slide" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slide — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --paper-text:#ece8e1;
+    --slide-green:#3c5347;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+    --display:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+
+  /* component frame — scene-level: a near-real slide viewport */
+  .stage{width:min(820px,94vw); aspect-ratio:16/10; border:1px solid var(--line);
+    border-radius:14px; overflow:hidden; position:relative;
+    box-shadow:0 34px 90px -34px #000; color:var(--paper-text)}
+
+  /* blurred green cover background + vignette */
+  .stage::before{content:''; position:absolute; inset:-12%;
+    background:
+      radial-gradient(60% 70% at 32% 30%, #6f8c74, transparent 70%),
+      radial-gradient(55% 65% at 74% 64%, #243b30, transparent 72%),
+      radial-gradient(120% 120% at 50% 40%, #20342a, #0c1410 78%),
+      linear-gradient(135deg, #2c4339, #0a120e);
+    filter:blur(46px) saturate(108%); transform:scale(1.18)}
+  .stage::after{content:''; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(115% 95% at 50% 42%, transparent 44%, rgba(0,0,0,.62) 100%);
+    box-shadow:inset 0 0 140px 40px rgba(0,0,0,.55)}
+  .grain{position:absolute; inset:0; opacity:.05; mix-blend-mode:overlay; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  /* centred text block */
+  .content{position:absolute; left:50%; top:42%; transform:translate(-50%,-50%);
+    width:88%; max-width:34rem; text-align:center; z-index:2}
+  .title{margin:0; font-family:var(--display); font-style:italic; font-weight:500;
+    font-size:clamp(3rem,8vw,5.4rem); line-height:1.05; letter-spacing:.01em;
+    text-shadow:0 6px 30px rgba(0,0,0,.5)}
+  .title .ch{display:inline-block; overflow:hidden; vertical-align:bottom;
+    line-height:1.25; padding:0 .04em .12em}
+  .title .ch i{display:inline-block; transform:translateY(130%); font-style:italic;
+    animation:rise .7s cubic-bezier(.16,1,.3,1) forwards}
+  .meta{display:block; overflow:hidden; margin-top:.85rem}
+  .meta span{display:block; font:500 .64rem/1 var(--mono); letter-spacing:.22em;
+    text-transform:uppercase; opacity:.82; transform:translateY(110%);
+    animation:rise .85s cubic-bezier(.16,1,.3,1) forwards}
+  .lower{margin-top:1.1rem; display:flex; align-items:flex-start; justify-content:center; gap:2rem}
+  .desc{display:block; overflow:hidden; max-width:15rem}
+  .desc p{margin:0; text-align:left; font-size:.82rem; line-height:1.6; opacity:.9;
+    transform:translateY(110%); animation:rise .85s cubic-bezier(.16,1,.3,1) forwards}
+  .btnwrap{display:block; transform:translateY(110%);
+    animation:rise .85s cubic-bezier(.16,1,.3,1) forwards}
+  .watch{display:inline-block; white-space:nowrap; border-radius:999px; border:1px solid;
+    border-color:color-mix(in srgb, var(--accent) 60%, white);
+    box-shadow:0 0 18px color-mix(in srgb, var(--accent) 34%, transparent);
+    padding:.5rem 1rem; font:.7rem/1 var(--sc); letter-spacing:.14em; color:var(--paper-text);
+    text-decoration:none; transition:box-shadow .3s, transform .3s}
+  .watch:hover{box-shadow:0 0 26px color-mix(in srgb, var(--accent) 55%, transparent);
+    transform:translateY(-1px)}
+
+  /* stagger via animation-delay */
+  .ch:nth-child(1) i{animation-delay:.04s}.ch:nth-child(2) i{animation-delay:.075s}
+  .ch:nth-child(3) i{animation-delay:.11s}.ch:nth-child(4) i{animation-delay:.145s}
+  .meta span{animation-delay:.30s}.desc p{animation-delay:.42s}.btnwrap{animation-delay:.54s}
+
+  @keyframes rise{to{transform:translateY(0)}}
+
+  /* circular media bottom-right */
+  .media{position:absolute; bottom:18px; right:18px; width:140px; height:140px;
+    border-radius:50%; border:1.5px solid rgba(255,255,255,.45); overflow:hidden; z-index:2;
+    background:
+      radial-gradient(70% 70% at 35% 30%, #8fae93, transparent 70%),
+      conic-gradient(from 210deg at 60% 60%, #2c4a3a, #6f8c74, #1f3329, #2c4a3a);
+    box-shadow:0 14px 40px -10px rgba(0,0,0,.6); animation:fadein .6s .25s both;
+    transition:transform .5s}
+  .media:hover{transform:scale(1.06)}
+
+  /* replay button */
+  .replay{position:absolute; top:14px; right:14px; z-index:3;
+    display:inline-flex; align-items:center; gap:.4rem;
+    border:1px solid rgba(255,255,255,.28); background:rgba(0,0,0,.32);
+    color:var(--paper-text); border-radius:999px; padding:.32rem .7rem;
+    font:.58rem/1 var(--mono); letter-spacing:.16em; cursor:pointer; backdrop-filter:blur(4px)}
+  .replay:hover{border-color:rgba(255,255,255,.5)}
+
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+
+  .specs{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ⑤ SHOWCASE</div>
+  <div class="ds-head">
+    <h1>Slide</h1>
+    <p>项目英雄幻灯——模糊封面背景 + 暗角，中央斜体大标题逐字蒙版升起，右下角圆形媒体，accent 辉光「观看」胶囊。</p>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="grain"></div>
+    <button class="replay" id="replay">↻ REPLAY</button>
+
+    <div class="content" id="content">
+      <h2 class="title" id="title" aria-label="扶桑"></h2>
+      <span class="meta"><span>PV · BOF21 / 2024</span></span>
+      <div class="lower">
+        <span class="desc"><p>为 BOF21 制作的影像作品，文字与映像一体的视觉叙事。</p></span>
+        <span class="btnwrap"><a class="watch" href="#" onclick="return false">观看 ↗</a></span>
+      </div>
+    </div>
+
+    <div class="media" aria-hidden="true"></div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">skin <b>dark</b></span>
+    <span class="chip">title <b>display-italic</b></span>
+    <span class="chip">reveal <b>per-letter</b></span>
+    <span class="chip">media <b>⌀140 circle</b></span>
+  </div>
+
+<script>
+  const TITLE='扶桑';
+  const titleEl=document.getElementById('title');
+  function buildTitle(){
+    titleEl.innerHTML=TITLE.split('').map(c=>`<span class="ch"><i>${c}</i></span>`).join('');
+  }
+  function replay(){
+    // re-trigger CSS animations by reflow
+    document.getElementById('content').style.animation='none';
+    buildTitle();
+    document.querySelectorAll('.meta span,.desc p,.btnwrap,.media').forEach(el=>{
+      el.style.animation='none'; void el.offsetWidth; el.style.animation='';
+    });
+  }
+  buildTitle();
+  document.getElementById('replay').addEventListener('click',replay);
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!-- @dsCard group="⑥ Background Skins" name="MediaImageSkin" subtitle="Blurred cover + parallax" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediaImageSkin — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+  /* component frame */
+  .stage{width:min(680px,92vw); aspect-ratio:16/10; background:var(--night);
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; position:relative;
+    box-shadow:0 30px 80px -30px #000; cursor:crosshair}
+  /* blurred gradient cover, scaled up, parallax-driven via --mx/--my */
+  .cover{position:absolute; inset:0;
+    background:
+      radial-gradient(60% 55% at 32% 30%, #3c5347 0%, transparent 60%),
+      radial-gradient(50% 50% at 75% 70%, #1c3326 0%, transparent 62%),
+      linear-gradient(135deg, #14241a 0%, #0c1410 55%, #060a07 100%);
+    transform:translate(calc((var(--mx,0.5) - 0.5) * -70px), calc((var(--my,0.5) - 0.5) * -70px)) scale(1.32);
+    filter:blur(38px) saturate(1.5);
+    transition:transform .4s ease-out}
+  /* radial vignette pressing the edges */
+  .vignette{position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(70% 70% at 50% 45%, transparent 55%, rgba(0,0,0,.6))}
+  .hint{position:absolute; left:50%; bottom:.9rem; transform:translateX(-50%);
+    font:.58rem/1 var(--mono); letter-spacing:.22em; color:rgba(236,232,225,.4);
+    pointer-events:none}
+  .specs{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ⑥ BACKGROUND SKINS</div>
+  <div class="ds-head">
+    <h1>MediaImageSkin</h1>
+    <p>影像作品页的背景皮肤——封面图放大 1.32 倍、重度模糊作底，叠一层 radial 暗角压边；鼠标在框内移动时封面反向轻微位移，带出纵深视差。</p>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="cover" id="cover"></div>
+    <div class="vignette"></div>
+    <div class="hint">MOVE CURSOR · PARALLAX ±35px</div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">scale <b>1.32</b></span>
+    <span class="chip">blur <b>38px</b></span>
+    <span class="chip">saturate <b>1.5</b></span>
+    <span class="chip">parallax <b>±35px</b></span>
+    <span class="chip">ease <b>.4s out</b></span>
+  </div>
+
+<script>
+  const stage=document.getElementById('stage'), cover=document.getElementById('cover');
+  // map cursor position inside the stage to --mx/--my (0..1); cover translates inversely
+  stage.addEventListener('mousemove',(e)=>{
+    const r=stage.getBoundingClientRect();
+    cover.style.setProperty('--mx', ((e.clientX-r.left)/r.width).toFixed(4));
+    cover.style.setProperty('--my', ((e.clientY-r.top)/r.height).toFixed(4));
+  });
+  stage.addEventListener('mouseleave',()=>{
+    cover.style.setProperty('--mx', 0.5);
+    cover.style.setProperty('--my', 0.5);
+  });
+</script>
+</body>
+</html>

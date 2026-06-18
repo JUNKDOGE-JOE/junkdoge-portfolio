@@ -1,0 +1,165 @@
+<!-- @dsCard group="④ Reveal & Motion" name="TiltCard" subtitle="3D cursor tilt" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TiltCard — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --paper:#f4f2ee;
+    --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+  /* component frame */
+  .stage{width:min(720px,94vw); background:var(--ink);
+    border:1px solid var(--line); border-radius:12px; position:relative;
+    box-shadow:0 30px 80px -30px #000; padding:2.4rem 1.6rem}
+  .ui-label{font:500 .58rem/1 var(--mono); letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted)}
+  .row-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:1.8rem}
+  .replay{font:500 .6rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase;
+    color:var(--bone); background:rgba(123,97,255,.12); border:1px solid var(--accent);
+    border-radius:999px; padding:.42rem .8rem; cursor:pointer; transition:background .2s ease,transform .12s ease;
+    display:inline-flex; align-items:center; gap:.45em}
+  .replay:hover{background:rgba(123,97,255,.24)}
+  .replay:active{transform:scale(.95)}
+  .replay svg{width:.85em; height:.85em}
+
+  /* tilt scene */
+  .scene{display:flex; justify-content:center; align-items:center; min-height:300px;
+    perspective:1100px}
+  /* the tilt target: perspective(900px) rotateX/rotateY set inline via JS */
+  .tilt{width:min(330px,80%); transform:perspective(900px) rotateX(0deg) rotateY(0deg);
+    transform-style:preserve-3d; transition:transform .2s ease-out; will-change:transform;
+    cursor:crosshair}
+  .card{position:relative; border-radius:16px; overflow:hidden;
+    border:1px solid var(--line); background:linear-gradient(150deg,#181820,#0c0c11);
+    box-shadow:0 24px 60px -22px #000; padding:1.4rem}
+  /* moving sheen reacts to tilt (--gx/--gy set by JS) */
+  .card::before{content:''; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(420px circle at var(--gx,50%) var(--gy,0%),
+      rgba(123,97,255,.30), transparent 60%)}
+  .card .tag{font:500 .54rem/1 var(--mono); letter-spacing:.24em; color:var(--accent);
+    transform:translateZ(34px)}
+  .card h3{margin:.7rem 0 0; font:700 1.5rem/1.1 var(--sc); letter-spacing:-.01em;
+    transform:translateZ(48px)}
+  .card .meta{margin:.35rem 0 0; font:.64rem/1.4 var(--mono); color:var(--muted);
+    transform:translateZ(24px)}
+  .thumbs{display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-top:1.15rem;
+    transform:translateZ(38px)}
+  .thumb{aspect-ratio:1; border-radius:8px; border:1px solid var(--line)}
+  .thumb:nth-child(1){background:linear-gradient(135deg,#7b61ff,#3a2a8c)}
+  .thumb:nth-child(2){background:linear-gradient(135deg,#4ade80,#176b3a)}
+  .thumb:nth-child(3){background:linear-gradient(135deg,#2a2a34,#101015)}
+  .card .row{display:flex; align-items:center; justify-content:space-between; margin-top:1.2rem;
+    transform:translateZ(20px)}
+  .card .row .by{font:.6rem/1 var(--mono); color:var(--muted)}
+  .card .row .go{font:.6rem/1 var(--mono); letter-spacing:.1em; color:var(--green)}
+  .readout{position:absolute; left:1.6rem; bottom:1.1rem; font:.56rem/1.5 var(--mono);
+    color:#5b5b64}
+  .readout b{color:var(--bone); font-weight:500}
+
+  .specs{margin-top:1.6rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ④ REVEAL &amp; MOTION</div>
+  <div class="ds-head">
+    <h1>TiltCard</h1>
+    <p>鼠标在卡面移动时，卡片以 perspective(900px) 朝光标方向倾斜——px=(鼠标x/宽−0.5)，最大 ±14°，transition .2s ease-out。卡内元素带 translateZ 形成真实层叠纵深。</p>
+  </div>
+
+  <div class="stage">
+    <div class="row-head">
+      <span class="ui-label">Hover / move cursor inside the card</span>
+      <button class="replay" id="replay" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v5h-5"/></svg>
+        重播
+      </button>
+    </div>
+
+    <div class="scene">
+      <div class="tilt" id="tilt">
+        <div class="card">
+          <div class="tag">WORK · 01</div>
+          <h3>镜之塔 / Centripetal</h3>
+          <div class="meta">CG · Compositing · 2024</div>
+          <div class="thumbs"><span class="thumb"></span><span class="thumb"></span><span class="thumb"></span></div>
+          <div class="row"><span class="by">JUNK_DOGE</span><span class="go">VIEW ↗</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="readout">rotateX <b id="rx">0.0°</b> · rotateY <b id="ry">0.0°</b></div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">transform <b>perspective(900px)</b></span>
+    <span class="chip">max <b>±14°</b></span>
+    <span class="chip">px <b>x/w − 0.5</b></span>
+    <span class="chip">transition <b>.2s ease-out</b></span>
+  </div>
+
+<script>
+  const tilt = document.getElementById('tilt');
+  const card = tilt.querySelector('.card');
+  const rx = document.getElementById('rx'), ry = document.getElementById('ry');
+  const MAX = 14;
+  let demoTimer = null;
+
+  function apply(px, py){            // px,py in -0.5..0.5
+    const ax = -py * MAX;            // rotateX (invert: top tilts back)
+    const ay =  px * MAX;            // rotateY
+    tilt.style.transform = `perspective(900px) rotateX(${ax.toFixed(2)}deg) rotateY(${ay.toFixed(2)}deg)`;
+    card.style.setProperty('--gx', (px + 0.5) * 100 + '%');
+    card.style.setProperty('--gy', (py + 0.5) * 100 + '%');
+    rx.textContent = ax.toFixed(1) + '°';
+    ry.textContent = ay.toFixed(1) + '°';
+  }
+  function reset(){
+    tilt.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+    card.style.setProperty('--gx','50%'); card.style.setProperty('--gy','0%');
+    rx.textContent = '0.0°'; ry.textContent = '0.0°';
+  }
+  function stopDemo(){ if(demoTimer){ cancelAnimationFrame(demoTimer); demoTimer=null; } }
+
+  tilt.addEventListener('mousemove', e=>{
+    stopDemo();
+    const r = tilt.getBoundingClientRect();
+    apply((e.clientX - r.left)/r.width - 0.5, (e.clientY - r.top)/r.height - 0.5);
+  });
+  tilt.addEventListener('mouseleave', ()=>{ stopDemo(); reset(); });
+
+  // auto-orbit demo so the 3D reads at a glance (and on "重播")
+  function demo(){
+    stopDemo();
+    const t0 = performance.now();
+    (function frame(now){
+      const t = (now - t0)/1000;
+      if(t > 3.2){ reset(); return; }
+      apply(Math.sin(t*1.7)*0.42, Math.cos(t*1.3)*0.36);
+      demoTimer = requestAnimationFrame(frame);
+    })(t0);
+  }
+  document.getElementById('replay').addEventListener('click', demo);
+  demo();
+</script>
+</body>
+</html>

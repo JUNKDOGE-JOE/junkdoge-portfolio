@@ -1,0 +1,138 @@
+<!-- @dsCard group="③ Navigation" name="CornerFurniture" subtitle="Four-corner info frame" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CornerFurniture — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+
+  /* shared label style (mirrors the global .ui-label) */
+  .ui-label{font:500 .58rem/1 var(--mono); letter-spacing:.22em; text-transform:uppercase}
+
+  /* component stage = a 16:9 viewport frame */
+  .stage{position:relative; width:min(760px,94vw); aspect-ratio:16/9;
+    background:radial-gradient(130% 110% at 50% 20%, #14141b, #060608);
+    border:1px solid var(--line); border-radius:14px; overflow:hidden;
+    box-shadow:0 30px 80px -30px #000; color:var(--bone)}
+
+  /* faint center watermark so the frame reads as a stage, not the content */
+  .stage .canvasNote{position:absolute; inset:0; display:flex; align-items:center;
+    justify-content:center; font:500 .6rem/1 var(--mono); letter-spacing:.34em;
+    color:#2a2a33}
+
+  /* ── four-corner furniture (all pinned, ui-label style) ───────── */
+  .fur{position:absolute; inset:0}
+  .fur a{color:inherit; text-decoration:none}
+
+  /* top-left: J / D mark + clock */
+  .tl{position:absolute; left:1.4rem; top:1.2rem; display:flex; align-items:center; gap:1rem}
+  .tl .mark{font:700 .82rem/1 var(--sc); letter-spacing:.18em}
+  .tl .clock{font:500 .58rem/1 var(--mono); letter-spacing:.16em; color:var(--muted)}
+
+  /* top-right: nav + EN pill */
+  .tr{position:absolute; right:1.4rem; top:1.2rem; display:flex; align-items:center; gap:.7rem}
+  .tr .nav{display:flex; align-items:center; gap:.7rem; font:500 .58rem/1 var(--mono);
+    letter-spacing:.22em; text-transform:uppercase}
+  .tr .nav .sep{opacity:.4}
+  .tr .nav a{transition:opacity .3s ease}
+  .tr .nav a:hover{opacity:.55}
+  .tr .pill{margin-left:.3rem; border:1px solid currentColor; border-radius:999px;
+    padding:.18rem .5rem; font:500 .55rem/1 var(--mono); letter-spacing:.16em;
+    background:none; color:inherit; cursor:pointer; transition:background .3s ease,color .3s ease}
+  .tr .pill:hover{background:var(--bone); color:var(--night)}
+
+  /* mid-left / mid-right vertical micro-labels */
+  .ml{position:absolute; left:1.4rem; top:50%; transform:translateY(-50%);
+    font:500 .58rem/1 var(--mono); letter-spacing:.22em; text-transform:uppercase; opacity:.7}
+  .mr{position:absolute; right:1.4rem; top:50%; transform:translateY(-50%);
+    font:500 .58rem/1 var(--mono); letter-spacing:.22em; text-transform:uppercase; opacity:.7}
+
+  /* bottom-left: mini progress-ring counter placeholder + tagline (spaced, no overlap) */
+  .bl{position:absolute; left:1.4rem; bottom:1.3rem; display:flex; align-items:center; gap:1.3rem}
+  .miniRing{position:relative; width:54px; height:54px; flex:0 0 54px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; color:var(--bone)}
+  .miniRing svg{position:absolute; inset:0; transform:rotate(-90deg)}
+  .miniRing .mn{font:500 .72rem/1 var(--sc)}
+  .miniRing .mt{font:500 .42rem/1 var(--mono); letter-spacing:.2em;
+    text-transform:uppercase; opacity:.6; margin-top:.12rem}
+  .tagline{font:500 .58rem/1 var(--mono); letter-spacing:.16em; color:var(--muted);
+    white-space:nowrap}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ③ NAVIGATION</div>
+  <div class="ds-head">
+    <h1>CornerFurniture</h1>
+    <p>覆盖每屏的四角信息框架——左上品牌标 + 本地时钟,右上导航 + 语言切换,中部竖排提示,左下角嵌一个迷你计数环占位与 tagline 并排,全部等宽小标风格。</p>
+  </div>
+
+  <div class="stage">
+    <div class="canvasNote">VIEWPORT · 16 / 9</div>
+    <div class="fur">
+
+      <!-- top-left -->
+      <div class="tl">
+        <a class="mark" href="#">J / D</a>
+        <span class="clock">HANGZHOU, 11:11 AM GMT+8</span>
+      </div>
+
+      <!-- top-right -->
+      <div class="tr">
+        <nav class="nav">
+          <a href="#">作品</a><span class="sep">/</span>
+          <a href="#">关于</a><span class="sep">/</span>
+          <a href="#">委托</a>
+        </nav>
+        <button class="pill" aria-label="toggle language">EN</button>
+      </div>
+
+      <!-- mid-left / mid-right -->
+      <span class="ml">PORTFOLIO 2026</span>
+      <span class="mr">滚动</span>
+
+      <!-- bottom-left: mini ring counter placeholder + tagline -->
+      <div class="bl">
+        <div class="miniRing">
+          <svg viewBox="0 0 54 54" aria-hidden="true">
+            <circle cx="27" cy="27" r="25" fill="none" stroke="currentColor"
+              stroke-opacity="0.15" stroke-width="1"/>
+            <!-- ~2/9 arc: CIRC=2π·25≈157.1, offset=157.1·(1−0.222)≈122 -->
+            <circle cx="27" cy="27" r="25" fill="none" stroke="currentColor"
+              stroke-opacity="0.85" stroke-width="1" stroke-linecap="round"
+              stroke-dasharray="157.1" stroke-dashoffset="122"/>
+          </svg>
+          <span class="mn">02</span>
+          <span class="mt">编号</span>
+        </div>
+        <span class="tagline">PV · VJ · 映像创作 × 创意开发</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="specs" style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center">
+    <span class="chip" style="font:.62rem/1 var(--mono);letter-spacing:.04em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.4rem .7rem">corners <b style="color:var(--accent);font-weight:500">×4</b></span>
+    <span class="chip" style="font:.62rem/1 var(--mono);letter-spacing:.04em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.4rem .7rem">type <b style="color:var(--accent);font-weight:500">ui-label</b></span>
+    <span class="chip" style="font:.62rem/1 var(--mono);letter-spacing:.04em;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:.4rem .7rem">layers <b style="color:var(--accent);font-weight:500">overlay z-20</b></span>
+  </div>
+</body>
+</html>

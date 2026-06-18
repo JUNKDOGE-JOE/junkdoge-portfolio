@@ -1,0 +1,90 @@
+<!-- @dsCard group="② Boot" name="Preloader" subtitle="Terminal-green boot log + progress bar" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preloader — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+  /* component frame */
+  .screen{width:min(680px,92vw); aspect-ratio:16/10; background:#000;
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; position:relative;
+    box-shadow:0 30px 80px -30px #000; display:flex; flex-direction:column; padding:1.4rem;
+    font-family:var(--mono); color:var(--green)}
+  .boot-tag{font-size:.58rem; letter-spacing:.28em; color:#2f6b43}
+  .log{margin-top:1.2rem; flex:1; font-size:.82rem; line-height:1.85}
+  .log .n{color:#2f6b43; margin-right:.7em}
+  .cursor{display:inline-block; width:.5em; height:1.05em; background:var(--green);
+    vertical-align:text-bottom; animation:blink 1s steps(1) infinite}
+  @keyframes blink{0%,49%{opacity:.9} 50%,100%{opacity:0}}
+  .bar-row{display:flex; justify-content:space-between; font-size:.58rem;
+    letter-spacing:.22em; margin-bottom:.5rem; opacity:.8}
+  .bar{height:8px; background:rgba(74,222,128,.14); overflow:hidden}
+  .bar i{display:block; height:100%; background:var(--green);
+    box-shadow:0 0 12px var(--green); width:0; animation:fill 2.4s ease-in-out infinite}
+  @keyframes fill{0%{width:0} 70%,100%{width:100%}}
+  .specs{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ② BOOT</div>
+  <div class="ds-head">
+    <h1>Preloader</h1>
+    <p>进入站点时的终端启动屏——伪启动日志逐行打印 + 闪烁光标 + 底部发光进度条，跑满后整屏淡出。</p>
+  </div>
+
+  <div class="screen">
+    <div class="boot-tag">J / D — SYSTEM BOOT</div>
+    <div class="log" id="log"></div>
+    <div>
+      <div class="bar-row"><span>LOADING ASSETS</span><span id="pct">000%</span></div>
+      <div class="bar"><i></i></div>
+    </div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">bg <b>#000</b></span>
+    <span class="chip">accent <b>#4ade80</b></span>
+    <span class="chip">font <b>mono</b></span>
+    <span class="chip">dur <b>2.0s</b></span>
+  </div>
+
+<script>
+  const LINES=['> booting junkdoge.portfolio','> loading /covers ............. ok',
+    '> mounting gsap timeline ...... ok','> compiling shaders ........... ok',
+    '> JUNK_DOGE :: 映像创作 × 创意开发','> ready.'];
+  const log=document.getElementById('log'), pct=document.getElementById('pct');
+  function run(){
+    log.innerHTML=''; let i=0;
+    const t=setInterval(()=>{ i++;
+      log.innerHTML=LINES.slice(0,i).map((l,k)=>
+        `<div><span class="n">${String(k+1).padStart(2,'0')}</span>${l}</div>`).join('')
+        +'<span class="cursor"></span>';
+      if(i>=LINES.length) clearInterval(t);
+    },300);
+  }
+  let p=0; setInterval(()=>{ p=(p+2)%108; pct.textContent=String(Math.min(p,100)).padStart(3,'0')+'%'; },48);
+  run(); setInterval(run,2400);
+</script>
+</body>
+</html>

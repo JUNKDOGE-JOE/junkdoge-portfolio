@@ -1,0 +1,120 @@
+<!-- @dsCard group="① Foundations" name="Typography" subtitle="Noto Sans SC · italic display · mono label" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Typography — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --paper:#f4f2ee;
+    --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+  /* component frame */
+  .stage{width:min(720px,94vw); background:var(--ink);
+    border:1px solid var(--line); border-radius:12px; overflow:hidden; position:relative;
+    box-shadow:0 30px 80px -30px #000; padding:1.8rem}
+  .ui-label{font:500 .58rem/1 var(--mono); letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted)}
+  .block{padding-top:1.4rem; margin-top:1.4rem; border-top:1px solid var(--line)}
+  .block:first-child{padding-top:0; margin-top:0; border-top:0}
+  /* display italic */
+  .display-italic{font-style:italic; font-weight:700; line-height:.98; letter-spacing:-.01em;
+    color:var(--bone)}
+  .display-italic .big{display:block; font-size:clamp(3rem,9vw,5rem)}
+  .display-italic .en{display:block; font-size:clamp(1.6rem,4.2vw,2.4rem); color:var(--muted);
+    margin-top:.2rem}
+  .display-italic .big::selection,.display-italic .en::selection{background:var(--accent); color:#fff}
+  /* body copy */
+  .copy{font:400 .92rem/1.85 var(--sc); color:var(--bone); max-width:46ch; margin-top:.7rem}
+  .copy .muted{color:var(--muted)}
+  /* scale ladder */
+  .ladder{margin-top:.85rem; display:flex; flex-direction:column; gap:.35rem}
+  .row{display:flex; align-items:baseline; gap:1rem; border-bottom:1px dashed rgba(154,154,162,.16);
+    padding-bottom:.35rem}
+  .row .sz{flex:0 0 4.5rem; font:.6rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    text-align:right}
+  .row .sample{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--bone)}
+  .specs{margin-top:1.6rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ① FOUNDATIONS</div>
+  <div class="ds-head">
+    <h1>Typography</h1>
+    <p>单一字族 Noto Sans SC 撑起全站：斜体作展示标题（中英同体）、常规字重作正文、等宽小标做 UI 标签。下方为字号阶梯。</p>
+  </div>
+
+  <div class="stage">
+    <div class="block">
+      <div class="ui-label">Display · italic</div>
+      <div class="display-italic">
+        <span class="big">扶桑</span>
+        <span class="en">Centripetal Force</span>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="ui-label">Body · Noto Sans SC</div>
+      <p class="copy">为 BOF21 制作的影像作品，文字与映像一体的视觉叙事。
+        <span class="muted">A visual piece made for BOF21 — typography and motion as one narrative. The same family carries headline italic and body weight without a second typeface.</span></p>
+    </div>
+
+    <div class="block">
+      <div class="ui-label">UI label · mono</div>
+      <div style="margin-top:.6rem; display:flex; gap:1.2rem; flex-wrap:wrap">
+        <span class="ui-label">SELECTED WORKS</span>
+        <span class="ui-label">PV · BOF21</span>
+        <span class="ui-label">2024 — 09</span>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="ui-label">Scale ladder</div>
+      <div class="ladder" id="ladder"></div>
+    </div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">family <b>Noto Sans SC</b></span>
+    <span class="chip">display <b>italic 700</b></span>
+    <span class="chip">label <b>.2em / upper</b></span>
+    <span class="chip">scale <b>5rem→.75rem</b></span>
+  </div>
+
+<script>
+  const STEPS=[
+    ['5rem','扶桑 Fusang'],['3rem','镜之塔 Mirror'],['2rem','二十九行诗'],
+    ['1.5rem','少女終幕'],['1.125rem','浮生 Fusheng'],['.875rem','正文 body copy'],
+    ['.75rem','UI LABEL'],
+  ];
+  const ld=document.getElementById('ladder');
+  STEPS.forEach(([sz,txt])=>{
+    const r=document.createElement('div'); r.className='row';
+    const isLabel = sz==='.75rem';
+    const style = isLabel
+      ? `font:500 ${sz} var(--mono); letter-spacing:.2em; text-transform:uppercase`
+      : `font:${parseFloat(sz)>=2?'italic 700':'400'} ${sz}/1 var(--sc)`;
+    r.innerHTML=`<span class="sz">${sz}</span><span class="sample" style="${style}">${txt}</span>`;
+    ld.appendChild(r);
+  });
+</script>
+</body>
+</html>

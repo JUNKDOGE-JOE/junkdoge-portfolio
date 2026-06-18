@@ -1,0 +1,158 @@
+<!-- @dsCard group="⑤ Showcase" name="ScrollingCircles" subtitle="Dual-track inertia scroll" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScrollingCircles — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --paper:#efece4; --paper-ink:#1a1a1f; --focus:#c98a4b;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+    --display:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+
+  /* component frame — light warm viewport */
+  .stage{width:min(820px,94vw); aspect-ratio:16/10; border:1px solid var(--line);
+    border-radius:14px; overflow:hidden; position:relative;
+    box-shadow:0 34px 90px -34px #000; color:var(--paper-ink);
+    background:
+      radial-gradient(120% 100% at 50% 30%, #fbf9f3, #e8e3d8 80%),
+      linear-gradient(180deg, #f3efe6, #e6e0d4)}
+  /* central focal glow */
+  .stage::after{content:''; position:absolute; left:50%; top:50%; width:46%; height:60%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(50% 50% at 50% 50%, rgba(201,138,75,.34), rgba(201,138,75,.10) 55%, transparent 72%);
+    pointer-events:none; filter:blur(6px)}
+
+  .scene{position:absolute; inset:0; overflow:hidden}
+
+  /* a circle base */
+  .circle{position:absolute; left:50%; top:50%; width:150px; height:150px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; will-change:transform,opacity}
+  /* left: name circle (light stroke) */
+  .name{border:1px solid rgba(26,26,31,.32); background:rgba(255,255,255,.18)}
+  .name .stack{display:flex; flex-direction:column; align-items:center; gap:.45rem;
+    font-family:var(--display); font-style:italic; color:var(--paper-ink)}
+  .name .no{font:500 .56rem/1 var(--mono); font-style:normal; letter-spacing:.14em; opacity:.55}
+  .name .ti{font-size:1.5rem; line-height:1; letter-spacing:.02em}
+  .name .yr{font:500 .56rem/1 var(--mono); font-style:normal; letter-spacing:.14em; opacity:.55}
+  /* decorative ring */
+  .name .ring{position:absolute; inset:-6px; border-radius:50%;
+    border:1px solid rgba(26,26,31,.16)}
+  .name .ring b{position:absolute; top:50%; width:3px; height:3px; border-radius:50%;
+    background:rgba(26,26,31,.3); transform:translateY(-50%)}
+  .name .ring b.l{left:-1px}.name .ring b.r{right:-1px}
+
+  /* right: image circle (gradient fill) */
+  .img{overflow:hidden; box-shadow:0 16px 40px -14px rgba(80,60,30,.45)}
+  .img.c0{background:radial-gradient(70% 70% at 35% 30%,#9db58f,transparent 70%),conic-gradient(from 200deg,#3c5347,#7d9c6f,#2f3b2f,#3c5347)}
+  .img.c1{background:radial-gradient(70% 70% at 35% 30%,#caa0a8,transparent 70%),conic-gradient(from 200deg,#6a4a52,#b98792,#3a2a30,#6a4a52)}
+  .img.c2{background:radial-gradient(70% 70% at 35% 30%,#9bb0c2,transparent 70%),conic-gradient(from 200deg,#39505f,#6f93a8,#26333d,#39505f)}
+
+  .specs{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+  .chip.warm b{color:#d6a05a}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ⑤ SHOWCASE</div>
+  <div class="ds-head">
+    <h1>ScrollingCircles</h1>
+    <p>/projects 双轨惯性滚动——左列名字圆、右列图片圆对向移动，正中焦点色光晕，中心圆略放大。入场快滚后摩擦减速至静止。</p>
+  </div>
+
+  <div class="stage">
+    <div class="scene" id="scene"></div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">skin <b>warm light</b></span>
+    <span class="chip warm">friction <b>0.94</b></span>
+    <span class="chip">tracks <b>opposed</b></span>
+    <span class="chip warm">intro <b>fast-scroll → rest</b></span>
+  </div>
+
+<script>
+  // ── mirror of ScrollingCircles.tsx geometry ──────────────────────────────
+  const SIZE=150, GAP=44, TRACK=120;
+  const FRICTION=0.94, SETTLE=0.01, INTRO_VEL=12;
+  const STEP=SIZE+GAP;
+
+  const PROJECTS=[
+    {no:'N.05', ti:'融っ', yr:'Y.2024', img:'c0'},
+    {no:'N.08', ti:'浮生', yr:'Y.2024', img:'c1'},
+    {no:'N.02', ti:'镜塔', yr:'Y.2024', img:'c2'},
+  ];
+  const N=PROJECTS.length, H=N*STEP;
+
+  const mod=(n,m)=>((n%m)+m)%m;
+  const wrap=(v,Hh)=>mod(v,Hh)-Hh/2;
+
+  const scene=document.getElementById('scene');
+  const names=[], imgs=[];
+  PROJECTS.forEach((p,i)=>{
+    const n=document.createElement('div');
+    n.className='circle name';
+    n.innerHTML=`<div class="ring"><b class="l"></b><b class="r"></b></div>
+      <div class="stack"><span class="no">${p.no}</span><span class="ti">${p.ti}</span><span class="yr">${p.yr}</span></div>`;
+    scene.appendChild(n); names.push(n);
+
+    const im=document.createElement('div');
+    im.className=`circle img ${p.img}`;
+    scene.appendChild(im); imgs.push(im);
+  });
+
+  // auto-drift state: slow oscillating velocity so it scrolls up/down forever
+  let s = -(INTRO_VEL*FRICTION)/(STEP*(1-FRICTION));  // intro offset (mirrors tsx)
+  let vel = INTRO_VEL;
+  let t = 0;
+
+  function apply(){
+    for(let i=0;i<N;i++){
+      const yName=wrap((i-s)*STEP,H);   // left rises as s grows
+      const yImg =wrap((s-i)*STEP,H);   // right falls (opposite)
+      const dN=Math.abs(yName), dI=Math.abs(yImg);
+      const fsN=1+Math.max(0,1-dN/(STEP*1.5))*0.08;
+      const fsI=1+Math.max(0,1-dI/(STEP*1.5))*0.08;
+      const foN=0.5+Math.max(0,1-dN/(STEP*2))*0.5;
+      const foI=0.5+Math.max(0,1-dI/(STEP*2))*0.5;
+      names[i].style.transform=`translate(-50%,-50%) translate(${-TRACK}px,${yName}px) scale(${fsN})`;
+      names[i].style.opacity=foN;
+      imgs[i].style.transform=`translate(-50%,-50%) translate(${TRACK}px,${yImg}px) scale(${fsI})`;
+      imgs[i].style.opacity=foI;
+    }
+  }
+
+  function frame(){
+    // intro kick eases out under friction; once settled, inject a slow sine drift
+    vel*=FRICTION;
+    if(Math.abs(vel)<SETTLE){
+      t+=0.012;
+      vel=Math.sin(t)*0.55;   // gentle perpetual up/down auto-scroll
+    }
+    s+=vel/STEP;
+    apply();
+    requestAnimationFrame(frame);
+  }
+  apply();
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>

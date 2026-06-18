@@ -1,0 +1,159 @@
+<!-- @dsCard group="⑤ Showcase" name="Gallery" subtitle="Morph + vertical-card grid" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gallery — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --paper-text:#ece8e1;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+    --display:Georgia,'Times New Roman',serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+
+  /* component frame — the full-screen overlay, scaled into a viewport */
+  .stage{width:min(860px,94vw); aspect-ratio:16/10; border:1px solid var(--line);
+    border-radius:14px; overflow:hidden; position:relative;
+    box-shadow:0 34px 90px -34px #000; color:var(--paper-text);
+    background:#0a0a0c}
+  /* dimmed backdrop: black 85% + blur feel (frosted) */
+  .backdrop{position:absolute; inset:0;
+    background:
+      radial-gradient(60% 80% at 78% 60%, rgba(60,70,90,.30), transparent 70%),
+      rgba(0,0,0,.86);
+    backdrop-filter:blur(20px)}
+  .panel{position:absolute; inset:0; display:flex; gap:1.6rem; padding:2rem 2.2rem;
+    animation:panelin .5s ease forwards}
+  @keyframes panelin{from{opacity:0}to{opacity:1}}
+
+  /* left column 1/3 */
+  .left{flex:0 0 30%; display:flex; flex-direction:column}
+  .close{align-self:flex-start; margin-bottom:1.8rem; background:none; border:none; cursor:pointer;
+    color:var(--paper-text); font:500 .62rem/1 var(--mono); letter-spacing:.2em; opacity:.7;
+    transition:opacity .2s}
+  .close:hover{opacity:1}
+  .reveal{display:block; overflow:hidden}
+  .reveal>*{display:block; transform:translateY(110%); animation:rise .8s cubic-bezier(.16,1,.3,1) forwards}
+  .gtitle{margin:0; font-family:var(--display); font-style:italic; font-weight:500;
+    font-size:clamp(1.9rem,4.4vw,3.2rem); line-height:.95}
+  .grole{margin:.9rem 0 0; font:500 .62rem/1 var(--mono); letter-spacing:.2em;
+    text-transform:uppercase; opacity:.7}
+  .gdesc{margin:1.1rem 0 0; max-width:18rem; font-size:.8rem; line-height:1.6; opacity:.8}
+  .r1>*{animation-delay:.18s}.r2>*{animation-delay:.27s}.r3>*{animation-delay:.36s}
+  @keyframes rise{to{transform:translateY(0)}}
+
+  /* right: 3-col vertical-card grid */
+  .grid{flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:.85rem;
+    align-content:start; overflow:hidden; padding-right:.2rem}
+  .vcard{aspect-ratio:5/11; border-radius:12px; overflow:hidden;
+    border:1px solid rgba(255,255,255,.15); box-shadow:0 18px 40px -16px rgba(0,0,0,.7);
+    position:relative; opacity:0; transform:translateY(42px);
+    animation:cardin .55s cubic-bezier(.16,1,.3,1) forwards}
+  @keyframes cardin{to{opacity:1; transform:translateY(0)}}
+  /* dark UI-ish phone-screenshot mock */
+  .vcard .ui{position:absolute; inset:0; display:flex; flex-direction:column;
+    font:500 .42rem/1 var(--mono); letter-spacing:.06em}
+  .vcard .bar{height:14%; display:flex; align-items:center; padding:0 8%; gap:5%;
+    color:rgba(255,255,255,.75)}
+  .vcard .dot{width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.8}
+  .vcard .body{flex:1; padding:8%; display:flex; flex-direction:column; gap:7%}
+  .vcard .ln{height:6px; border-radius:3px; background:rgba(255,255,255,.16)}
+  .vcard .ln.s{width:60%}.vcard .ln.m{width:82%}
+  .vcard .blk{flex:1; border-radius:8px; min-height:30%}
+
+  .v1{animation-delay:.40s}.v2{animation-delay:.48s}.v3{animation-delay:.56s}
+  .v4{animation-delay:.64s}.v5{animation-delay:.72s}.v6{animation-delay:.80s}
+
+  /* the morph note — circle becomes rounded card */
+  .morphnote{position:absolute; bottom:14px; left:50%; transform:translateX(-50%); z-index:3}
+
+  .specs{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+  .chip.accent{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+  .chip.accent b{color:#b6a7ff}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ⑤ SHOWCASE</div>
+  <div class="ds-head">
+    <h1>Gallery</h1>
+    <p>点开圆形封面后的全屏作品总览——黑 85% 模糊 overlay，左 1/3 斜体标题信息，右侧三列竖卡网格 stagger 上移入场。</p>
+  </div>
+
+  <div class="stage">
+    <div class="backdrop"></div>
+    <div class="panel" id="panel">
+      <div class="left">
+        <button class="close" id="close">✕ CLOSE</button>
+        <span class="reveal r1"><h2 class="gtitle">after-effects-mcp</h2></span>
+        <span class="reveal r2"><p class="grole">Dev · AE 自动化 / 2026</p></span>
+        <span class="reveal r3"><p class="gdesc">Agent 驱动的 AE 自动化：MCP + CEP，让 AI 用 30+ 工具操控 After Effects。⭐22</p></span>
+      </div>
+
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="morphnote">
+      <span class="chip accent">圆 → 圆角卡 <b>morph</b></span>
+    </div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">overlay <b>black 85% + blur</b></span>
+    <span class="chip">cards <b>aspect 5/11</b></span>
+    <span class="chip">grid <b>3-col</b></span>
+    <span class="chip">enter <b>stagger ↑</b></span>
+  </div>
+
+<script>
+  // 6 dark-UI vertical-card mocks: varied tints + layout to read as phone screenshots
+  const CARDS=[
+    {bar:'#1b1f2a', body:'linear-gradient(180deg,#12151d,#0c0f15)', blk:'linear-gradient(135deg,#7b61ff,#3a2f7a)', cls:'v1'},
+    {bar:'#241b22', body:'linear-gradient(180deg,#1a1216,#0e0a0c)', blk:'linear-gradient(135deg,#c2557a,#5a2740)', cls:'v2'},
+    {bar:'#16241f', body:'linear-gradient(180deg,#101a16,#0a0f0d)', blk:'linear-gradient(135deg,#4ade80,#1f5a39)', cls:'v3'},
+    {bar:'#222418', body:'linear-gradient(180deg,#171a10,#0d0f0a)', blk:'linear-gradient(135deg,#d9c25a,#5a4f27)', cls:'v4'},
+    {bar:'#1a2230', body:'linear-gradient(180deg,#101622,#0a0e15)', blk:'linear-gradient(135deg,#55a6c2,#274a5a)', cls:'v5'},
+    {bar:'#221a2a', body:'linear-gradient(180deg,#15101a,#0d0a0f)', blk:'linear-gradient(135deg,#9b6ad9,#412f5a)', cls:'v6'},
+  ];
+  const grid=document.getElementById('grid');
+  function build(){
+    grid.innerHTML=CARDS.map(c=>`
+      <div class="vcard ${c.cls}" style="background:${c.body}">
+        <div class="ui">
+          <div class="bar" style="background:${c.bar}"><span class="dot"></span><span>09:41</span><span style="margin-left:auto">▢ ▢ ▢</span></div>
+          <div class="body">
+            <div class="ln m"></div><div class="ln s"></div>
+            <div class="blk" style="background:${c.blk}"></div>
+            <div class="ln m"></div><div class="ln s"></div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+  function replay(){
+    document.getElementById('panel').style.animation='none'; void grid.offsetWidth;
+    document.getElementById('panel').style.animation='';
+    document.querySelectorAll('.reveal>*').forEach(el=>{el.style.animation='none';void el.offsetWidth;el.style.animation='';});
+    build();
+  }
+  build();
+  // CLOSE acts as a replay trigger in this static preview
+  document.getElementById('close').addEventListener('click',replay);
+</script>
+</body>
+</html>

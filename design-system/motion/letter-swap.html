@@ -1,0 +1,147 @@
+<!-- @dsCard group="④ Reveal & Motion" name="LetterSwap" subtitle="Per-letter masked swap" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LetterSwap — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --paper:#f4f2ee;
+    --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+    --swap-ease:cubic-bezier(0.2,0.9,0.2,1);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+  /* component frame */
+  .stage{width:min(720px,94vw); background:var(--ink);
+    border:1px solid var(--line); border-radius:12px; position:relative;
+    box-shadow:0 30px 80px -30px #000; padding:1.6rem}
+  .ui-label{font:500 .58rem/1 var(--mono); letter-spacing:.2em; text-transform:uppercase;
+    color:var(--muted)}
+  .row-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem}
+  .replay{font:500 .6rem/1 var(--mono); letter-spacing:.14em; text-transform:uppercase;
+    color:var(--bone); background:rgba(123,97,255,.12); border:1px solid var(--accent);
+    border-radius:999px; padding:.42rem .8rem; cursor:pointer; transition:background .2s ease,transform .12s ease;
+    display:inline-flex; align-items:center; gap:.45em}
+  .replay:hover{background:rgba(123,97,255,.24)}
+  .replay:active{transform:scale(.95)}
+  .replay svg{width:.85em; height:.85em}
+
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:1rem}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .pane{border:1px solid var(--line); border-radius:10px; padding:1.6rem 1.4rem; background:var(--night);
+    display:flex; flex-direction:column; align-items:flex-start; gap:1rem; min-height:118px;
+    justify-content:center}
+  .pane .cap{font:.56rem/1 var(--mono); letter-spacing:.16em; color:#5b5b64}
+
+  /* ---- LetterSwap ---- (faithful port of LetterSwap.module.css) */
+  .letterswap{display:inline-flex; line-height:1; cursor:pointer; color:var(--bone)}
+  .letterswap.lg{font:700 1.9rem/1 var(--sc); letter-spacing:.02em}
+  .letterswap.btn{font:600 1.05rem/1 var(--mono); letter-spacing:.18em;
+    border:1px solid var(--line); border-radius:999px; padding:.7rem 1.2rem; background:var(--ink)}
+  .letterswap.btn:hover{border-color:var(--green)}
+  .lsrow{display:flex}
+  .col{position:relative; display:inline-block; overflow:hidden}     /* the per-letter mask */
+  .col > span{display:block; transition:transform .42s var(--swap-ease); transition-delay:inherit}
+  .b{position:absolute; left:0; top:0; transform:translateY(100%); color:var(--green)}
+  /* on hover (or .force): original slides up & out, duplicate rises from below */
+  .letterswap:hover .a, .letterswap.force .a{transform:translateY(-100%)}
+  .letterswap:hover .b, .letterswap.force .b{transform:translateY(0)}
+  .space{width:.34em}
+
+  .specs{margin-top:1.6rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--green); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ④ REVEAL &amp; MOTION</div>
+  <div class="ds-head">
+    <h1>LetterSwap</h1>
+    <p>悬停时标签逐字在各自遮罩里上下交换：原字 translateY(0→−100%) 滑出，同字副本 translateY(100%→0) 从下方滑入，逐字 stagger 28ms(尾字先动)，0.42s 缓出。离开复位。</p>
+  </div>
+
+  <div class="stage">
+    <div class="row-head">
+      <span class="ui-label">Hover the labels · 或点重播触发一次</span>
+      <button class="replay" id="replay" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v5h-5"/></svg>
+        重播
+      </button>
+    </div>
+
+    <div class="grid">
+      <div class="pane">
+        <span class="cap">CN · INLINE LABEL</span>
+        <span class="letterswap lg" data-label="观看 ↗"></span>
+      </div>
+      <div class="pane">
+        <span class="cap">EN · BUTTON</span>
+        <span class="letterswap btn" data-label="WATCH"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">a <b>0 → −100%</b></span>
+    <span class="chip">b <b>100% → 0</b></span>
+    <span class="chip">stagger <b>28ms</b></span>
+    <span class="chip">ease <b>.42s cb(.2,.9,.2,1)</b></span>
+  </div>
+
+<script>
+  // Build each label: per char, a masked column with .a (original) + .b (duplicate),
+  // transition-delay reversed so the trailing letter leads (matches source: (len-1-i)*28ms).
+  function build(el){
+    const label = el.dataset.label;
+    const chars = [...label];
+    const row = document.createElement('span');
+    row.className = 'lsrow';
+    chars.forEach((ch,i)=>{
+      if(ch === ' '){
+        const sp = document.createElement('span');
+        sp.className = 'space';
+        row.appendChild(sp);
+        return;
+      }
+      const col = document.createElement('span');
+      col.className = 'col';
+      col.style.transitionDelay = (chars.length - 1 - i) * 28 + 'ms';
+      const a = document.createElement('span'); a.className='a'; a.textContent=ch;
+      const b = document.createElement('span'); b.className='b'; b.textContent=ch;
+      col.style.setProperty('--d', col.style.transitionDelay);
+      // make inner spans inherit the per-column delay
+      a.style.transitionDelay='inherit'; b.style.transitionDelay='inherit';
+      col.append(a,b);
+      row.appendChild(col);
+    });
+    el.appendChild(row);
+  }
+  const labels = [...document.querySelectorAll('.letterswap')];
+  labels.forEach(build);
+
+  // "重播" = programmatically fire the swap once, then release (no hover needed)
+  document.getElementById('replay').addEventListener('click', ()=>{
+    labels.forEach(el=>{
+      el.classList.add('force');
+      const delay = ([...el.querySelectorAll('.col')].length) * 28 + 480; // longest stagger + dur
+      setTimeout(()=> el.classList.remove('force'), delay);
+    });
+  });
+</script>
+</body>
+</html>

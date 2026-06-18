@@ -1,0 +1,155 @@
+<!-- @dsCard group="③ Navigation" name="ProjectCounter" subtitle="Progress ring + eased arrows" -->
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProjectCounter — JD Kinetic System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+  :root{
+    --night:#0a0a0c; --ink:#101015; --bone:#ece8e1; --muted:#9a9aa2; --line:#26262e;
+    --accent:#7b61ff; --green:#4ade80;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --sc:'Noto Sans SC',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; min-height:100vh; color:var(--bone); font-family:var(--sc);
+    background:radial-gradient(120% 80% at 50% 0%, #15151c, var(--night));
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:1.5rem; padding:3rem 2rem}
+  .ds-tag{position:fixed; top:1.1rem; left:1.3rem; font:600 .6rem/1 var(--mono);
+    letter-spacing:.24em; color:#5b5b64}
+  .ds-head{text-align:center}
+  .ds-head h1{margin:0; font:600 1.15rem/1.1 var(--sc)}
+  .ds-head p{margin:.5rem auto 0; max-width:34rem; font:.76rem/1.6 var(--sc); color:var(--muted)}
+
+  /* shared label style (mirrors the global .ui-label) */
+  .ui-label{font:500 .6rem/1 var(--mono); letter-spacing:.22em; text-transform:uppercase}
+
+  /* component stage */
+  .stage{width:min(560px,92vw); aspect-ratio:16/10;
+    background:radial-gradient(130% 100% at 50% 30%, #16161e, #060608);
+    border:1px solid var(--line); border-radius:14px; overflow:hidden; position:relative;
+    box-shadow:0 30px 80px -30px #000; display:flex; align-items:center; justify-content:center}
+  .stage::after{content:'HOVER ARROWS'; position:absolute; bottom:.9rem; left:50%;
+    transform:translateX(-50%); font:500 .55rem/1 var(--mono); letter-spacing:.3em; color:#3a3a44}
+
+  /* ── the real component ───────────────────────────────────────── */
+  .counter{position:relative; width:128px; height:128px; border-radius:999px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; color:var(--bone);
+    box-shadow:0 0 22px color-mix(in srgb, var(--accent) 35%, transparent)}
+  .counter svg.ring{position:absolute; inset:0; pointer-events:none; transform:rotate(-90deg)}
+
+  .counter .lbl{font:500 .6rem/1 var(--mono); letter-spacing:.22em;
+    text-transform:uppercase; opacity:.7}
+  .counter .num{display:block; overflow:hidden; height:1.1em; font-size:2rem;
+    font-weight:500; line-height:1; position:relative}
+  .counter .num span{display:block; animation:numIn .5s cubic-bezier(.22,1,.36,1) both}
+  @keyframes numIn{from{transform:translateY(60%);opacity:0} to{transform:translateY(0);opacity:1}}
+
+  /* arrow buttons */
+  .arw{position:absolute; top:50%; transform:translateY(-50%); padding:.5rem;
+    background:none; border:0; color:var(--bone); cursor:pointer;
+    transition:transform .7s cubic-bezier(.4,0,.25,1)}
+  .arw.left{left:-.5rem}
+  .arw.right{right:-.5rem}
+  .arw.left:hover{transform:translate(-.25rem,-50%)}
+  .arw.right:hover{transform:translate(.25rem,-50%)}
+
+  .arwMask{display:inline-block; width:1.6rem; overflow:hidden}
+  .arwRow{display:flex; width:100%; transition:transform .7s cubic-bezier(.4,0,.25,1);
+    transform:translateX(0)}
+  .arwRow>svg{flex:0 0 100%; width:100%; height:auto}
+  /* left: at rest shows 1st copy; hover slides 1st out left, 2nd in from right */
+  .arw.left:hover .arwRow{transform:translateX(-100%)}
+  /* right: at rest shows 2nd copy; hover slides back so 2nd exits right, 1st enters left */
+  .arw.right .arwRow{transform:translateX(-100%)}
+  .arw.right:hover .arwRow{transform:translateX(0)}
+
+  .specs{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center}
+  .chip{font:.62rem/1 var(--mono); letter-spacing:.04em; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:.4rem .7rem}
+  .chip b{color:var(--accent); font-weight:500}
+</style>
+</head>
+<body>
+  <div class="ds-tag">JD · ③ NAVIGATION</div>
+  <div class="ds-head">
+    <h1>ProjectCounter</h1>
+    <p>作品轮播的圆形导航——内嵌 SVG 进度环随项目推进填充,圆心竖排编号(数字翻滚切换),左右箭头悬停时整体外移 + 在窄遮罩里 swap。</p>
+  </div>
+
+  <div class="stage">
+    <div class="counter">
+      <!-- rotate(-90deg) so the arc starts at 12 o'clock -->
+      <svg class="ring" viewBox="0 0 128 128" aria-hidden="true">
+        <!-- faint full-circle track -->
+        <circle cx="64" cy="64" r="61" fill="none" stroke="currentColor"
+          stroke-opacity="0.15" stroke-width="1.5"/>
+        <!-- progress arc: ~2/9 of circumference. CIRC=2π·61≈383.3, offset=CIRC·(1−0.222)≈298 -->
+        <circle cx="64" cy="64" r="61" fill="none" stroke="currentColor"
+          stroke-opacity="0.85" stroke-width="1.5" stroke-linecap="round"
+          stroke-dasharray="383.3" stroke-dashoffset="298"
+          style="transition:stroke-dashoffset .6s ease"/>
+        <!-- decorative diagonal line (counter-rotated 90deg in this −90 space → diagonal on screen) -->
+        <line x1="89.6" y1="25.6" x2="38.4" y2="102.4" stroke="currentColor"
+          stroke-opacity="0.3" stroke-width="0.8"
+          style="transform-origin:64px 64px; transform:rotate(90deg)"/>
+      </svg>
+
+      <span class="lbl">项目</span>
+      <span class="num"><span>02</span></span>
+      <span class="lbl">编号</span>
+
+      <button class="arw left" aria-label="previous">
+        <span class="arwMask"><span class="arwRow">
+          <svg viewBox="0 0 30 17" fill="none" aria-hidden="true">
+            <path stroke="currentColor" stroke-width="1.5" d="M8.54736 16.6364L1.38827 8.26321L7.83145 0.727323"/>
+            <path stroke="currentColor" stroke-width="1.5" d="M1.38817 8.28388L30.0245 8.28387"/>
+          </svg>
+          <svg viewBox="0 0 30 17" fill="none" aria-hidden="true">
+            <path stroke="currentColor" stroke-width="1.5" d="M8.54736 16.6364L1.38827 8.26321L7.83145 0.727323"/>
+            <path stroke="currentColor" stroke-width="1.5" d="M1.38817 8.28388L30.0245 8.28387"/>
+          </svg>
+        </span></span>
+      </button>
+
+      <button class="arw right" aria-label="next">
+        <span class="arwMask"><span class="arwRow">
+          <svg viewBox="0 0 30 17" fill="none" aria-hidden="true">
+            <path stroke="currentColor" stroke-width="1.5" d="M21.7229 0.363708L28.882 8.73691L22.4388 16.2728"/>
+            <path stroke="currentColor" stroke-width="1.5" d="M28.8821 8.71619L0.245728 8.71619"/>
+          </svg>
+          <svg viewBox="0 0 30 17" fill="none" aria-hidden="true">
+            <path stroke="currentColor" stroke-width="1.5" d="M21.7229 0.363708L28.882 8.73691L22.4388 16.2728"/>
+            <path stroke="currentColor" stroke-width="1.5" d="M28.8821 8.71619L0.245728 8.71619"/>
+          </svg>
+        </span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="specs">
+    <span class="chip">dur <b>0.7s</b></span>
+    <span class="chip">accent <b>glow</b></span>
+    <span class="chip">progress <b>SVG arc</b></span>
+    <span class="chip">cap <b>round</b></span>
+  </div>
+
+<script>
+  // Re-trigger the number-roll periodically so the swap reads at a glance.
+  const num = document.querySelector('.counter .num');
+  let vals = ['02','03','04','01'], k = 0;
+  setInterval(() => {
+    k = (k + 1) % vals.length;
+    const inner = num.querySelector('span');
+    inner.style.animation = 'none';
+    inner.textContent = vals[k];
+    void inner.offsetWidth;            // force reflow to restart the keyframe
+    inner.style.animation = '';
+  }, 2200);
+</script>
+</body>
+</html>
