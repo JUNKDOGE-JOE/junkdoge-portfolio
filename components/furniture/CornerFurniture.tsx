@@ -23,7 +23,7 @@ export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'ligh
     <div className="pointer-events-none absolute inset-0 z-20" style={inkStyle}>
       <div className="pointer-events-auto absolute left-5 top-4 flex items-center gap-3">
         <Link href="/" className="text-sm font-bold tracking-[0.18em]"><LetterSwap label="J / D" /></Link>
-        <Clock />
+        <span className="hidden md:block"><Clock /></span>
       </div>
       <nav className="pointer-events-auto absolute right-5 top-4 flex items-center gap-3 ui-label">
         <Link href="/projects" className={styles.link}>{t(uiProjects)}</Link>
@@ -36,10 +36,10 @@ export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'ligh
       </nav>
       {/* Hidden on /projects to avoid collision with the "Featured NN projects" header */}
       {!hidePortfolioLabel && (
-        <span className="absolute left-5 top-1/2 -translate-y-1/2 ui-label opacity-70">portfolio 2026</span>
+        <span className="absolute left-5 top-1/2 -translate-y-1/2 hidden md:block ui-label opacity-70">portfolio 2026</span>
       )}
-      <span className="absolute right-5 top-1/2 -translate-y-1/2 ui-label opacity-70">{t(ui.scroll)}</span>
-      <span className="absolute bottom-[4.6rem] left-[12.5rem] whitespace-nowrap ui-label opacity-55">
+      <span className="absolute right-5 top-1/2 -translate-y-1/2 hidden md:block ui-label opacity-70">{t(ui.scroll)}</span>
+      <span className="absolute bottom-[4.6rem] left-[12.5rem] hidden md:block whitespace-nowrap ui-label opacity-55">
         PV · VJ · 映像创作 × 创意开发
       </span>
     </div>

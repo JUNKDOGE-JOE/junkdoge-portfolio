@@ -7,11 +7,13 @@ import { galleryFor } from '@/lib/projects'
 import { Slide } from './Slide'
 import { MouseTrail } from './MouseTrail'
 import { ProjectCounter } from './ProjectCounter'
+import { useIsMobile } from '@/lib/useIsMobile'
 import { SlideBackground } from './SlideBackground'
 import { isGalleryOpen } from './Gallery'
 
 export function CarouselRoot({ projects }: { projects: Project[] }) {
   const [index, setIndex] = useState(0)
+  const isMobile = useIsMobile()
   const lock = useRef(false)
   const lastScroll = useRef(0)
   const accum = useRef(0)
@@ -102,7 +104,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
         onPrev={() => go(-1)}
         onNext={() => go(1)}
       />
-      <MouseTrail images={trailImgs} />
+      {!isMobile && <MouseTrail images={trailImgs} />}
     </section>
   )
 }

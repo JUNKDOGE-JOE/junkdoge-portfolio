@@ -4,14 +4,11 @@ import styles from './ScrollingCircles.module.css'
 import type { Project } from '@/content/projects'
 import { useLang } from '@/lib/i18n'
 import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
+import { useIsMobile } from '@/lib/useIsMobile'
 
 // ---------------------------------------------------------------------------
 // CONFIG
 // ---------------------------------------------------------------------------
-const SIZE  = 210   // circle diameter px
-const GAP   = 56    // vertical gap between circles
-const TRACK = 150   // horizontal offset from viewport centre to each track centre (smaller = columns closer)
-
 const FRICTION         = 0.94
 const SETTLE_THRESHOLD = 0.01
 const INTRO_VELOCITY   = 90   // entry kick: fast-scrolls on mount, then friction eases it to rest
@@ -46,17 +43,25 @@ interface Props {
 // ---------------------------------------------------------------------------
 // ScrollingCircles
 //
+// Desktop: dual-track (name circles left, image circles right, opposite scroll).
+// Mobile : single centred column of image circles (TRACK=0) with the name
+//          overlaid on each — the dual track is far too wide for a phone.
+//
 // Scroll position lives in refs and is written STRAIGHT to the DOM each rAF —
 // the loop never calls setState, so React never re-renders while you scroll.
-// That (plus dropping the transform/opacity CSS transition that used to "chase"
-// each frame's new target) is what removes the jitter/flicker; React only owns
-// the static structure + text.
 // ---------------------------------------------------------------------------
 export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: Props) {
   const { t } = useLang()
+  const isMobile = useIsMobile()
+
+  // Desktop = dual vertical tracks. Mobile = two horizontal rows of image circles,
+  // brick-offset, scrolled sideways (like the reference site's phone layout).
+  const SIZE  = isMobile ? 150 : 210
+  const TRACK = isMobile ? 0   : 150   // desktop: column x-offset
+  const ROW   = 84                     // mobile: row y-offset (±ROW = two rows)
+  const STEP  = isMobile ? 92  : (210 + 56)  // mobile: horizontal spacing; desktop: SIZE+GAP
 
   const N    = projects.length
-  const STEP = SIZE + GAP
   const H    = N * STEP
 
   // Continuous scroll position (project-units, float) + velocity
@@ -69,7 +74,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
   const groupRefs = useRef<(HTMLDivElement | null)[]>([])
   const imgRefs   = useRef<(HTMLButtonElement | null)[]>([])
 
-  // Keep latest props in refs so the [N]-scoped loop never reads a stale closure
+  // Keep latest props in refs so the loop never reads a stale closure
   const pausedRef   = useRef(paused ?? false)
   const onFocalRef  = useRef(onFocal)
   const projectsRef = useRef(projects)
@@ -82,6 +87,20 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
     const apply = () => {
       const s = sRef.current
       for (let i = 0; i < N; i++) {
+        if (isMobile) {
+          // two horizontal rows, brick-offset (even row up, odd row down), scrolled sideways
+          const x = wrap((i - s) * STEP, H)
+          const y = i % 2 === 0 ? -ROW : ROW
+          const d = Math.abs(x)
+          const fs = 1 + Math.max(0, 1 - d / (STEP * 2)) * 0.18
+          const fo = 0.4 + Math.max(0, 1 - d / (STEP * 2.4)) * 0.6
+          const im = imgRefs.current[i]
+          if (im) {
+            im.style.transform = `translate3d(-50%,-50%,0) translate3d(${x}px,${y}px,0) scale(${fs})`
+            im.style.opacity = String(fo)
+          }
+          continue
+        }
         const yName = wrap((i - s) * STEP, H)   // left col rises as s grows
         const yImg  = wrap((s - i) * STEP, H)   // right col falls (opposite)
         const distName = Math.abs(yName)
@@ -108,11 +127,14 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
       if (pausedRef.current) return
       velRef.current += e.deltaY * 0.09
     }
-    const onTouchStart = (e: TouchEvent) => { touchStartRef.current = e.touches[0].clientY }
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartRef.current = isMobile ? e.touches[0].clientX : e.touches[0].clientY
+    }
     const onTouchMove = (e: TouchEvent) => {
       if (pausedRef.current) return
-      const delta = touchStartRef.current - e.touches[0].clientY
-      touchStartRef.current = e.touches[0].clientY
+      const pos = isMobile ? e.touches[0].clientX : e.touches[0].clientY
+      const delta = touchStartRef.current - pos
+      touchStartRef.current = pos
       velRef.current += delta * 0.18
     }
 
@@ -138,7 +160,6 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
 
     // Intro: start a few projects "behind" the head and fast-scroll forward, so the ring
     // eases to rest roughly on the first project instead of a random midpoint.
-    // (distance ≈ total travel of an INTRO_VELOCITY kick under this friction)
     sRef.current = -(INTRO_VELOCITY * FRICTION) / (STEP * (1 - FRICTION))
     velRef.current = INTRO_VELOCITY
     apply()                       // place circles before first paint (no flash-in)
@@ -151,18 +172,17 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
       window.removeEventListener('touchmove',  onTouchMove)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [N]) // re-init only if number of projects changes
+  }, [N, isMobile]) // re-init when project count or layout (mobile/desktop) changes
 
-  // Snapshot the live scroll position for SSR / re-render (language switch, mount):
-  // each render places circles at the CURRENT sRef, then the rAF above takes over
-  // imperatively. Reading a ref in render is fine — we never write it here.
+  // Snapshot the live scroll position for SSR / re-render.
   const s = sRef.current
+  const sizeStyle = { width: SIZE, height: SIZE }
 
   return (
     <div className={styles.stage} aria-label="Projects gallery">
       {projects.map((project, i) => {
-        const yName = wrap((i - s) * STEP, H)   // left col rises as s grows
-        const yImg  = wrap((s - i) * STEP, H)   // right col falls (opposite)
+        const yName = wrap((i - s) * STEP, H)
+        const yImg  = wrap((s - i) * STEP, H)
         const distName = Math.abs(yName)
         const distImg  = Math.abs(yImg)
         const fsName = 1 + Math.max(0, 1 - distName / (STEP * 1.5)) * 0.06
@@ -174,20 +194,52 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
         const year      = `Y.${project.year}`
         const titleText = t(project.title)
 
+        // ── Mobile: two brick-offset rows, scrolled horizontally ────────────
+        if (isMobile) {
+          const x = wrap((i - s) * STEP, H)
+          const y = i % 2 === 0 ? -ROW : ROW
+          const d = Math.abs(x)
+          const fs = 1 + Math.max(0, 1 - d / (STEP * 2)) * 0.18
+          const fo = 0.4 + Math.max(0, 1 - d / (STEP * 2.4)) * 0.6
+          return (
+            <button
+              key={`img-${project.slug}`}
+              ref={(el) => { imgRefs.current[i] = el }}
+              className={`${styles.circle} ${styles.imgCircle}`}
+              style={{
+                ...sizeStyle,
+                transform: `translate3d(-50%,-50%,0) translate3d(${x}px,${y}px,0) scale(${fs})`,
+                opacity: fo,
+                willChange: 'transform, opacity',
+              }}
+              onClick={() => onCircleClick(project)}
+              aria-label={titleText}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={project.cover} alt={titleText} style={project.type === 'dev' ? { objectPosition: 'top' } : undefined} />
+              <span className={styles.mobileLabel}>
+                <span className={styles.mlNo}>{no}</span>
+                <span className={styles.mlTitle}>{titleText}</span>
+                <span className={styles.mlYear}>{year}</span>
+              </span>
+            </button>
+          )
+        }
+
+        // ── Desktop: dual-track (name circle left, image circle right) ──────
         return [
-          // ── Left: name circle (group enables ring/disc hover) ──────────────
           <div
             key={`name-${project.slug}`}
             ref={(el) => { groupRefs.current[i] = el }}
             className={styles.textCircleGroup}
             style={{
+              ...sizeStyle,
               transform: `translate3d(-50%,-50%,0) translate3d(${-TRACK}px,${yName}px,0) scale(${fsName})`,
               opacity: foName,
               pointerEvents: 'auto',
               willChange: 'transform, opacity',
             }}
           >
-            {/* Inner disc + text — scales down on hover (⑥) */}
             <div className={styles.innerDisc}>
               <button
                 className={`${styles.circle} ${styles.textCircle}`}
@@ -201,17 +253,11 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
               </button>
             </div>
 
-            {/* Decorative spinning ring — pointer-events:none, sits over the circle (⑦ half-turn) */}
             <svg
               viewBox="0 0 100 100"
               className={styles.ringDeco}
               aria-hidden="true"
-              style={{
-                position: 'absolute',
-                inset: '-7px',           /* (224-210)/2 = 7 px extra on each side */
-                width: 'calc(100% + 14px)',
-                height: 'calc(100% + 14px)',
-              }}
+              style={{ position: 'absolute', inset: '-7px', width: 'calc(100% + 14px)', height: 'calc(100% + 14px)' }}
             >
               <circle cx={50} cy={50} r={48} fill="none" stroke="currentColor" strokeOpacity={0.3} strokeWidth={0.4} />
               {RING_DOTS.map((d, k) => (
@@ -220,12 +266,12 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
             </svg>
           </div>,
 
-          // ── Right: image circle ────────────────────────────────────────────
           <button
             key={`img-${project.slug}`}
             ref={(el) => { imgRefs.current[i] = el }}
             className={`${styles.circle} ${styles.imgCircle}`}
             style={{
+              ...sizeStyle,
               transform: `translate3d(-50%,-50%,0) translate3d(${TRACK}px,${yImg}px,0) scale(${fsImg})`,
               opacity: foImg,
               willChange: 'transform, opacity',

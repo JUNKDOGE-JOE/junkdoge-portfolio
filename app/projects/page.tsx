@@ -56,8 +56,9 @@ export default function ProjectsPage() {
             mid-left label that would collide with the "Featured NN projects" header. ── */}
       <CornerFurniture variant="projects" />
 
-      {/* ── Left-centre label: "Featured (09) projects" ── */}
-      <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-0.5"
+      {/* ── Left-centre label: "Featured (09) projects" — desktop only (collides with the
+            circle ring on phones, where the ring + on-circle names carry the page) ── */}
+      <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col gap-0.5"
            style={{ fontFamily: 'Georgia, serif' }}>
         <RevealGroup>
           <Reveal>
@@ -193,7 +194,7 @@ export default function ProjectsPage() {
       {/* Fix 4: was at top-1/2, the right circles sit at +TRACK=190px from centre;
           moving this label to top-8 clears the circle column entirely.           */}
       <div className="pointer-events-none absolute right-5 top-8 z-10
-                      flex flex-col items-end gap-1"
+                      hidden md:flex flex-col items-end gap-1"
            style={{ fontFamily: 'Georgia, serif', color: 'rgba(28,22,20,0.7)' }}>
         <RevealGroup>
           <Reveal>
@@ -213,7 +214,7 @@ export default function ProjectsPage() {
 
       {/* ── Bottom-right tagline ── */}
       <div className="pointer-events-none absolute bottom-6 right-5 z-10
-                      text-right ui-label leading-snug"
+                      hidden md:block text-right ui-label leading-snug"
            style={{ color: 'rgba(28,22,20,0.5)', maxWidth: '14rem' }}>
         <RevealGroup>
           <Reveal>

@@ -19,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Providers>{children}</Providers>
         </ViewTransitions>
         {/* 全局「装修中」提示 —— 固定顶部居中,脉动点 + 文字,不挡交互 */}
-        <div aria-hidden className="pointer-events-none fixed top-3 left-1/2 z-40 -translate-x-1/2">
+        <div aria-hidden className="pointer-events-none fixed top-14 md:top-3 left-1/2 z-40 -translate-x-1/2">
           <span
             className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-[0.62rem] tracking-[0.18em]"
             style={{
