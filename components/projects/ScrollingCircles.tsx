@@ -89,7 +89,8 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
           const row      = i % 2                       // 0 top, 1 bottom
           const rowIndex = Math.floor(i / 2)           // position within its row
           const rowCount = row === 0 ? UP : DOWN
-          const x = wrap((rowIndex - s) * STEP_M, rowCount * STEP_M)
+          const dir      = row === 0 ? -1 : 1           // rows scroll in opposite directions
+          const x = wrap((rowIndex + dir * s) * STEP_M, rowCount * STEP_M)
           const y = row === 0 ? -ROW : ROW
           const d = Math.abs(x)
           if (d < minD) { minD = d; focalI = i }
@@ -193,7 +194,8 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
           const row      = i % 2
           const rowIndex = Math.floor(i / 2)
           const rowCount = row === 0 ? UP : DOWN
-          const x = wrap((rowIndex - s) * STEP_M, rowCount * STEP_M)
+          const dir      = row === 0 ? -1 : 1           // rows scroll in opposite directions
+          const x = wrap((rowIndex + dir * s) * STEP_M, rowCount * STEP_M)
           const y = row === 0 ? -ROW : ROW
           const d = Math.abs(x)
           const fs = 1 + Math.max(0, 1 - d / (STEP_M * 1.6)) * 0.1
