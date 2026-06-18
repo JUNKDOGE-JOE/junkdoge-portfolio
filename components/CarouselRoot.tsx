@@ -105,6 +105,18 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
         onNext={() => go(1)}
       />
       {!isMobile && <MouseTrail images={trailImgs} />}
+
+      {/* Mobile: swipe-to-switch hint (desktop has the wheel + "scroll" label) */}
+      {isMobile && (
+        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+          <span
+            className="rounded-full px-3 py-1 text-[0.55rem] tracking-[0.22em]"
+            style={{ background: 'rgba(0,0,0,0.28)', color: 'rgba(255,255,255,0.82)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+          >
+            ← 滑动切换 →
+          </span>
+        </div>
+      )}
     </section>
   )
 }

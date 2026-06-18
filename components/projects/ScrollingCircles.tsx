@@ -92,7 +92,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
           const x = wrap((i - s) * STEP, H)
           const y = i % 2 === 0 ? -ROW : ROW
           const d = Math.abs(x)
-          const fs = 1 + Math.max(0, 1 - d / (STEP * 2)) * 0.18
+          const fs = 1 + Math.max(0, 1 - d / (STEP * 2)) * 0.12
           const fo = 0.4 + Math.max(0, 1 - d / (STEP * 2.4)) * 0.6
           const im = imgRefs.current[i]
           if (im) {
@@ -199,7 +199,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
           const x = wrap((i - s) * STEP, H)
           const y = i % 2 === 0 ? -ROW : ROW
           const d = Math.abs(x)
-          const fs = 1 + Math.max(0, 1 - d / (STEP * 2)) * 0.18
+          const fs = 1 + Math.max(0, 1 - d / (STEP * 2)) * 0.12
           const fo = 0.4 + Math.max(0, 1 - d / (STEP * 2.4)) * 0.6
           return (
             <button

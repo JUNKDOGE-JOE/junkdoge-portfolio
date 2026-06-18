@@ -226,6 +226,12 @@ export default function ProjectsPage() {
         </RevealGroup>
       </div>
 
+      {/* ── Mobile: horizontal-swipe hint (desktop uses the wheel + "scroll" label) ── */}
+      <div className="md:hidden pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 z-10 ui-label text-[0.58rem] tracking-[0.22em]"
+           style={{ color: 'rgba(28,22,20,0.45)' }}>
+        ← 横向滑动浏览 →
+      </div>
+
       {/* ── Gallery overlay ── */}
       {active && (
         <Gallery project={active} onClose={() => setActive(null)} />
