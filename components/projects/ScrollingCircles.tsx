@@ -12,7 +12,7 @@ const SIZE  = 210   // circle diameter px
 const GAP   = 56    // vertical gap between circles
 const TRACK = 150   // horizontal offset from viewport centre to each track centre (smaller = columns closer)
 
-const FRICTION         = 0.92
+const FRICTION         = 0.94
 const SETTLE_THRESHOLD = 0.01
 const INTRO_VELOCITY   = 90   // entry kick: fast-scrolls on mount, then friction eases it to rest
 
@@ -106,14 +106,14 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
 
     const onWheel = (e: WheelEvent) => {
       if (pausedRef.current) return
-      velRef.current += e.deltaY * 0.12
+      velRef.current += e.deltaY * 0.09
     }
     const onTouchStart = (e: TouchEvent) => { touchStartRef.current = e.touches[0].clientY }
     const onTouchMove = (e: TouchEvent) => {
       if (pausedRef.current) return
       const delta = touchStartRef.current - e.touches[0].clientY
       touchStartRef.current = e.touches[0].clientY
-      velRef.current += delta * 0.24
+      velRef.current += delta * 0.18
     }
 
     window.addEventListener('wheel',      onWheel,      { passive: true })

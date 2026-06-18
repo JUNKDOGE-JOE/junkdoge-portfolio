@@ -92,7 +92,7 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
       <button
         aria-label="previous"
         onClick={onPrev}
-        className={`absolute -left-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-500 hover:-translate-x-1 ${styles.arrowLeft}`}
+        className={`absolute -left-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-700 hover:-translate-x-1 ${styles.arrowLeft}`}
       >
         <span className={styles.arrowMask}>
           <span className={styles.arrowRow}>
@@ -110,7 +110,7 @@ export function ProjectCounter({ index, total, onPrev, onNext }: {
       <button
         aria-label="next"
         onClick={onNext}
-        className={`absolute -right-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-500 hover:translate-x-1 ${styles.arrowRight}`}
+        className={`absolute -right-2 top-1/2 -translate-y-1/2 p-2 transition-transform duration-700 hover:translate-x-1 ${styles.arrowRight}`}
       >
         <span className={styles.arrowMask}>
           <span className={styles.arrowRow}>
