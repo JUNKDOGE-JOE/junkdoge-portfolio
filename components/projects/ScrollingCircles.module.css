@@ -170,3 +170,23 @@
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Mobile: name circles are smaller (116px) — tighten padding + type so the
+   N. / title / Y. stack fits the disc. */
+@media (max-width: 767px) {
+  .textCircle {
+    padding: 0.7rem;
+  }
+  .textNo {
+    font-size: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .textYear {
+    font-size: 0.5rem;
+    margin-top: 0.4rem;
+  }
+  .textTitle {
+    font-size: 0.92rem;
+    line-height: 1.12;
+  }
+}
+
