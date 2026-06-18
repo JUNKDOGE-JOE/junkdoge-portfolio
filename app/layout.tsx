@@ -18,6 +18,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ViewTransitions>
           <Providers>{children}</Providers>
         </ViewTransitions>
+        {/* 全局「装修中」提示 —— 固定顶部居中,脉动点 + 文字,不挡交互 */}
+        <div aria-hidden className="pointer-events-none fixed top-3 left-1/2 z-40 -translate-x-1/2">
+          <span
+            className="inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-[0.62rem] tracking-[0.18em]"
+            style={{
+              background: 'rgba(18,18,22,0.55)',
+              color: 'rgba(255,255,255,0.82)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+            }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: '#fbbf24' }} />
+            装修中 · 持续完善
+          </span>
+        </div>
       </body>
     </html>
   )
