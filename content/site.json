@@ -1,0 +1,25 @@
+{
+  "about": {
+    "bio": {
+      "zh": "我是 JUNK_DOGE —— PV师 / VJ / 映像创作，同时做创意开发（after-effects-mcp 等工具）。",
+      "en": "I'm JUNK_DOGE — PV / VJ / motion artist, and a creative developer (tools like after-effects-mcp)."
+    },
+    "links": [
+      { "label": "BILIBILI", "href": "https://space.bilibili.com/73910418" },
+      { "label": "GITHUB", "href": "https://github.com/JUNKDOGE-JOE" },
+      { "label": "EMAIL", "href": "mailto:2814374544@qq.com" }
+    ]
+  },
+  "commission": {
+    "tiers": [
+      { "k": "文字PV / Lyric", "zh": "按时长与复杂度报价", "en": "Priced by length & complexity" },
+      { "k": "VJ 素材 / VJ Clips", "zh": "按场次与素材量报价", "en": "Priced by show & volume" },
+      { "k": "PV / MV", "zh": "面议", "en": "By negotiation" }
+    ],
+    "contact": "QQ 2814374544 · WeChat weixinJUNKDOGE · 2814374544@qq.com"
+  },
+  "misc": {
+    "homeTagline": "PV · VJ · 映像创作 × 创意开发",
+    "bannerText": "装修中 · 持续完善"
+  }
+}
