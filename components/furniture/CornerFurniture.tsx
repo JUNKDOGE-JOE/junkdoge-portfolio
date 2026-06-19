@@ -3,6 +3,7 @@ import { Link } from 'next-view-transitions'
 import { useLang, ui } from '@/lib/i18n'
 import { Clock } from './Clock'
 import { LetterSwap } from '@/components/LetterSwap'
+import { site } from '@/lib/site'
 import styles from './Nav.module.css'
 
 const uiProjects = { zh: '作品', en: 'PROJECTS' }
@@ -40,7 +41,7 @@ export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'ligh
       )}
       <span className="absolute right-5 top-1/2 -translate-y-1/2 hidden md:block ui-label opacity-70">{t(ui.scroll)}</span>
       <span className="absolute bottom-[4.6rem] left-[12.5rem] hidden md:block whitespace-nowrap ui-label opacity-55">
-        PV · VJ · 映像创作 × 创意开发
+        {site.misc.homeTagline}
       </span>
     </div>
   )

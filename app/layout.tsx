@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from '@/components/Providers'
 import { ViewTransitions } from 'next-view-transitions'
 import { DeviceTilt } from '@/components/DeviceTilt'
+import { site } from '@/lib/site'
 
 const noto = Noto_Sans_SC({ subsets: ['latin'], weight: ['400', '500', '700', '900'], variable: '--font-noto', preload: false })
 
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }}
           >
             <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: '#fbbf24' }} />
-            装修中 · 持续完善
+            {site.misc.bannerText}
           </span>
         </div>
         <DeviceTilt />
