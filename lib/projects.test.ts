@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { getHomeProjects, isImageSkin } from '@/lib/projects'
+import { projects } from '@/content/projects'
 import type { Project } from '@/content/projects'
 
 const mk = (slug: string, order: number, featured: boolean, type: Project['type'] = 'pv'): Project => ({
@@ -21,5 +22,20 @@ describe('isImageSkin', () => {
     expect(isImageSkin(mk('x', 1, true, 'vj'))).toBe(true)
     expect(isImageSkin(mk('x', 1, true, 'collab'))).toBe(true)
     expect(isImageSkin(mk('x', 1, true, 'dev'))).toBe(false)
+  })
+})
+
+describe('projects.json migration', () => {
+  it('loads 9 featured projects with required fields', () => {
+    expect(projects).toHaveLength(9)
+    for (const p of projects) {
+      expect(p.slug).toBeTruthy()
+      expect(p.title.zh).toBeTruthy()
+      expect(p.cover.startsWith('/covers/')).toBe(true)
+      expect(p.links).toBeDefined()
+    }
+  })
+  it('keeps fusang as order 1', () => {
+    expect(projects.find(p => p.slug === 'fusang')?.order).toBe(1)
   })
 })
