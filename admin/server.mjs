@@ -13,6 +13,10 @@ const PORT = 4000
 const app = express()
 app.use(express.json({ limit: '2mb' }))
 
+// serve existing images so the UI can show current cover/gallery thumbnails
+app.use('/covers', express.static(path.join(PUBLIC, 'covers')))
+app.use('/gallery', express.static(path.join(PUBLIC, 'gallery')))
+
 const readJson = async (f) => JSON.parse(await fs.readFile(path.join(CONTENT, f), 'utf8'))
 const writeJson = async (f, data) => fs.writeFile(path.join(CONTENT, f), JSON.stringify(data, null, 2) + '\n', 'utf8')
 
