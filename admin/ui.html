@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JUNK_DOGE · 内容后台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background:#0c0c0f; color:#e8e6e1; font-family: ui-sans-serif, system-ui, "Noto Sans SC", sans-serif }
+  input,textarea,select{ background:#17171c; border:1px solid #2a2a32; border-radius:6px; padding:.4rem .6rem; color:#e8e6e1; width:100% }
+  input[type=color]{ padding:0 }
+  label{ font-size:.7rem; letter-spacing:.04em; color:#9a9aa2; display:block; margin-bottom:.2rem }
+  .btn{ border:1px solid #3a3a44; border-radius:999px; padding:.4rem .9rem; font-size:.8rem; cursor:pointer }
+  .btn:hover{ background:#1e1e24 }
+  summary::-webkit-details-marker{ display:none }
+</style>
+</head>
+<body class="p-6">
+<div id="app" class="mx-auto max-w-5xl"></div>
+<script type="module">
+import { h, render } from 'https://esm.sh/preact@10.23.2'
+import { useState, useEffect } from 'https://esm.sh/preact@10.23.2/hooks'
+import htm from 'https://esm.sh/htm@3.1.1'
+const html = htm.bind(h)
+
+const api = {
+  load: () => fetch('/api/data').then(r => r.json()),
+  saveProjects: (p) => fetch('/api/projects', { method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(p) }),
+  saveSite: (s) => fetch('/api/site', { method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(s) }),
+  upload: (file, target) => { const fd = new FormData(); fd.append('file', file); fd.append('target', target); return fetch('/api/upload', { method:'POST', body: fd }).then(r=>r.json()) },
+}
+
+function Img({ src, target, onDone }) {
+  const [busy, setBusy] = useState(false)
+  const [bust, setBust] = useState('')
+  const pick = async (e) => {
+    const f = e.target.files[0]; if(!f) return
+    setBusy(true)
+    const r = await api.upload(f, target)
+    setBusy(false)
+    if (r && r.path) { setBust('?t=' + Date.now()); onDone(r.path) } else { alert('上传失败: ' + (r && r.error)) }
+  }
+  return html`<div class="flex items-center gap-3">
+    <div class="h-16 w-16 shrink-0 overflow-hidden rounded border border-[#2a2a32] bg-black">${src ? html`<img src=${src + bust} class="h-full w-full object-cover" />` : ''}</div>
+    <label class="btn">${busy ? '上传中…' : '换图'}<input type="file" accept="image/*" class="hidden" onChange=${pick} /></label>
+    <span class="text-xs text-[#65656e]">${target}</span>
+  </div>`
+}
+
+function ProjectRow({ p, onChange, onDelete }) {
+  const set = (path, v) => {
+    const c = structuredClone(p)
+    let o = c; const ks = path.split('.')
+    while (ks.length > 1) o = o[ks.shift()]
+    o[ks[0]] = v
+    onChange(c)
+  }
+  const galleryCount = p.type === 'dev' ? 5 : 4
+  return html`<details class="rounded-lg border border-[#26262e] p-4">
+    <summary class="cursor-pointer select-none text-sm">
+      <span class="inline-block w-10 text-[#7b61ff]">N.${String(p.order).padStart(2,'0')}</span>
+      <b>${p.title.zh || '(未命名)'}</b> <span class="text-[#65656e]">/${p.slug}</span>
+    </summary>
+    <div class="mt-4 grid grid-cols-2 gap-3">
+      <div class="col-span-2"><label>slug（英文 id，决定图片路径 /covers/&lt;slug&gt;.jpg）</label><input value=${p.slug} onInput=${e=>set('slug',e.target.value)} /></div>
+      <div><label>名字 (中)</label><input value=${p.title.zh} onInput=${e=>set('title.zh',e.target.value)} /></div>
+      <div><label>名字 (英)</label><input value=${p.title.en} onInput=${e=>set('title.en',e.target.value)} /></div>
+      <div><label>角色 (中)</label><input value=${p.role.zh} onInput=${e=>set('role.zh',e.target.value)} /></div>
+      <div><label>角色 (英)</label><input value=${p.role.en} onInput=${e=>set('role.en',e.target.value)} /></div>
+      <div class="col-span-2"><label>简介 (中)</label><textarea rows="2" value=${p.desc.zh} onInput=${e=>set('desc.zh',e.target.value)}></textarea></div>
+      <div class="col-span-2"><label>简介 (英)</label><textarea rows="2" value=${p.desc.en} onInput=${e=>set('desc.en',e.target.value)}></textarea></div>
+      <div><label>年份</label><input value=${p.year} onInput=${e=>set('year',e.target.value)} /></div>
+      <div><label>类型</label><select onChange=${e=>set('type',e.target.value)}>${['pv','vj','collab','dev'].map(t=>html`<option value=${t} selected=${p.type===t}>${t}</option>`)}</select></div>
+      <div><label>排序 order</label><input type="number" value=${p.order} onInput=${e=>set('order',Number(e.target.value))} /></div>
+      <div><label>主题色 accent</label><div class="flex gap-2"><input type="color" value=${p.accent||'#888888'} onInput=${e=>set('accent',e.target.value)} class="h-9 w-12" /><input value=${p.accent||''} onInput=${e=>set('accent',e.target.value)} /></div></div>
+      <div><label>B站链接</label><input value=${p.links.bilibili||''} onInput=${e=>set('links.bilibili',e.target.value)} /></div>
+      <div><label>GitHub 链接</label><input value=${p.links.github||''} onInput=${e=>set('links.github',e.target.value)} /></div>
+      <div class="col-span-2"><label>外链 external</label><input value=${p.links.external||''} onInput=${e=>set('links.external',e.target.value)} /></div>
+      <div class="col-span-2 mt-2"><label>封面 cover</label><${Img} src=${p.cover} target=${'covers/'+p.slug+'.jpg'} onDone=${()=>set('cover','/covers/'+p.slug+'.jpg')} /></div>
+      <div class="col-span-2"><label>画廊图（${galleryCount} 张，点开作品时展示）</label><div class="flex flex-wrap gap-3">
+        ${Array.from({length:galleryCount},(_,i)=>html`<${Img} key=${i} src=${'/gallery/'+p.slug+'/'+(i+1)+'.jpg'} target=${'gallery/'+p.slug+'/'+(i+1)+'.jpg'} onDone=${()=>{}} />`)}
+      </div></div>
+      <div class="col-span-2 mt-2"><button class="btn text-red-300 border-red-900" onClick=${()=>{ if(confirm('删除作品「'+(p.title.zh||p.slug)+'」？')) onDelete() }}>删除作品</button></div>
+    </div>
+  </details>`
+}
+
+function Field({ label, value, onInput, area }) {
+  return html`<div><label>${label}</label>${area
+    ? html`<textarea rows="3" value=${value} onInput=${onInput}></textarea>`
+    : html`<input value=${value} onInput=${onInput} />`}</div>`
+}
+
+function App() {
+  const [data, setData] = useState(null)
+  const [tab, setTab] = useState('projects')
+  const [msg, setMsg] = useState('')
+  const [err, setErr] = useState('')
+  useEffect(() => { api.load().then(setData).catch(e => setErr(String(e))) }, [])
+  if (err) return html`<p class="text-red-300">加载失败：${err}（确认 npm run admin 正在运行）</p>`
+  if (!data) return html`<p>加载中…</p>`
+
+  const s = data.site
+  const setProjects = (ps) => setData({ ...data, projects: ps })
+  const setSite = (ns) => setData({ ...data, site: ns })
+  const setAbout = (a) => setSite({ ...s, about: { ...s.about, ...a } })
+  const setComm = (c) => setSite({ ...s, commission: { ...s.commission, ...c } })
+  const setMisc = (k, v) => setSite({ ...s, misc: { ...s.misc, [k]: v } })
+
+  const save = async () => {
+    setMsg('保存中…')
+    const r1 = await api.saveProjects(data.projects)
+    const r2 = await api.saveSite(data.site)
+    if (r1.ok && r2.ok) { setMsg('已写入 — 开着 npm run dev 预览，满意后自己 git push'); setTimeout(()=>setMsg(''), 7000) }
+    else setMsg('保存出错，看终端日志')
+  }
+  const addProject = () => setProjects([...data.projects, {
+    slug: 'new-' + Date.now(), type: 'pv', featured: true, order: data.projects.length + 1, year: '2026',
+    title: { zh: '新作品', en: 'New' }, role: { zh: '', en: '' }, desc: { zh: '', en: '' },
+    cover: '', accent: '#888888', links: {},
+  }])
+
+  const tabs = [['projects','作品'],['about','关于'],['commission','委托'],['misc','杂项文案']]
+  return html`<div>
+    <header class="mb-6 flex items-center justify-between">
+      <h1 class="text-lg font-bold">JUNK_DOGE · 内容后台</h1>
+      <div class="flex items-center gap-3">${msg && html`<span class="text-xs text-green-300">${msg}</span>`}<button class="btn bg-[#1e1e24]" onClick=${save}>保存全部</button></div>
+    </header>
+    <nav class="mb-5 flex gap-2 text-sm">${tabs.map(([k,t])=>html`<button class=${'btn '+(tab===k?'bg-[#1e1e24] border-[#7b61ff]':'')} onClick=${()=>setTab(k)}>${t}</button>`)}</nav>
+
+    ${tab==='projects' && html`<div class="space-y-3">
+      <button class="btn" onClick=${addProject}>+ 新作品</button>
+      ${data.projects.map((p,i)=>html`<${ProjectRow} key=${i} p=${p}
+        onChange=${np=>{ const arr=[...data.projects]; arr[i]=np; setProjects(arr) }}
+        onDelete=${()=>setProjects(data.projects.filter((_,j)=>j!==i))} />`)}
+    </div>`}
+
+    ${tab==='about' && html`<div class="grid gap-3">
+      <${Field} label="自我介绍 (中)" area value=${s.about.bio.zh} onInput=${e=>setAbout({ bio:{ ...s.about.bio, zh:e.target.value } })} />
+      <${Field} label="自我介绍 (英)" area value=${s.about.bio.en} onInput=${e=>setAbout({ bio:{ ...s.about.bio, en:e.target.value } })} />
+      <label>社交链接（标签 + 地址；邮箱用 mailto:）</label>
+      ${s.about.links.map((l,i)=>html`<div class="flex gap-2">
+        <input class="!w-40" value=${l.label} onInput=${e=>{const links=[...s.about.links];links[i]={...l,label:e.target.value};setAbout({links})}} />
+        <input value=${l.href} onInput=${e=>{const links=[...s.about.links];links[i]={...l,href:e.target.value};setAbout({links})}} />
+        <button class="btn text-red-300" onClick=${()=>setAbout({ links: s.about.links.filter((_,j)=>j!==i) })}>×</button>
+      </div>`)}
+      <button class="btn w-max" onClick=${()=>setAbout({ links:[...s.about.links, { label:'LABEL', href:'https://' }] })}>+ 链接</button>
+    </div>`}
+
+    ${tab==='commission' && html`<div class="grid gap-3">
+      <label>服务报价（名称 / 中文报价 / 英文报价）</label>
+      ${s.commission.tiers.map((row,i)=>html`<div class="flex gap-2">
+        <input value=${row.k} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,k:e.target.value};setComm({tiers})}} />
+        <input value=${row.zh} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,zh:e.target.value};setComm({tiers})}} />
+        <input value=${row.en} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,en:e.target.value};setComm({tiers})}} />
+        <button class="btn text-red-300" onClick=${()=>setComm({ tiers: s.commission.tiers.filter((_,j)=>j!==i) })}>×</button>
+      </div>`)}
+      <button class="btn w-max" onClick=${()=>setComm({ tiers:[...s.commission.tiers, { k:'新服务', zh:'', en:'' }] })}>+ 服务</button>
+      <${Field} label="联系方式" value=${s.commission.contact} onInput=${e=>setComm({ contact:e.target.value })} />
+    </div>`}
+
+    ${tab==='misc' && html`<div class="grid gap-3">
+      <${Field} label="首页副标语" value=${s.misc.homeTagline} onInput=${e=>setMisc('homeTagline',e.target.value)} />
+      <${Field} label="顶部「装修中」提示" value=${s.misc.bannerText} onInput=${e=>setMisc('bannerText',e.target.value)} />
+    </div>`}
+  </div>`
+}
+render(html`<${App} />`, document.getElementById('app'))
+</script>
+</body>
+</html>
