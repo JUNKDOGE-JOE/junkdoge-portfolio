@@ -9,7 +9,5 @@ export function isImageSkin(p: Project): boolean {
 }
 
 export function galleryFor(p: Project): string[] {
-  // dev projects ship 5 portrait UI shots; everyone else has 4 landscape stills
-  const count = p.type === 'dev' ? 5 : 4
-  return Array.from({ length: count }, (_, i) => `/gallery/${p.slug}/${i + 1}.jpg`)
+  return p.gallery ?? []
 }

@@ -9,7 +9,7 @@ export default function Home() {
     <main>
       <Preloader />
       <CarouselRoot projects={projects} />
-      <CornerFurniture />
+      <CornerFurniture variant="home" />
     </main>
   )
 }

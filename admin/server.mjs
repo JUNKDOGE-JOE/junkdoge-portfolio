@@ -38,6 +38,7 @@ app.put('/api/projects', async (req, res) => {
 })
 
 app.put('/api/site', async (req, res) => {
+  if (typeof req.body !== 'object' || req.body === null) return res.status(400).json({ error: 'expected object' })
   await writeJson('site.json', req.body)
   res.json({ ok: true })
 })
@@ -59,6 +60,18 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
     await fs.mkdir(path.dirname(dest), { recursive: true })
     await fs.writeFile(dest, req.file.buffer)
     res.json({ ok: true, path: '/' + target })
+  } catch (e) {
+    res.status(400).json({ error: String(e.message || e) })
+  }
+})
+
+// delete an image under public/covers or public/gallery
+app.delete('/api/image', async (req, res) => {
+  try {
+    const target = String(req.query.target || '')
+    if (!/^(covers|gallery)\//.test(target)) return res.status(400).json({ error: 'bad target' })
+    await fs.rm(safePublic(target), { force: true })
+    res.json({ ok: true })
   } catch (e) {
     res.status(400).json({ error: String(e.message || e) })
   }

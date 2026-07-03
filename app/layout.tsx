@@ -9,8 +9,8 @@ import { site } from '@/lib/site'
 const noto = Noto_Sans_SC({ subsets: ['latin'], weight: ['400', '500', '700', '900'], variable: '--font-noto', preload: false })
 
 export const metadata: Metadata = {
-  title: 'JUNK_DOGE — 映像创作 × 创意开发',
-  description: 'PV / VJ / 映像创作 and creative development by JUNK_DOGE.',
+  title: 'JUNK_DOGE — 文字 × 映像 × 代码',
+  description: 'JUNK_DOGE 的个人主页：PV / VJ / 映像创作与创意开发。Type, motion and code — PV, VJ visuals and creative tools by JUNK_DOGE.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {site.misc.bannerText}
           </span>
         </div>
+        <div aria-hidden className="grain-overlay" />
         <DeviceTilt />
       </body>
     </html>

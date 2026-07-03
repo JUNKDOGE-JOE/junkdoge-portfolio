@@ -17,6 +17,53 @@ body { background: var(--night); color: var(--paper-text); }
 .ui-label { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; }
 .display-italic { font-style: italic; }
 
+/* Text selection picks up the current project accent (falls back to cyan) */
+::selection {
+  background: color-mix(in srgb, var(--accent, var(--cyan)) 70%, transparent);
+  color: #fff;
+}
+
+/* Keyboard focus ring — visible on both skins without hijacking mouse clicks */
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent, var(--cyan)) 80%, white);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Film-grain overlay: a faint animated SVG noise layer over everything.
+   Gives the flat gradients a subtle print/film texture. */
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-shift 0.9s steps(4) infinite;
+}
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 1.5%); }
+  50% { transform: translate(1.5%, -2%); }
+  75% { transform: translate(-1%, -1%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Slow-spinning circular label (gallery affordance ring on the home slide) */
+.ring-spin {
+  animation: ring-spin 28s linear infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes ring-spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

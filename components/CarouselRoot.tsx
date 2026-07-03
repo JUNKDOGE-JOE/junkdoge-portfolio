@@ -8,11 +8,14 @@ import { Slide } from './Slide'
 import { MouseTrail } from './MouseTrail'
 import { ProjectCounter } from './ProjectCounter'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { isImageSkin } from '@/lib/projects'
 import { SlideBackground } from './SlideBackground'
 import { isGalleryOpen } from './Gallery'
+import { sfxSlide } from '@/lib/sound'
 
 export function CarouselRoot({ projects }: { projects: Project[] }) {
   const [index, setIndex] = useState(0)
+  const current = projects[index]
   const isMobile = useIsMobile()
   const lock = useRef(false)
   const lastScroll = useRef(0)
@@ -20,11 +23,13 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
   const dragX = useRef<number | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const go = useCallback((dir: 1 | -1) => {
+    sfxSlide(dir)
     setIndex((i) => (dir === 1 ? nextIndex(i, projects.length) : prevIndex(i, projects.length)))
   }, [projects.length])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (isGalleryOpen()) return
       if (e.key === 'ArrowRight') go(1)
       if (e.key === 'ArrowLeft') go(-1)
     }
@@ -64,6 +69,14 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
     return () => window.removeEventListener('mousemove', onMouseMove)
   }, [isMobile])
 
+  // Fixed UI (corner nav, counter) lives outside the slide's own colour scope —
+  // publish the skin-appropriate ink so it stays legible on the light dev skin.
+  useEffect(() => {
+    const ink = isImageSkin(current) ? 'var(--paper-text)' : 'var(--ink)'
+    document.documentElement.style.setProperty('--ui-ink', ink)
+    return () => { document.documentElement.style.removeProperty('--ui-ink') }
+  }, [current])
+
   const onPointerDown = (e: React.PointerEvent) => { dragX.current = e.clientX }
   const onPointerUp = (e: React.PointerEvent) => {
     if (dragX.current === null) return
@@ -72,14 +85,18 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
     if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1)
   }
 
-  const current = projects[index]
   const trailImgs = galleryFor(current).length ? galleryFor(current) : [current.cover]
   return (
     <section
       ref={sectionRef}
       aria-roledescription="carousel"
       className="relative h-screen w-screen touch-pan-y overflow-hidden"
-      style={{ '--accent': current.accent ?? '#2b2b30', ...(isMobile ? {} : { '--mx': '0.5', '--my': '0.5' }) } as React.CSSProperties}
+      style={{
+        '--accent': current.accent ?? '#2b2b30',
+        color: 'var(--ui-ink, var(--paper-text))',
+        transition: 'color 0.6s ease',
+        ...(isMobile ? {} : { '--mx': '0.5', '--my': '0.5' }),
+      } as React.CSSProperties}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
     >

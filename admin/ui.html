@@ -3,23 +3,160 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>JUNK_DOGE · 内容后台</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>J / D · 内容控制台</title>
 <style>
-  body { background:#0c0c0f; color:#e8e6e1; font-family: ui-sans-serif, system-ui, "Noto Sans SC", sans-serif }
-  input,textarea,select{ background:#17171c; border:1px solid #2a2a32; border-radius:6px; padding:.4rem .6rem; color:#e8e6e1; width:100% }
-  input[type=color]{ padding:0 }
-  label{ font-size:.7rem; letter-spacing:.04em; color:#9a9aa2; display:block; margin-bottom:.2rem }
-  .btn{ border:1px solid #3a3a44; border-radius:999px; padding:.4rem .9rem; font-size:.8rem; cursor:pointer }
-  .btn:hover{ background:#1e1e24 }
-  summary::-webkit-details-marker{ display:none }
+  :root {
+    --bg: #08080d;
+    --panel: #101017;
+    --panel-2: #16161f;
+    --line: #23232e;
+    --line-soft: #1b1b24;
+    --text: #ece9e2;
+    --dim: #8f8f9a;
+    --faint: #5d5d68;
+    --accent: #7b61ff;
+    --green: #4ade80;
+    --red: #f87171;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: ui-sans-serif, system-ui, "Noto Sans SC", sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  body::after { /* faint grain, same trick as the site */
+    content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .04; z-index: 99;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  #app { max-width: 60rem; margin: 0 auto; padding: 0 1.5rem 5rem; }
+
+  .kicker { font-family: var(--mono); font-size: .64rem; letter-spacing: .3em; text-transform: uppercase; color: var(--faint); }
+
+  header.bar {
+    position: sticky; top: 0; z-index: 10; margin: 0 -1.5rem; padding: .9rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  header.bar h1 { margin: 0; font-size: .95rem; font-weight: 700; letter-spacing: .14em; }
+  header.bar h1 em { font-style: italic; color: var(--accent); }
+
+  .dirty-dot { display: inline-block; width: .45rem; height: .45rem; border-radius: 999px; background: #fbbf24; margin-left: .5rem; vertical-align: .1em; }
+
+  nav.tabs { display: flex; gap: .4rem; margin: 1.4rem 0 1.6rem; flex-wrap: wrap; }
+  nav.tabs button {
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase;
+    background: none; border: 1px solid var(--line); color: var(--dim);
+    border-radius: 999px; padding: .42rem 1rem; cursor: pointer; transition: all .18s ease;
+  }
+  nav.tabs button:hover { color: var(--text); border-color: var(--dim); }
+  nav.tabs button.on { color: var(--text); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+
+  label { display: block; margin-bottom: .3rem; font-family: var(--mono); font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+  input, textarea, select {
+    width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: .5rem .7rem; color: var(--text); font: inherit; font-size: .85rem;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  input[type=color] { padding: .15rem; height: 2.3rem; width: 3rem; cursor: pointer; }
+  textarea { resize: vertical; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: .45rem;
+    background: var(--panel); border: 1px solid var(--line); color: var(--text);
+    border-radius: 999px; padding: .45rem 1rem; font-size: .78rem; cursor: pointer;
+    transition: all .18s ease; white-space: nowrap;
+  }
+  .btn:hover { border-color: var(--dim); background: var(--panel-2); }
+  .btn.primary { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, var(--panel)); }
+  .btn.primary:hover { background: color-mix(in srgb, var(--accent) 30%, var(--panel)); }
+  .btn.danger { color: var(--red); border-color: color-mix(in srgb, var(--red) 35%, var(--line)); }
+  .btn.danger:hover { background: color-mix(in srgb, var(--red) 10%, var(--panel)); }
+  .btn.ghost { border-color: transparent; color: var(--dim); padding: .3rem .5rem; }
+  .btn.ghost:hover { color: var(--text); background: var(--panel-2); }
+
+  .card {
+    border: 1px solid var(--line-soft); border-radius: 12px; background: var(--panel);
+    overflow: hidden; transition: border-color .18s ease;
+  }
+  .card[open], .card:hover { border-color: var(--line); }
+  .card > summary {
+    list-style: none; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: .9rem; padding: .75rem .9rem;
+  }
+  .card > summary::-webkit-details-marker { display: none; }
+  .card .thumb {
+    width: 3.4rem; height: 2.1rem; border-radius: 6px; object-fit: cover;
+    background: #000; border: 1px solid var(--line); flex: none;
+  }
+  .card .no { font-family: var(--mono); font-size: .66rem; letter-spacing: .1em; color: var(--dim); flex: none; width: 2.4rem; }
+  .card .stripe { width: .28rem; align-self: stretch; border-radius: 99px; flex: none; }
+  .card .t { font-weight: 600; }
+  .card .slug { color: var(--faint); font-family: var(--mono); font-size: .72rem; }
+  .card .type-badge {
+    margin-left: auto; font-family: var(--mono); font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: .12rem .55rem; flex: none;
+  }
+  .card .body { padding: .4rem 1rem 1.1rem; border-top: 1px solid var(--line-soft); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem .9rem; margin-top: .9rem; }
+  .grid2 .full { grid-column: 1 / -1; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+
+  .imgrow { display: flex; align-items: center; gap: .8rem; }
+  .imgrow .pv { height: 4rem; width: 4rem; flex: none; overflow: hidden; border-radius: 8px; border: 1px solid var(--line); background: #000; }
+  .imgrow .pv img { height: 100%; width: 100%; object-fit: cover; }
+  .imgrow .path { font-family: var(--mono); font-size: .66rem; color: var(--faint); }
+
+  .gal { display: flex; flex-wrap: wrap; gap: .7rem; }
+  .gal .cell { position: relative; width: 6.4rem; }
+  .gal .cell .pic { aspect-ratio: 16/10; width: 100%; overflow: hidden; border-radius: 8px; border: 1px solid var(--line); background: #000; }
+  .gal .cell .pic img { height: 100%; width: 100%; object-fit: cover; }
+  .gal .cell .rm {
+    position: absolute; top: -.45rem; right: -.45rem; width: 1.35rem; height: 1.35rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 999px; border: 1px solid var(--line); background: var(--panel-2);
+    color: var(--red); font-size: .8rem; cursor: pointer; line-height: 1;
+    opacity: 0; transition: opacity .15s ease;
+  }
+  .gal .cell:hover .rm { opacity: 1; }
+  .gal .add {
+    aspect-ratio: 16/10; width: 6.4rem; display: flex; align-items: center; justify-content: center;
+    border: 1px dashed var(--line); border-radius: 8px; color: var(--dim); cursor: pointer;
+    font-size: 1.1rem; transition: all .15s ease;
+  }
+  .gal .add:hover { border-color: var(--accent); color: var(--text); }
+  .gal .idx { position: absolute; left: .3rem; top: .25rem; font-family: var(--mono); font-size: .58rem; color: #fff; text-shadow: 0 0 4px #000; }
+
+  .row { display: flex; gap: .5rem; align-items: center; }
+  .section { display: grid; gap: 1rem; }
+  .hint { font-size: .74rem; color: var(--faint); margin: -0.4rem 0 0; }
+
+  #toast {
+    position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%) translateY(150%);
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 999px; padding: .55rem 1.2rem; font-size: .8rem; z-index: 100;
+    transition: transform .25s ease; pointer-events: none; white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.ok { border-color: color-mix(in srgb, var(--green) 40%, var(--line)); }
+  #toast.bad { border-color: color-mix(in srgb, var(--red) 45%, var(--line)); }
+
+  .loading { padding: 4rem 0; text-align: center; color: var(--faint); font-family: var(--mono); font-size: .75rem; letter-spacing: .2em; }
 </style>
 </head>
-<body class="p-6">
-<div id="app" class="mx-auto max-w-5xl"></div>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
 <script type="module">
 import { h, render } from 'https://esm.sh/preact@10.23.2'
-import { useState, useEffect } from 'https://esm.sh/preact@10.23.2/hooks'
+import { useState, useEffect, useRef } from 'https://esm.sh/preact@10.23.2/hooks'
 import htm from 'https://esm.sh/htm@3.1.1'
 const html = htm.bind(h)
 
@@ -28,26 +165,65 @@ const api = {
   saveProjects: (p) => fetch('/api/projects', { method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(p) }),
   saveSite: (s) => fetch('/api/site', { method:'PUT', headers:{'content-type':'application/json'}, body: JSON.stringify(s) }),
   upload: (file, target) => { const fd = new FormData(); fd.append('file', file); fd.append('target', target); return fetch('/api/upload', { method:'POST', body: fd }).then(r=>r.json()) },
+  removeImage: (target) => fetch('/api/image?target=' + encodeURIComponent(target.replace(/^\/+/, '')), { method:'DELETE' }).then(r=>r.json()),
+}
+
+let toastTimer
+function toast(text, kind = 'ok') {
+  const el = document.getElementById('toast')
+  el.textContent = text
+  el.className = 'show ' + kind
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => { el.className = '' }, 3200)
 }
 
 function Img({ src, target, onDone }) {
   const [busy, setBusy] = useState(false)
   const [bust, setBust] = useState('')
   const pick = async (e) => {
-    const f = e.target.files[0]; if(!f) return
+    const f = e.target.files[0]; if (!f) return
     setBusy(true)
-    const r = await api.upload(f, target)
+    const r = await api.upload(f, target).catch(err => ({ error: String(err) }))
     setBusy(false)
-    if (r && r.path) { setBust('?t=' + Date.now()); onDone(r.path) } else { alert('上传失败: ' + (r && r.error)) }
+    if (r && r.path) { setBust('?t=' + Date.now()); onDone(r.path); toast('图片已上传 ' + target) }
+    else toast('上传失败：' + (r && r.error), 'bad')
   }
-  return html`<div class="flex items-center gap-3">
-    <div class="h-16 w-16 shrink-0 overflow-hidden rounded border border-[#2a2a32] bg-black">${src ? html`<img src=${src + bust} class="h-full w-full object-cover" />` : ''}</div>
-    <label class="btn">${busy ? '上传中…' : '换图'}<input type="file" accept="image/*" class="hidden" onChange=${pick} /></label>
-    <span class="text-xs text-[#65656e]">${target}</span>
+  return html`<div class="imgrow">
+    <div class="pv">${src ? html`<img src=${src + bust} />` : ''}</div>
+    <label class="btn" style="margin:0">${busy ? '上传中…' : '换图'}<input type="file" accept="image/*" style="display:none" onChange=${pick} /></label>
+    <span class="path">${target}</span>
   </div>`
 }
 
-function ProjectRow({ p, onChange, onDelete }) {
+function GalleryEditor({ p, onChange }) {
+  const [busy, setBusy] = useState(false)
+  const gallery = p.gallery || []
+  const add = async (e) => {
+    const f = e.target.files[0]; e.target.value = ''
+    if (!f) return
+    setBusy(true)
+    const ext = (f.name.match(/\.(jpe?g|png|webp)$/i) || ['.jpg'])[0].toLowerCase()
+    const r = await api.upload(f, 'gallery/' + p.slug + '/' + Date.now() + ext).catch(err => ({ error: String(err) }))
+    setBusy(false)
+    if (r && r.path) onChange({ ...structuredClone(p), gallery: [...gallery, r.path] }, { persist: true })
+    else toast('上传失败：' + (r && r.error), 'bad')
+  }
+  const remove = async (i) => {
+    const src = gallery[i]
+    onChange({ ...structuredClone(p), gallery: gallery.filter((_, j) => j !== i) }, { persist: true })
+    await api.removeImage(src).catch(() => {})
+  }
+  return html`<div class="gal">
+    ${gallery.map((src, i) => html`<div class="cell" key=${src}>
+      <div class="pic"><img src=${src} loading="lazy" /></div>
+      <span class="idx">${String(i + 1).padStart(2, '0')}</span>
+      <button class="rm" title="删除这张" onClick=${() => remove(i)}>×</button>
+    </div>`)}
+    <label class="add" title="添加图片">${busy ? '…' : '+'}<input type="file" accept="image/*" style="display:none" onChange=${add} /></label>
+  </div>`
+}
+
+function ProjectRow({ p, onChange, onDelete, onMove, isFirst, isLast }) {
   const set = (path, v) => {
     const c = structuredClone(p)
     let o = c; const ks = path.split('.')
@@ -55,32 +231,40 @@ function ProjectRow({ p, onChange, onDelete }) {
     o[ks[0]] = v
     onChange(c)
   }
-  const galleryCount = p.type === 'dev' ? 5 : 4
-  return html`<details class="rounded-lg border border-[#26262e] p-4">
-    <summary class="cursor-pointer select-none text-sm">
-      <span class="inline-block w-10 text-[#7b61ff]">N.${String(p.order).padStart(2,'0')}</span>
-      <b>${p.title.zh || '(未命名)'}</b> <span class="text-[#65656e]">/${p.slug}</span>
+  return html`<details class="card">
+    <summary>
+      <span class="stripe" style=${'background:' + (p.accent || '#444')}></span>
+      <span class="no">${String(p.order).padStart(2, '0')}</span>
+      ${p.cover ? html`<img class="thumb" src=${p.cover} />` : html`<span class="thumb"></span>`}
+      <span><span class="t">${p.title.zh || '(未命名)'}</span> <span class="slug">/${p.slug}</span></span>
+      <span class="type-badge">${p.type} · ${p.year}</span>
+      <span class="row" style="flex:none" onClick=${e => e.preventDefault()}>
+        <button class="btn ghost" title="上移" disabled=${isFirst} onClick=${() => onMove(-1)}>↑</button>
+        <button class="btn ghost" title="下移" disabled=${isLast} onClick=${() => onMove(1)}>↓</button>
+      </span>
     </summary>
-    <div class="mt-4 grid grid-cols-2 gap-3">
-      <div class="col-span-2"><label>slug（英文 id，决定图片路径 /covers/&lt;slug&gt;.jpg）</label><input value=${p.slug} onInput=${e=>set('slug',e.target.value)} /></div>
-      <div><label>名字 (中)</label><input value=${p.title.zh} onInput=${e=>set('title.zh',e.target.value)} /></div>
-      <div><label>名字 (英)</label><input value=${p.title.en} onInput=${e=>set('title.en',e.target.value)} /></div>
-      <div><label>角色 (中)</label><input value=${p.role.zh} onInput=${e=>set('role.zh',e.target.value)} /></div>
-      <div><label>角色 (英)</label><input value=${p.role.en} onInput=${e=>set('role.en',e.target.value)} /></div>
-      <div class="col-span-2"><label>简介 (中)</label><textarea rows="2" value=${p.desc.zh} onInput=${e=>set('desc.zh',e.target.value)}></textarea></div>
-      <div class="col-span-2"><label>简介 (英)</label><textarea rows="2" value=${p.desc.en} onInput=${e=>set('desc.en',e.target.value)}></textarea></div>
-      <div><label>年份</label><input value=${p.year} onInput=${e=>set('year',e.target.value)} /></div>
-      <div><label>类型</label><select onChange=${e=>set('type',e.target.value)}>${['pv','vj','collab','dev'].map(t=>html`<option value=${t} selected=${p.type===t}>${t}</option>`)}</select></div>
-      <div><label>排序 order</label><input type="number" value=${p.order} onInput=${e=>set('order',Number(e.target.value))} /></div>
-      <div><label>主题色 accent</label><div class="flex gap-2"><input type="color" value=${p.accent||'#888888'} onInput=${e=>set('accent',e.target.value)} class="h-9 w-12" /><input value=${p.accent||''} onInput=${e=>set('accent',e.target.value)} /></div></div>
-      <div><label>B站链接</label><input value=${p.links.bilibili||''} onInput=${e=>set('links.bilibili',e.target.value)} /></div>
-      <div><label>GitHub 链接</label><input value=${p.links.github||''} onInput=${e=>set('links.github',e.target.value)} /></div>
-      <div class="col-span-2"><label>外链 external</label><input value=${p.links.external||''} onInput=${e=>set('links.external',e.target.value)} /></div>
-      <div class="col-span-2 mt-2"><label>封面 cover</label><${Img} src=${p.cover} target=${'covers/'+p.slug+'.jpg'} onDone=${()=>set('cover','/covers/'+p.slug+'.jpg')} /></div>
-      <div class="col-span-2"><label>画廊图（${galleryCount} 张，点开作品时展示）</label><div class="flex flex-wrap gap-3">
-        ${Array.from({length:galleryCount},(_,i)=>html`<${Img} key=${i} src=${'/gallery/'+p.slug+'/'+(i+1)+'.jpg'} target=${'gallery/'+p.slug+'/'+(i+1)+'.jpg'} onDone=${()=>{}} />`)}
-      </div></div>
-      <div class="col-span-2 mt-2"><button class="btn text-red-300 border-red-900" onClick=${()=>{ if(confirm('删除作品「'+(p.title.zh||p.slug)+'」？')) onDelete() }}>删除作品</button></div>
+    <div class="body">
+      <div class="grid2">
+        <div class="full"><label>slug（英文 id，决定图片路径 /covers/${'<'}slug${'>'}.jpg）</label><input value=${p.slug} onInput=${e=>set('slug',e.target.value)} /></div>
+        <div><label>名字 · 中</label><input value=${p.title.zh} onInput=${e=>set('title.zh',e.target.value)} /></div>
+        <div><label>名字 · EN</label><input value=${p.title.en} onInput=${e=>set('title.en',e.target.value)} /></div>
+        <div><label>角色 · 中</label><input value=${p.role.zh} onInput=${e=>set('role.zh',e.target.value)} /></div>
+        <div><label>角色 · EN</label><input value=${p.role.en} onInput=${e=>set('role.en',e.target.value)} /></div>
+        <div class="full"><label>简介 · 中</label><textarea rows="2" value=${p.desc.zh} onInput=${e=>set('desc.zh',e.target.value)}></textarea></div>
+        <div class="full"><label>简介 · EN</label><textarea rows="2" value=${p.desc.en} onInput=${e=>set('desc.en',e.target.value)}></textarea></div>
+        <div><label>年份</label><input value=${p.year} onInput=${e=>set('year',e.target.value)} /></div>
+        <div><label>类型</label><select onChange=${e=>set('type',e.target.value)}>${['pv','vj','collab','dev'].map(t=>html`<option value=${t} selected=${p.type===t}>${t}</option>`)}</select></div>
+        <div><label>排序 order</label><input type="number" value=${p.order} onInput=${e=>set('order',Number(e.target.value))} /></div>
+        <div><label>主题色 accent</label><div class="row"><input type="color" value=${p.accent||'#888888'} onInput=${e=>set('accent',e.target.value)} style="width:3rem;flex:none" /><input value=${p.accent||''} onInput=${e=>set('accent',e.target.value)} /></div></div>
+        <div><label>B站链接</label><input value=${p.links.bilibili||''} onInput=${e=>set('links.bilibili',e.target.value)} /></div>
+        <div><label>GitHub 链接</label><input value=${p.links.github||''} onInput=${e=>set('links.github',e.target.value)} /></div>
+        <div class="full"><label>外链 external</label><input value=${p.links.external||''} onInput=${e=>set('links.external',e.target.value)} /></div>
+        <div class="full"><label>封面 cover</label><${Img} src=${p.cover} target=${'covers/'+p.slug+'.jpg'} onDone=${()=>set('cover','/covers/'+p.slug+'.jpg')} /></div>
+        <div class="full"><label>画廊图（${(p.gallery||[]).length} 张 · 增删即时生效并自动保存）</label>
+          <${GalleryEditor} p=${p} onChange=${onChange} />
+        </div>
+        <div class="full"><button class="btn danger" onClick=${()=>{ if(confirm('删除作品「'+(p.title.zh||p.slug)+'」？')) onDelete() }}>删除作品</button></div>
+      </div>
     </div>
   </details>`
 }
@@ -94,74 +278,124 @@ function Field({ label, value, onInput, area }) {
 function App() {
   const [data, setData] = useState(null)
   const [tab, setTab] = useState('projects')
-  const [msg, setMsg] = useState('')
   const [err, setErr] = useState('')
+  const [dirty, setDirty] = useState(false)
+  const dataRef = useRef(null)
+  dataRef.current = data
+
   useEffect(() => { api.load().then(setData).catch(e => setErr(String(e))) }, [])
-  if (err) return html`<p class="text-red-300">加载失败：${err}（确认 npm run admin 正在运行）</p>`
-  if (!data) return html`<p>加载中…</p>`
+
+  // warn before closing with unsaved edits
+  useEffect(() => {
+    const onUnload = (e) => { if (dirty) { e.preventDefault(); e.returnValue = '' } }
+    window.addEventListener('beforeunload', onUnload)
+    return () => window.removeEventListener('beforeunload', onUnload)
+  }, [dirty])
+
+  const saveAll = async (d, quiet) => {
+    const [r1, r2] = await Promise.all([api.saveProjects(d.projects), api.saveSite(d.site)])
+    if (r1.ok && r2.ok) { setDirty(false); toast(quiet ? '已保存' : '已写入 content/ — npm run dev 预览，满意后 git push') }
+    else toast('保存出错，看终端日志', 'bad')
+  }
+  const save = () => { if (dataRef.current) saveAll(dataRef.current) }
+
+  // Ctrl/Cmd+S saves
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  if (err) return html`<p class="loading">加载失败：${err}（确认 npm run admin 正在运行）</p>`
+  if (!data) return html`<p class="loading">LOADING…</p>`
 
   const s = data.site
-  const setProjects = (ps) => setData({ ...data, projects: ps })
-  const setSite = (ns) => setData({ ...data, site: ns })
+  const mutate = (next) => { setData(next); setDirty(true) }
+  const setProjects = (ps) => mutate({ ...data, projects: ps })
+  const setSite = (ns) => mutate({ ...data, site: ns })
   const setAbout = (a) => setSite({ ...s, about: { ...s.about, ...a } })
   const setComm = (c) => setSite({ ...s, commission: { ...s.commission, ...c } })
   const setMisc = (k, v) => setSite({ ...s, misc: { ...s.misc, [k]: v } })
 
-  const save = async () => {
-    setMsg('保存中…')
-    const r1 = await api.saveProjects(data.projects)
-    const r2 = await api.saveSite(data.site)
-    if (r1.ok && r2.ok) { setMsg('已写入 — 开着 npm run dev 预览，满意后自己 git push'); setTimeout(()=>setMsg(''), 7000) }
-    else setMsg('保存出错，看终端日志')
-  }
   const addProject = () => setProjects([...data.projects, {
-    slug: 'new-' + Date.now(), type: 'pv', featured: true, order: data.projects.length + 1, year: '2026',
+    slug: 'new-' + Date.now(), type: 'pv', featured: true, order: data.projects.length + 1, year: String(new Date().getFullYear()),
     title: { zh: '新作品', en: 'New' }, role: { zh: '', en: '' }, desc: { zh: '', en: '' },
-    cover: '', accent: '#888888', links: {},
+    cover: '', accent: '#888888', gallery: [], links: {},
   }])
+
+  const moveProject = (i, dir) => {
+    const j = i + dir
+    if (j < 0 || j >= data.projects.length) return
+    const arr = [...data.projects]
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    // keep the order field in sync with the visual position
+    setProjects(arr.map((p, k) => ({ ...p, order: k + 1 })))
+  }
 
   const tabs = [['projects','作品'],['about','关于'],['commission','委托'],['misc','杂项文案']]
   return html`<div>
-    <header class="mb-6 flex items-center justify-between">
-      <h1 class="text-lg font-bold">JUNK_DOGE · 内容后台</h1>
-      <div class="flex items-center gap-3">${msg && html`<span class="text-xs text-green-300">${msg}</span>`}<button class="btn bg-[#1e1e24]" onClick=${save}>保存全部</button></div>
+    <header class="bar">
+      <div>
+        <div class="kicker">J / D — CONTENT CONSOLE</div>
+        <h1><em>内容控制台</em>${dirty && html`<span class="dirty-dot" title="有未保存的修改"></span>`}</h1>
+      </div>
+      <div class="row">
+        <span class="kicker" style="letter-spacing:.1em">${dirty ? 'UNSAVED' : 'SYNCED'} · CTRL+S</span>
+        <button class="btn primary" onClick=${save}>保存全部</button>
+      </div>
     </header>
-    <nav class="mb-5 flex gap-2 text-sm">${tabs.map(([k,t])=>html`<button class=${'btn '+(tab===k?'bg-[#1e1e24] border-[#7b61ff]':'')} onClick=${()=>setTab(k)}>${t}</button>`)}</nav>
 
-    ${tab==='projects' && html`<div class="space-y-3">
-      <button class="btn" onClick=${addProject}>+ 新作品</button>
-      ${data.projects.map((p,i)=>html`<${ProjectRow} key=${i} p=${p}
-        onChange=${np=>{ const arr=[...data.projects]; arr[i]=np; setProjects(arr) }}
+    <nav class="tabs">${tabs.map(([k,t])=>html`<button class=${tab===k?'on':''} onClick=${()=>setTab(k)}>${t}</button>`)}</nav>
+
+    ${tab==='projects' && html`<div class="section">
+      ${data.projects.map((p,i)=>html`<${ProjectRow} key=${p.slug} p=${p}
+        isFirst=${i===0} isLast=${i===data.projects.length-1}
+        onMove=${dir=>moveProject(i,dir)}
+        onChange=${(np, opts)=>{ const arr=[...data.projects]; arr[i]=np; const next={ ...data, projects: arr }; mutate(next); if (opts && opts.persist) saveAll(next, true) }}
         onDelete=${()=>setProjects(data.projects.filter((_,j)=>j!==i))} />`)}
+      <button class="btn" style="justify-self:start" onClick=${addProject}>+ 新作品</button>
     </div>`}
 
-    ${tab==='about' && html`<div class="grid gap-3">
-      <${Field} label="自我介绍 (中)" area value=${s.about.bio.zh} onInput=${e=>setAbout({ bio:{ ...s.about.bio, zh:e.target.value } })} />
-      <${Field} label="自我介绍 (英)" area value=${s.about.bio.en} onInput=${e=>setAbout({ bio:{ ...s.about.bio, en:e.target.value } })} />
-      <label>社交链接（标签 + 地址；邮箱用 mailto:）</label>
-      ${s.about.links.map((l,i)=>html`<div class="flex gap-2">
-        <input class="!w-40" value=${l.label} onInput=${e=>{const links=[...s.about.links];links[i]={...l,label:e.target.value};setAbout({links})}} />
-        <input value=${l.href} onInput=${e=>{const links=[...s.about.links];links[i]={...l,href:e.target.value};setAbout({links})}} />
-        <button class="btn text-red-300" onClick=${()=>setAbout({ links: s.about.links.filter((_,j)=>j!==i) })}>×</button>
-      </div>`)}
-      <button class="btn w-max" onClick=${()=>setAbout({ links:[...s.about.links, { label:'LABEL', href:'https://' }] })}>+ 链接</button>
+    ${tab==='about' && html`<div class="section">
+      <${Field} label="自我介绍 · 中" area value=${s.about.bio.zh} onInput=${e=>setAbout({ bio:{ ...s.about.bio, zh:e.target.value } })} />
+      <${Field} label="自我介绍 · EN" area value=${s.about.bio.en} onInput=${e=>setAbout({ bio:{ ...s.about.bio, en:e.target.value } })} />
+      <div>
+        <label>社交链接（标签 + 地址；邮箱用 mailto:）</label>
+        <div class="section" style="gap:.5rem">
+          ${s.about.links.map((l,i)=>html`<div class="row">
+            <input style="width:11rem;flex:none" value=${l.label} onInput=${e=>{const links=[...s.about.links];links[i]={...l,label:e.target.value};setAbout({links})}} />
+            <input value=${l.href} onInput=${e=>{const links=[...s.about.links];links[i]={...l,href:e.target.value};setAbout({links})}} />
+            <button class="btn danger" onClick=${()=>setAbout({ links: s.about.links.filter((_,j)=>j!==i) })}>×</button>
+          </div>`)}
+        </div>
+      </div>
+      <button class="btn" style="justify-self:start" onClick=${()=>setAbout({ links:[...s.about.links, { label:'LABEL', href:'https://' }] })}>+ 链接</button>
     </div>`}
 
-    ${tab==='commission' && html`<div class="grid gap-3">
-      <label>服务报价（名称 / 中文报价 / 英文报价）</label>
-      ${s.commission.tiers.map((row,i)=>html`<div class="flex gap-2">
-        <input value=${row.k} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,k:e.target.value};setComm({tiers})}} />
-        <input value=${row.zh} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,zh:e.target.value};setComm({tiers})}} />
-        <input value=${row.en} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,en:e.target.value};setComm({tiers})}} />
-        <button class="btn text-red-300" onClick=${()=>setComm({ tiers: s.commission.tiers.filter((_,j)=>j!==i) })}>×</button>
-      </div>`)}
-      <button class="btn w-max" onClick=${()=>setComm({ tiers:[...s.commission.tiers, { k:'新服务', zh:'', en:'' }] })}>+ 服务</button>
+    ${tab==='commission' && html`<div class="section">
+      <${Field} label="引言 · 中" area value=${(s.commission.lead||{}).zh||''} onInput=${e=>setComm({ lead:{ ...(s.commission.lead||{}), zh:e.target.value } })} />
+      <${Field} label="引言 · EN" area value=${(s.commission.lead||{}).en||''} onInput=${e=>setComm({ lead:{ ...(s.commission.lead||{}), en:e.target.value } })} />
+      <div>
+        <label>服务报价（名称 / 中文报价 / 英文报价）</label>
+        <div class="section" style="gap:.5rem">
+          ${s.commission.tiers.map((row,i)=>html`<div class="row">
+            <input value=${row.k} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,k:e.target.value};setComm({tiers})}} />
+            <input value=${row.zh} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,zh:e.target.value};setComm({tiers})}} />
+            <input value=${row.en} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,en:e.target.value};setComm({tiers})}} />
+            <button class="btn danger" onClick=${()=>setComm({ tiers: s.commission.tiers.filter((_,j)=>j!==i) })}>×</button>
+          </div>`)}
+        </div>
+      </div>
+      <button class="btn" style="justify-self:start" onClick=${()=>setComm({ tiers:[...s.commission.tiers, { k:'新服务', zh:'', en:'' }] })}>+ 服务</button>
       <${Field} label="联系方式" value=${s.commission.contact} onInput=${e=>setComm({ contact:e.target.value })} />
     </div>`}
 
-    ${tab==='misc' && html`<div class="grid gap-3">
+    ${tab==='misc' && html`<div class="section">
       <${Field} label="首页副标语" value=${s.misc.homeTagline} onInput=${e=>setMisc('homeTagline',e.target.value)} />
-      <${Field} label="顶部「装修中」提示" value=${s.misc.bannerText} onInput=${e=>setMisc('bannerText',e.target.value)} />
+      <${Field} label="顶部横幅提示" value=${s.misc.bannerText} onInput=${e=>setMisc('bannerText',e.target.value)} />
+      <p class="hint">保存后内容写入 content/*.json —— 开着 npm run dev 即刻预览，确认无误后 git push 部署。</p>
     </div>`}
   </div>`
 }

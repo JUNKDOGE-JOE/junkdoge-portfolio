@@ -8,8 +8,15 @@ import { getHomeProjects } from '@/lib/projects'
 import { useLang } from '@/lib/i18n'
 import { Reveal, RevealGroup } from '@/components/Reveal'
 import type { Project } from '@/content/projects'
+import { sfxClick } from '@/lib/sound'
 
 const allProjects = getHomeProjects()
+
+// Year range derived from the data (e.g. "2023 / 2026")
+const projectYears = allProjects.map((p) => parseInt(p.year, 10)).filter((n) => !Number.isNaN(n))
+const yearRange = projectYears.length
+  ? `${Math.min(...projectYears)}\u2009/\u2009${Math.max(...projectYears)}`
+  : ''
 
 // Zero-pad count, e.g. 09
 const padCount = (n: number) => String(n).padStart(2, '0')
@@ -46,7 +53,7 @@ export default function ProjectsPage() {
       {/* ── Dual-track scrolling circles ── */}
       <ScrollingCircles
         projects={allProjects}
-        onCircleClick={(p) => setActive(p)}
+        onCircleClick={(p) => { sfxClick(); setActive(p) }}
         onFocal={handleFocal}
         paused={active !== null}
       />
@@ -206,7 +213,7 @@ export default function ProjectsPage() {
                 display: 'block',
               }}
             >
-              2021&thinsp;/&thinsp;2026
+              {yearRange}
             </span>
           </Reveal>
         </RevealGroup>
@@ -221,7 +228,7 @@ export default function ProjectsPage() {
             <span>A FEATURED SELECTION.</span>
           </Reveal>
           <Reveal>
-            <span>映像创作 × 创意开发</span>
+            <span>文字 × 映像 × 代码</span>
           </Reveal>
         </RevealGroup>
       </div>

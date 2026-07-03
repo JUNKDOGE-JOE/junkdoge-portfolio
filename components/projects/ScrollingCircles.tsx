@@ -5,6 +5,7 @@ import type { Project } from '@/content/projects'
 import { useLang } from '@/lib/i18n'
 import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
 import { useIsMobile } from '@/lib/useIsMobile'
+import { sfxHover } from '@/lib/sound'
 
 // ---------------------------------------------------------------------------
 // CONFIG
@@ -242,6 +243,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
                 className={`${styles.circle} ${styles.textCircle}`}
                 style={{ position: 'absolute', inset: 0, transform: 'none' }}
                 onClick={() => onCircleClick(project)}
+                onMouseEnter={sfxHover}
                 aria-label={titleText}
               >
                 <span className={styles.textNo}>{no}</span>
@@ -268,6 +270,7 @@ export function ScrollingCircles({ projects, onCircleClick, onFocal, paused }: P
             className={`${styles.circle} ${styles.imgCircle}`}
             style={{ ...sizeStyle, transform: `translate3d(-50%,-50%,0) translate3d(${TRACK}px,${yImg}px,0) scale(${fsImg})`, opacity: foImg, willChange: 'transform, opacity' }}
             onClick={() => onCircleClick(project)}
+            onMouseEnter={sfxHover}
             aria-label={titleText}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -1,8 +1,8 @@
 {
   "about": {
     "bio": {
-      "zh": "我是 JUNK_DOGE —— PV师 / VJ / 映像创作，同时做创意开发（after-effects-mcp 等工具）。",
-      "en": "I'm JUNK_DOGE — PV / VJ / motion artist, and a creative developer (tools like after-effects-mcp)."
+      "zh": "我是 JUNK_DOGE —— PV师 / VJ / 映像创作者。做文字与画面同频呼吸的 PV，也在演出现场跑实时视觉；同时写代码，做 after-effects-mcp 这样的创作工具，让 AI 也能参与映像制作。",
+      "en": "I'm JUNK_DOGE — PV / VJ / motion artist. I make videos where type and image breathe together, run live visuals on stage, and build creative tools like after-effects-mcp that let AI join the making of motion."
     },
     "links": [
       { "label": "BILIBILI", "href": "https://space.bilibili.com/73910418" },
@@ -11,6 +11,10 @@
     ]
   },
   "commission": {
+    "lead": {
+      "zh": "文字PV、VJ 素材、PV / MV 定制映像——带着你的曲子和想法来聊，一起把它做成画面。",
+      "en": "Lyric PVs, VJ clips and custom PV / MV work — bring your track and your idea, and let's turn it into motion."
+    },
     "tiers": [
       { "k": "文字PV / Lyric", "zh": "按时长与复杂度报价", "en": "Priced by length & complexity" },
       { "k": "VJ 素材 / VJ Clips", "zh": "按场次与素材量报价", "en": "Priced by show & volume" },
@@ -19,7 +23,7 @@
     "contact": "QQ 2814374544 · WeChat weixinJUNKDOGE · 2814374544@qq.com"
   },
   "misc": {
-    "homeTagline": "PV · VJ · 映像创作 × 创意开发",
-    "bannerText": "装修中 · 持续完善"
+    "homeTagline": "文字 × 映像 × 代码 — PV / VJ / 创意开发",
+    "bannerText": "持续施工中 · 新作陆续上架"
   }
 }

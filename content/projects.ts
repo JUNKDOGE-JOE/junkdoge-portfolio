@@ -15,6 +15,7 @@ export interface Project {
   cover: string            // path under /public, e.g. /covers/fusang.jpg
   devVisual?: string       // circle visual for dev projects
   accent?: string          // optional UI tint
+  gallery?: string[]       // gallery image paths under /public (managed via admin)
   links: ProjectLinks
 }
 

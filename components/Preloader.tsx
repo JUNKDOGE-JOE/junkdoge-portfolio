@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import { sfxBoot, sfxReady } from '@/lib/sound'
 
 // Terminal-green boot screen. Fake startup log types in line-by-line while a
 // progress bar fills along the bottom, then the whole thing fades out.
@@ -9,9 +10,9 @@ const LINES = [
   '> booting junkdoge.portfolio',
   '> loading /covers ............. ok',
   '> mounting gsap timeline ...... ok',
-  '> compiling shaders ........... ok',
-  '> JUNK_DOGE :: 映像创作 × 创意开发',
-  '> ready.',
+  '> patching audio synth ........ ok',
+  '> JUNK_DOGE :: 文字 × 映像 × 代码',
+  '> ready. enjoy the show.',
 ]
 
 export function Preloader() {
@@ -21,12 +22,12 @@ export function Preloader() {
   const root = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    let line = 0
     const lineTimer = setInterval(() => {
-      setN((v) => {
-        const nv = v + 1
-        if (nv >= LINES.length) clearInterval(lineTimer)
-        return nv
-      })
+      line += 1
+      sfxBoot(line)
+      if (line >= LINES.length) clearInterval(lineTimer)
+      setN(line)
     }, 170)
     const curTimer = setInterval(() => setCursor((c) => !c), 500)
 
@@ -36,13 +37,15 @@ export function Preloader() {
       duration: 1.2,
       ease: 'power1.inOut',
       onUpdate: () => setPct(Math.round(obj.v)),
-      onComplete: () =>
+      onComplete: () => {
+        sfxReady()
         gsap.to(root.current, {
           autoAlpha: 0,
           duration: 0.5,
           delay: 0.15,
           onComplete: () => root.current && (root.current.style.display = 'none'),
-        }),
+        })
+      },
     })
 
     return () => {

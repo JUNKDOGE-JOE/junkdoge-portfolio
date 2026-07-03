@@ -6,6 +6,7 @@ import type { Project } from '@/content/projects'
 import { galleryFor } from '@/lib/projects'
 import { Reveal, RevealGroup } from '@/components/Reveal'
 import { TiltCard } from '@/components/TiltCard'
+import { sfxHover, sfxClick } from '@/lib/sound'
 
 // Module-level open-gallery counter — shared across all Gallery instances so
 // CarouselRoot / ScrollingCircles can bail out of their wheel handlers even if a
@@ -108,7 +109,12 @@ export function Gallery({
 
         {/* ── ⑪ Left column: masked stagger reveal ────────────────────────── */}
         <RevealGroup className="shrink-0 md:w-1/3" delay={0.15}>
-          <button onClick={onClose} aria-label="close gallery" className="ui-label mb-10 opacity-70 transition-opacity hover:opacity-100">✕ CLOSE</button>
+          <button
+            onClick={() => { sfxClick(); onClose() }}
+            onMouseEnter={sfxHover}
+            aria-label="close gallery"
+            className="ui-label mb-10 opacity-70 transition-opacity hover:opacity-100"
+          >✕ CLOSE</button>
           <Reveal><h2 className="display-italic text-4xl font-medium leading-[0.95] md:text-6xl">{t(project.title)}</h2></Reveal>
           <Reveal className="mt-4"><p className="ui-label opacity-70">{t(project.role)} / {project.year}</p></Reveal>
           <Reveal className="mt-5"><p className="max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p></Reveal>

@@ -12,8 +12,9 @@ export function MediaImageSkin({ project }: { project: Project }) {
           filter: 'blur(38px) saturate(1.5)',
           transition: 'transform 0.4s ease-out',
         }} />
+      {/* Vignette + bottom anchor gradient (grounds the counter / circle UI) */}
       <div className="absolute inset-0"
-        style={{ background: 'radial-gradient(70% 70% at 50% 45%, transparent 55%, rgba(0,0,0,0.6))' }} />
+        style={{ background: 'radial-gradient(70% 70% at 50% 45%, transparent 55%, rgba(0,0,0,0.6)), linear-gradient(to top, rgba(0,0,0,0.38), transparent 24%)' }} />
     </div>
   )
 }
