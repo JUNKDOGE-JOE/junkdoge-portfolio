@@ -38,7 +38,6 @@ export default function About() {
           {/* Services — synced from commission tiers (edit in admin → 委托 tab) */}
           <Reveal className="mt-14">
             <p className="ui-label opacity-55">{t({ zh: '制作内容', en: 'WHAT I MAKE' })}</p>
-            <p className="mt-1 text-xs opacity-45">{t({ zh: '与「委托」页报价同步 · 在控制台「委托」页编辑', en: 'Synced with Commission tiers · edit in admin → Commission tab' })}</p>
           </Reveal>
           <div className="mt-4 border-y border-black/10">
             {site.commission.tiers.map((x, i) => (
