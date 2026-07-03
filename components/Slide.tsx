@@ -5,7 +5,6 @@ import type { Project } from '@/content/projects'
 import { isImageSkin, galleryFor } from '@/lib/projects'
 import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
 import { useLang } from '@/lib/i18n'
-import { CircleCrop } from './CircleCrop'
 import { LetterSwap } from './LetterSwap'
 import { GhostOutline } from './GhostOutline'
 import { Gallery } from './Gallery'
@@ -21,7 +20,6 @@ export function Slide({ project }: { project: Project }) {
   const circleSrc = project.devVisual ?? project.cover
   const verb = project.type === 'dev' ? t({ zh: '查看', en: 'VIEW' }) : t({ zh: '观看', en: 'WATCH' })
   const href = visitHref(project)
-  const hasGallery = galleryFor(project).length > 0
   const [galleryOpen, setGalleryOpen] = useState(false)
   const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -177,11 +175,11 @@ export function Slide({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* Circle: morph trigger for image projects, plain circle for dev */}
+      {/* Circle: always opens the gallery overlay — with no gallery images it
+          simply presents the cover full-size (same behaviour as /projects) */}
       <div className="absolute bottom-3 right-3"
            style={{ transform: 'translate(calc((var(--mx,0.5) - 0.5) * 38px), calc((var(--my,0.5) - 0.5) * 38px)) scale(0.95)', transition: 'transform 0.3s ease-out' }}>
-        {hasGallery ? (
-          <>
+        <>
             {/* Slow-spinning label ring — signals the circle is clickable.
                 Hidden on phones: it would clip at the viewport edge. */}
             <svg
@@ -214,10 +212,7 @@ export function Slide({ project }: { project: Project }) {
                 style={project.type === 'dev' ? { objectPosition: 'top' } : undefined}
               />
             </button>
-          </>
-        ) : (
-          <CircleCrop src={circleSrc} alt={t(project.title)} size={140} />
-        )}
+        </>
       </div>
 
       <span className="sr-only">{lang}</span>
