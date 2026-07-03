@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { sfxBoot, sfxReady } from '@/lib/sound'
+import { initSound, sfxBoot, sfxReady } from '@/lib/sound'
 
 // Terminal-green boot screen. Fake startup log types in line-by-line while a
 // progress bar fills along the bottom, then the whole thing fades out.
@@ -15,13 +15,19 @@ const LINES = [
   '> ready. enjoy the show.',
 ]
 
-export function Preloader() {
+const MIN_BOOT_MS = 1200   // keep the boot aesthetic even on a warm cache
+const MAX_WAIT_MS = 6000   // never block longer than this on slow networks
+
+export function Preloader({ assets = [] }: { assets?: string[] }) {
   const [pct, setPct] = useState(0)
   const [n, setN] = useState(0)           // number of log lines revealed
   const [cursor, setCursor] = useState(true)
   const root = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // Audio is fully synthesized (no files to load) — init early so the first
+    // user gesture unlocks the AudioContext as soon as possible.
+    initSound()
     let line = 0
     const lineTimer = setInterval(() => {
       line += 1
@@ -31,27 +37,58 @@ export function Preloader() {
     }, 170)
     const curTimer = setInterval(() => setCursor((c) => !c), 500)
 
-    const obj = { v: 0 }
-    gsap.to(obj, {
-      v: 100,
-      duration: 1.2,
-      ease: 'power1.inOut',
-      onUpdate: () => setPct(Math.round(obj.v)),
-      onComplete: () => {
-        sfxReady()
-        gsap.to(root.current, {
-          autoAlpha: 0,
-          duration: 0.5,
-          delay: 0.15,
-          onComplete: () => root.current && (root.current.style.display = 'none'),
-        })
-      },
+    // Real preload: fetch every cover now so slide switches are instant.
+    const start = performance.now()
+    const total = assets.length
+    let loaded = 0
+    let disposed = false
+    const imgs = assets.map((src) => {
+      const img = new Image()
+      img.onload = img.onerror = () => { loaded += 1 }
+      img.src = src
+      return img
     })
 
+    // Progress bar chases the REAL loading progress (time-based when no assets).
+    let v = 0
+    let finished = false
+    let rafId = 0
+    const finish = () => {
+      finished = true
+      sfxReady()
+      gsap.to(root.current, {
+        autoAlpha: 0,
+        duration: 0.5,
+        delay: 0.2,
+        onComplete: () => root.current && (root.current.style.display = 'none'),
+      })
+    }
+    const tick = () => {
+      if (disposed || finished) return
+      const elapsed = performance.now() - start
+      const timePct = Math.min(1, elapsed / MIN_BOOT_MS) * 100
+      const loadPct = total > 0 ? (loaded / total) * 100 : 100
+      const target = Math.min(timePct, loadPct)
+      v += (target - v) * 0.12
+      setPct(Math.round(v))
+      const ready = (loaded >= total || elapsed >= MAX_WAIT_MS) && elapsed >= MIN_BOOT_MS
+      if (ready && v > 99.2) {
+        setPct(100)
+        finish()
+        return
+      }
+      rafId = requestAnimationFrame(tick)
+    }
+    rafId = requestAnimationFrame(tick)
+
     return () => {
+      disposed = true
+      cancelAnimationFrame(rafId)
       clearInterval(lineTimer)
       clearInterval(curTimer)
+      imgs.forEach((img) => { img.onload = img.onerror = null })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

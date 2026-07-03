@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import type { Project } from '@/content/projects'
 import { isImageSkin, galleryFor } from '@/lib/projects'
@@ -26,6 +26,20 @@ export function Slide({ project }: { project: Project }) {
   const [originRect, setOriginRect] = useState<DOMRect | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
   const circleRef = useRef<HTMLButtonElement>(null)
+
+  // Prefetch this project's gallery while the slide is showing, so opening
+  // the gallery (or the mouse trail on desktop) never waits on the network.
+  useEffect(() => {
+    const srcs = galleryFor(project)
+    if (!srcs.length) return
+    const idle = (cb: () => void) =>
+      'requestIdleCallback' in window ? window.requestIdleCallback(cb) : setTimeout(cb, 350)
+    const handle = idle(() => srcs.forEach((src) => { const im = new Image(); im.src = src }))
+    return () => {
+      if ('cancelIdleCallback' in window) window.cancelIdleCallback(handle as number)
+      else clearTimeout(handle as ReturnType<typeof setTimeout>)
+    }
+  }, [project])
 
   const openGallery = () => {
     sfxClick()

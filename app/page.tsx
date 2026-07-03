@@ -7,7 +7,7 @@ export default function Home() {
   const projects = getHomeProjects()
   return (
     <main>
-      <Preloader />
+      <Preloader assets={projects.map((p) => p.cover)} />
       <CarouselRoot projects={projects} />
       <CornerFurniture variant="home" />
     </main>
