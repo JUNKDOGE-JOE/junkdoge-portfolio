@@ -4,18 +4,18 @@
     "type": "pv",
     "featured": true,
     "order": 1,
-    "year": "2024",
+    "year": "2025",
     "title": {
       "zh": "扶桑",
       "en": "THE FUSOR ARBOR"
     },
     "role": {
-      "zh": "PV · BOF21",
-      "en": "PV · BOF21"
+      "zh": "BGA · BOF21",
+      "en": "BGA · BOF21"
     },
     "desc": {
-      "zh": "为 BOF21 制作的参赛影像——文字随音乐生长，字与画面互为叙事。",
-      "en": "An entry made for BOF21 — type grows with the music; letters and image narrate each other."
+      "zh": "与 BLACK-ZERO 老师合作的 BOF21 参赛作品",
+      "en": "A BOF21 entry made in collaboration with BLACK-ZERO."
     },
     "cover": "/covers/fusang.jpg",
     "accent": "#3c5347",
@@ -23,108 +23,42 @@
       "bilibili": "https://www.bilibili.com/video/BV126WEz3EjX/"
     },
     "gallery": [
-      "/gallery/fusang/1.jpg",
-      "/gallery/fusang/2.jpg",
-      "/gallery/fusang/3.jpg",
-      "/gallery/fusang/4.jpg"
+      "/gallery/fusang/1783089171779.jpg",
+      "/gallery/fusang/1783089175126.jpg",
+      "/gallery/fusang/1783089178242.jpg",
+      "/gallery/fusang/1783089180934.jpg",
+      "/gallery/fusang/1783089183201.jpg"
     ]
   },
   {
-    "slug": "mirror-tower",
-    "type": "pv",
+    "slug": "wdvj",
+    "type": "vj",
     "featured": true,
     "order": 2,
-    "year": "2024",
+    "year": "2026",
     "title": {
-      "zh": "镜之塔",
-      "en": "Tales of Endless Tower"
+      "zh": "某游戏音乐会VJ",
+      "en": "Untitled Game Concert — VJ"
     },
     "role": {
-      "zh": "PV · 音游",
-      "en": "PV · Rhythm Game"
+      "zh": "VJ · CG",
+      "en": "VJ · CG"
     },
     "desc": {
-      "zh": "音乐游戏《镜之塔》宣传 PV 第一章，塔内世界观的首次影像化。",
-      "en": "Chapter one of the promo PV for the rhythm game Mirror Tower — the tower's world, first put on screen."
+      "zh": "",
+      "en": ""
     },
-    "cover": "/covers/mirror-tower.jpg",
-    "accent": "#534249",
-    "links": {
-      "bilibili": "https://www.bilibili.com/video/BV1XhSXYKEyM/"
-    },
-    "gallery": [
-      "/gallery/mirror-tower/1.jpg",
-      "/gallery/mirror-tower/2.jpg",
-      "/gallery/mirror-tower/3.jpg",
-      "/gallery/mirror-tower/4.jpg"
-    ]
-  },
-  {
-    "slug": "centripetal-force",
-    "type": "pv",
-    "featured": true,
-    "order": 3,
-    "year": "2023",
-    "title": {
-      "zh": "Centripetal Force",
-      "en": "Centripetal Force"
-    },
-    "role": {
-      "zh": "PV · BOF:TT",
-      "en": "PV · BOF:TT"
-    },
-    "desc": {
-      "zh": "为 BOF:TT 制作的参赛影像，以旋转与向心的张力驱动画面节奏。",
-      "en": "An entry made for BOF:TT — rotation and centripetal tension drive the visual rhythm."
-    },
-    "cover": "/covers/centripetal-force.jpg",
-    "accent": "#2c2a2f",
-    "links": {
-      "bilibili": ""
-    },
-    "gallery": [
-      "/gallery/centripetal-force/1.jpg",
-      "/gallery/centripetal-force/2.jpg",
-      "/gallery/centripetal-force/3.jpg",
-      "/gallery/centripetal-force/4.jpg"
-    ]
-  },
-  {
-    "slug": "pojin",
-    "type": "pv",
-    "featured": true,
-    "order": 4,
-    "year": "2025",
-    "title": {
-      "zh": "破禁 先行PV",
-      "en": "PoJin — Teaser PV"
-    },
-    "role": {
-      "zh": "PV · 独立游戏",
-      "en": "PV · Indie Game"
-    },
-    "desc": {
-      "zh": "独立游戏《破禁》先行 PV——用影像先一步打开游戏的世界。",
-      "en": "Teaser PV for the indie game PoJin — opening the game's world through motion, first."
-    },
-    "cover": "/covers/pojin.jpg",
-    "accent": "#430215",
-    "links": {
-      "external": "https://www.xiaohongshu.com/explore/68de4490000000000700e4f7"
-    },
-    "gallery": [
-      "/gallery/pojin/1.jpg",
-      "/gallery/pojin/2.jpg",
-      "/gallery/pojin/3.jpg",
-      "/gallery/pojin/4.jpg"
-    ]
+    "cover": "/covers/wdvj.jpg",
+    "accent": "#888888",
+    "gallery": [],
+    "links": {}
   },
   {
     "slug": "yu",
     "type": "pv",
     "featured": true,
-    "order": 5,
-    "year": "2024",
+    "order": 3,
+    "year": "2025",
     "title": {
       "zh": "融っ",
       "en": "融っ / original song"
@@ -134,27 +68,27 @@
       "en": "PV · Original Song"
     },
     "desc": {
-      "zh": "原创曲《融っ》PV，字形在旋律里消融、再重组。",
-      "en": "PV for the original song \"融っ\" — letterforms melt into the melody and re-form."
+      "zh": "原创曲《融っ》PV",
+      "en": "PV for the original song \"融っ\" "
     },
     "cover": "/covers/yu.jpg",
     "accent": "#2f3b47",
     "links": {
-      "bilibili": "https://www.bilibili.com/video/BV1WktCzDEdT/"
+      "bilibili": "https://www.bilibili.com/video/BV1WktCzDEdT"
     },
     "gallery": [
-      "/gallery/yu/1.jpg",
-      "/gallery/yu/2.jpg",
-      "/gallery/yu/3.jpg",
-      "/gallery/yu/4.jpg"
+      "/gallery/yu/1783090571852.jpg",
+      "/gallery/yu/1783090573933.jpg",
+      "/gallery/yu/1783090575714.jpg",
+      "/gallery/yu/1783090577836.jpg"
     ]
   },
   {
     "slug": "sonnet-29",
     "type": "pv",
     "featured": true,
-    "order": 6,
-    "year": "2024",
+    "order": 4,
+    "year": "2025",
     "title": {
       "zh": "二十九行诗",
       "en": "Sonnet 29"
@@ -173,17 +107,143 @@
       "bilibili": "https://www.bilibili.com/video/BV1yZKNecEp9/"
     },
     "gallery": [
-      "/gallery/sonnet-29/1.jpg",
-      "/gallery/sonnet-29/2.jpg",
-      "/gallery/sonnet-29/3.jpg",
-      "/gallery/sonnet-29/4.jpg"
+      "/gallery/sonnet-29/1783090828940.jpg",
+      "/gallery/sonnet-29/1783090835223.jpg",
+      "/gallery/sonnet-29/1783090838563.jpg",
+      "/gallery/sonnet-29/1783090845080.jpg",
+      "/gallery/sonnet-29/1783090851320.jpg",
+      "/gallery/sonnet-29/1783090856567.jpg"
     ]
   },
   {
-    "slug": "shoujo",
+    "slug": "pojin",
+    "type": "pv",
+    "featured": true,
+    "order": 5,
+    "year": "2025",
+    "title": {
+      "zh": "破禁 先行PV",
+      "en": "PoJin — Teaser PV"
+    },
+    "role": {
+      "zh": "PV · 独立游戏",
+      "en": "PV · Indie Game"
+    },
+    "desc": {
+      "zh": "独立游戏《破禁》先行 PV",
+      "en": "Teaser PV for the indie game PoJin "
+    },
+    "cover": "/covers/pojin.jpg",
+    "accent": "#430215",
+    "links": {
+      "external": "",
+      "bilibili": "https://www.bilibili.com/video/BV1x8xszFErn/"
+    },
+    "gallery": [
+      "/gallery/pojin/4.jpg",
+      "/gallery/pojin/1783090113568.jpg",
+      "/gallery/pojin/1783090115753.jpg",
+      "/gallery/pojin/1783090119283.jpg"
+    ]
+  },
+  {
+    "slug": "Mirror-Tower",
+    "type": "pv",
+    "featured": true,
+    "order": 6,
+    "year": "2024",
+    "title": {
+      "zh": "镜之塔",
+      "en": "Tales of Endless Tower"
+    },
+    "role": {
+      "zh": "PV · 音游",
+      "en": "PV · Rhythm Game"
+    },
+    "desc": {
+      "zh": "音乐游戏《镜之塔》宣传 PV 第一章",
+      "en": "Chapter one of the promo PV for the rhythm game Mirror Tower"
+    },
+    "cover": "/covers/mirror-tower.jpg",
+    "accent": "#534249",
+    "links": {
+      "bilibili": "https://www.bilibili.com/video/BV1XhSXYKEyM/"
+    },
+    "gallery": [
+      "/gallery/mirror-tower/1.jpg",
+      "/gallery/mirror-tower/4.jpg"
+    ]
+  },
+  {
+    "slug": "centripetal-force",
     "type": "pv",
     "featured": true,
     "order": 7,
+    "year": "2024",
+    "title": {
+      "zh": "Centripetal Force",
+      "en": "Centripetal Force"
+    },
+    "role": {
+      "zh": "BGA · BOF:TT",
+      "en": "BGA · BOF:TT"
+    },
+    "desc": {
+      "zh": "为 BOF:TT 制作的参赛影像",
+      "en": "An entry made for BOF:TT"
+    },
+    "cover": "/covers/centripetal-force.jpg",
+    "accent": "#2c2a2f",
+    "links": {
+      "bilibili": "https://www.bilibili.com/video/BV1xFxaeWE8a"
+    },
+    "gallery": [
+      "/gallery/centripetal-force/1783089499850.jpg",
+      "/gallery/centripetal-force/1783089502474.jpg",
+      "/gallery/centripetal-force/1783089506924.jpg",
+      "/gallery/centripetal-force/1783089510729.jpg",
+      "/gallery/centripetal-force/1783089512888.jpg"
+    ]
+  },
+  {
+    "slug": "2024zbhyychop",
+    "type": "pv",
+    "featured": true,
+    "order": 8,
+    "year": "2024",
+    "title": {
+      "zh": "真白花音4周年纪念3D演唱会 OP",
+      "en": "Mashiro Kanon 4th Anniversary 3D Concert OP"
+    },
+    "role": {
+      "zh": "PV · 视频设计",
+      "en": "PV · Video Designer"
+    },
+    "desc": {
+      "zh": "制作了真白花音4周年纪念3D演唱会 OP部分",
+      "en": "Created the opening sequence for Mashiro Kanon's 4th Anniversary 3D Concert."
+    },
+    "cover": "/covers/2024zbhyychop.jpg",
+    "accent": "#888888",
+    "gallery": [
+      "/gallery/2024zbhyychop/1783091835962.jpg",
+      "/gallery/2024zbhyychop/1783091841348.jpg",
+      "/gallery/2024zbhyychop/1783091847519.jpg",
+      "/gallery/2024zbhyychop/1783091858501.jpg",
+      "/gallery/2024zbhyychop/1783091863133.jpg",
+      "/gallery/2024zbhyychop/1783091867847.jpg",
+      "/gallery/2024zbhyychop/1783091871211.jpg",
+      "/gallery/2024zbhyychop/1783091881003.jpg"
+    ],
+    "links": {
+      "bilibili": "https://www.bilibili.com/video/BV15C6WYAEa7/?share_source=copy_web&vd_source=9741fbf5fb2f4f32e343bdef9478b6f2&t=1180"
+    }
+  },
+  {
+    "slug": "Shojoshumaku",
+    "type": "pv",
+    "featured": true,
+    "order": 9,
     "year": "2024",
     "title": {
       "zh": "少女終幕",
@@ -194,24 +254,27 @@
       "en": "PV · Original Song"
     },
     "desc": {
-      "zh": "原创曲《少女終幕｜ある少女の始末》PV——一场少女的谢幕叙事。",
-      "en": "PV for the original song \"Aru Shoujo no Shimatsu\" — a girl's final-curtain narrative."
+      "zh": "原创曲《少女終幕｜ある少女の始末》PV",
+      "en": "PV for the original song \"Aru Shoujo no Shimatsu\" "
     },
     "cover": "/covers/shoujo.jpg",
     "accent": "#9e6d9d",
-    "links": {},
+    "links": {
+      "bilibili": "https://www.bilibili.com/video/BV1uU411S7ay/"
+    },
     "gallery": [
-      "/gallery/shoujo/1.jpg",
-      "/gallery/shoujo/2.jpg",
-      "/gallery/shoujo/3.jpg",
-      "/gallery/shoujo/4.jpg"
+      "/gallery/shoujo/1783089702815.jpg",
+      "/gallery/shoujo/1783089704903.jpg",
+      "/gallery/shoujo/1783089706760.jpg",
+      "/gallery/shoujo/1783089708771.jpg",
+      "/gallery/shoujo/1783089710617.jpg"
     ]
   },
   {
     "slug": "fusheng",
     "type": "vj",
     "featured": true,
-    "order": 8,
+    "order": 10,
     "year": "2024",
     "title": {
       "zh": "浮生",
@@ -222,8 +285,8 @@
       "en": "VJ · Lyric Motion"
     },
     "desc": {
-      "zh": "陈致逸作品音乐会《浮生》现场文字动画——为交响现场注入流动的汉字。",
-      "en": "Kinetic-lyric animation for the Chen Zhiyi concert \"Fusheng\" — flowing hanzi for a live orchestra."
+      "zh": "陈致逸作品音乐会《浮生》现场文字动画",
+      "en": "Kinetic-lyric animation for the Chen Zhiyi concert \"Fusheng\""
     },
     "cover": "/covers/fusheng.jpg",
     "accent": "#999297",
@@ -231,17 +294,17 @@
       "bilibili": "https://www.bilibili.com/video/BV178k1YuEXo/"
     },
     "gallery": [
-      "/gallery/fusheng/1.jpg",
-      "/gallery/fusheng/2.jpg",
-      "/gallery/fusheng/3.jpg",
-      "/gallery/fusheng/4.jpg"
+      "/gallery/fusheng/1783089923504.jpg",
+      "/gallery/fusheng/1783089926690.jpg",
+      "/gallery/fusheng/1783089928800.jpg",
+      "/gallery/fusheng/1783089931178.jpg"
     ]
   },
   {
     "slug": "after-effects-mcp",
     "type": "dev",
     "featured": true,
-    "order": 9,
+    "order": 11,
     "year": "2026",
     "title": {
       "zh": "after-effects-mcp",

@@ -7,7 +7,7 @@ export interface SiteData {
   }
   commission: {
     lead?: { zh: string; en: string }
-    tiers: { k: string; zh: string; en: string }[]
+    tiers: { k: string; kEn?: string; zh: string; en: string }[]
     contact: string
   }
   misc: {

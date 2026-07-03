@@ -1,4 +1,4 @@
-/* Dual-track scrolling-circle gallery */
+/* Dual horizontal-ring circle gallery */
 
 .stage {
   position: fixed;
@@ -8,19 +8,17 @@
 }
 
 .circle {
-  /* Anchor at viewport centre — transform handles both track offset and y scroll */
+  /* Anchor at viewport centre — transform handles row offset + x scroll */
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 210px;
-  height: 210px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
   pointer-events: auto;
   /* transform + opacity are written imperatively every rAF (see ScrollingCircles.tsx);
-     a CSS transition here would "chase" each frame's new target and cause the jitter/
-     flicker. will-change keeps both on their own GPU layer. */
+     a CSS transition here would "chase" each frame's new target and cause jitter.
+     will-change keeps both on their own GPU layer. */
   will-change: transform, opacity;
 }
 
@@ -29,45 +27,6 @@
   outline-offset: 3px;
 }
 
-/* Text (name) circles */
-.textCircle {
-  background: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 1.5rem;
-  font-family: Georgia, serif;
-  color: #1a1a1a;
-  backdrop-filter: blur(4px);
-}
-
-.textNo {
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(40, 40, 40, 0.55);
-  margin-bottom: 0.9rem;
-}
-
-.textTitle {
-  font-size: 1.2rem;
-  font-weight: 500;
-  font-style: italic;
-  line-height: 1.22;
-}
-
-.textYear {
-  font-size: 0.65rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(40, 40, 40, 0.55);
-  margin-top: 0.9rem;
-}
-
-/* Image circles */
 .imgCircle {
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -85,57 +44,7 @@
   transform: scale(1.08);
 }
 
-/* ── Spinning ring decoration on text circles ─────────────────────────────── */
-
-/* Wrapper that positions the ring relative to the circle */
-.circleWrapper {
-  position: absolute;
-  /* slightly larger than the 210px circle so the ring sits just outside */
-  width: 224px;
-  height: 224px;
-  left: 50%;
-  top: 50%;
-  pointer-events: none;
-}
-
-/* The decorative SVG ring — ⑦ half-turn on hover */
-.ringDeco {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transition: transform 1.2s ease;
-  pointer-events: none;
-}
-
-/* Group wrapper for name-circle + ring */
-.textCircleGroup {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  /* width/height must match the button so transforms align */
-  width: 210px;
-  height: 210px;
-  pointer-events: none;
-}
-
-/* ⑥ Inner disc wrapper — scales down slightly on hover */
-.innerDisc {
-  position: absolute;
-  inset: 0;
-  transition: transform 0.4s ease;
-}
-
-.textCircleGroup:hover .innerDisc {
-  transform: scale(0.94);
-}
-
-/* ⑦ Ring spins HALF a turn on hover, reverses on leave */
-.textCircleGroup:hover .ringDeco {
-  transform: rotate(180deg);
-}
-
-/* ── Mobile: name overlaid on the bottom arc of each image circle ─────────── */
+/* Name overlaid on the bottom arc of each circle */
 .mobileLabel {
   position: absolute;
   left: 0;
@@ -170,23 +79,16 @@
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Mobile: name circles are smaller (116px) — tighten padding + type so the
-   N. / title / Y. stack fits the disc. */
-@media (max-width: 767px) {
-  .textCircle {
-    padding: 0.7rem;
+/* Desktop circles are larger (250px) — scale the label type up a touch */
+@media (min-width: 768px) {
+  .mobileLabel {
+    padding-bottom: 2.2rem;
   }
-  .textNo {
-    font-size: 0.5rem;
-    margin-bottom: 0.4rem;
+  .mlTitle {
+    font-size: 1.55rem;
   }
-  .textYear {
-    font-size: 0.5rem;
-    margin-top: 0.4rem;
-  }
-  .textTitle {
-    font-size: 0.92rem;
-    line-height: 1.12;
+  .mlNo,
+  .mlYear {
+    font-size: 0.66rem;
   }
 }
-

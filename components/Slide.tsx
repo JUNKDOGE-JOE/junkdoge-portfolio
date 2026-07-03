@@ -7,6 +7,7 @@ import { useIsoLayoutEffect } from '@/lib/useIsoLayoutEffect'
 import { useLang } from '@/lib/i18n'
 import { CircleCrop } from './CircleCrop'
 import { LetterSwap } from './LetterSwap'
+import { GhostOutline } from './GhostOutline'
 import { Gallery } from './Gallery'
 import { sfxHover, sfxClick } from '@/lib/sound'
 
@@ -57,8 +58,9 @@ export function Slide({ project }: { project: Project }) {
       if (circleRef.current) {
         gsap.from(circleRef.current, { autoAlpha: 0, duration: 0.6, delay: 0.25, ease: 'power2.out' })
       }
-      // Ghost numeral drifts in slightly after the title
-      gsap.from('[data-ghost]', { autoAlpha: 0, scale: 1.06, duration: 1.1, delay: 0.1, ease: 'power2.out' })
+      // Ghost numeral: fade only — a scale tween would rasterize the huge
+      // outline text on a low-res GPU layer, making it snap sharp afterwards
+      gsap.from('[data-ghost]', { autoAlpha: 0, duration: 1.1, delay: 0.1, ease: 'power2.out' })
     }, rootRef)
     return () => ctx.revert()
   }, [project.slug])
@@ -69,41 +71,56 @@ export function Slide({ project }: { project: Project }) {
       data-testid="slide"
       className={`relative h-full w-full ${dark ? 'text-[var(--paper-text)]' : 'text-[var(--ink)]'}`}
     >
-      <div aria-live="polite" className="absolute left-1/2 top-[42%] w-[88%] max-w-3xl text-center"
+      <div aria-live="polite" className="absolute left-1/2 top-[40%] w-[92%] max-w-3xl text-center md:top-[42%] md:w-[88%]"
            style={{ transform: 'translate(-50%, -50%) translate(calc((var(--mx,0.5) - 0.5) * 16px), calc((var(--my,0.5) - 0.5) * 16px))', transition: 'transform 0.3s ease-out' }}>
-        {/* Ghost index numeral — oversized outline digit behind the title (editorial depth layer) */}
-        <span
-          aria-hidden="true"
-          data-ghost
-          className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 select-none font-black italic leading-none"
-          style={{
-            fontSize: 'clamp(11rem, 30vw, 24rem)',
-            color: 'transparent',
-            // explicit colours: currentColor would resolve to the transparent fill above
-            WebkitTextStroke: dark ? '1.5px rgba(241,238,232,0.17)' : '1.5px rgba(28,26,23,0.15)',
-          }}
-        >
-          {String(project.order).padStart(2, '0')}
-        </span>
-
-        {/* Title: per-letter masked stagger — pb+leading give room for descenders/italic */}
-        <h2
-          className="display-italic text-5xl font-medium md:text-7xl"
-          aria-label={t(project.title)}
-        >
-          {t(project.title).split('').map((char, i) => (
-            <span
-              key={i}
-              className="inline-block align-bottom leading-[1.25] pb-[0.12em]"
-              style={{ clipPath: 'inset(0 -0.45em 0 -0.45em)' }}
-              aria-hidden="true"
-            >
-              <span className="inline-block" data-reveal-char>
-                {char === ' ' ? ' ' : char}
-              </span>
+        {/* Title block — ghost numeral centres on the visible title box, not the whole slide */}
+        <div className="relative inline-block max-w-full">
+          {/* Parallax lives on this wrapper (not on [data-ghost]) so GSAP's
+              entrance tween doesn't freeze the mouse-driven transform.
+              Net drift ≈ -34px vs the title's +16px and the skin's -110px,
+              placing the numeral on a depth layer between them. */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              transform: 'translate(calc((var(--mx,0.5) - 0.5) * -50px), calc((var(--my,0.5) - 0.5) * -50px))',
+              transition: 'transform 0.35s ease-out',
+            }}
+          >
+            <span className="flex h-full w-full items-center justify-center">
+              <GhostOutline
+                data-ghost
+                text={String(project.order).padStart(2, '0')}
+                color={dark ? 'rgba(241,238,232,0.17)' : 'rgba(28,26,23,0.15)'}
+                className="flex-none overflow-visible"
+                style={{ width: 'clamp(20rem, 54vw, 48rem)', height: 'auto' }}
+              />
             </span>
-          ))}
-        </h2>
+          </span>
+          <h2
+            className="display-italic relative z-[1] text-4xl font-medium sm:text-5xl md:text-7xl"
+            aria-label={t(project.title)}
+          >
+            {/* Words are kept whole (whitespace-nowrap) so lines only break at spaces;
+                chars inside each word still stagger individually. */}
+            {t(project.title).split(' ').map((word, wi, words) => (
+              <span key={wi} aria-hidden="true">
+                <span className="inline-block whitespace-nowrap">
+                  {word.split('').map((char, ci) => (
+                    <span
+                      key={ci}
+                      className="inline-block align-bottom leading-[1.25] pb-[0.12em]"
+                      style={{ clipPath: 'inset(0 -0.45em 0 -0.45em)' }}
+                    >
+                      <span className="inline-block" data-reveal-char>{char}</span>
+                    </span>
+                  ))}
+                </span>
+                {wi < words.length - 1 && ' '}
+              </span>
+            ))}
+          </h2>
+        </div>
 
         {/* Meta mask */}
         <span className="block overflow-hidden" data-reveal>
@@ -117,10 +134,12 @@ export function Slide({ project }: { project: Project }) {
         </span>
 
         <div className="mt-4 flex items-start justify-center gap-8">
-          {/* Description mask */}
-          <span className="block overflow-hidden" data-reveal>
-            <p className="block max-w-[15rem] text-left text-sm leading-relaxed opacity-90">{t(project.desc)}</p>
-          </span>
+          {/* Description mask — skipped entirely when the project has no blurb */}
+          {t(project.desc) && (
+            <span className="block overflow-hidden" data-reveal>
+              <p className="block max-w-[15rem] text-left text-sm leading-relaxed opacity-90">{t(project.desc)}</p>
+            </span>
+          )}
 
           {href !== '#' && (
             /* Visit button — no overflow-hidden so the accent glow isn't clipped into a rectangle */
@@ -149,11 +168,12 @@ export function Slide({ project }: { project: Project }) {
            style={{ transform: 'translate(calc((var(--mx,0.5) - 0.5) * 38px), calc((var(--my,0.5) - 0.5) * 38px)) scale(0.95)', transition: 'transform 0.3s ease-out' }}>
         {hasGallery ? (
           <>
-            {/* Slow-spinning label ring — signals the circle is clickable */}
+            {/* Slow-spinning label ring — signals the circle is clickable.
+                Hidden on phones: it would clip at the viewport edge. */}
             <svg
               aria-hidden="true"
               viewBox="0 0 200 200"
-              className="ring-spin pointer-events-none absolute bottom-[-30px] right-[-30px] h-[200px] w-[200px] opacity-45"
+              className="ring-spin pointer-events-none absolute bottom-[-30px] right-[-30px] hidden h-[200px] w-[200px] opacity-45 md:block"
               style={{ visibility: galleryOpen ? 'hidden' : 'visible' }}
             >
               <defs>
@@ -170,7 +190,7 @@ export function Slide({ project }: { project: Project }) {
               onClick={openGallery}
               onMouseEnter={sfxHover}
               aria-label="open gallery"
-              className="group absolute bottom-0 right-0 h-[140px] w-[140px] overflow-hidden rounded-full border border-white/40 cursor-pointer"
+              className="group absolute bottom-0 right-0 h-[108px] w-[108px] overflow-hidden rounded-full border border-white/40 cursor-pointer md:h-[140px] md:w-[140px]"
               style={{ visibility: galleryOpen ? 'hidden' : 'visible' }}
             >
               <img

@@ -33,11 +33,11 @@ export function CornerFurniture({ variant = 'dark' }: { variant?: 'dark' | 'ligh
 
   return (
     <div className="pointer-events-none absolute inset-0 z-20" style={inkStyle}>
-      <div className="pointer-events-auto absolute left-5 top-4 flex items-center gap-3">
+      <div className="pointer-events-auto absolute left-4 top-3 flex items-center gap-2 md:left-5 md:top-4 md:gap-3">
         <Link href="/" className="text-sm font-bold tracking-[0.18em]"><LetterSwap label="J / D" /></Link>
         <span className="hidden md:block"><Clock /></span>
       </div>
-      <nav className="pointer-events-auto absolute right-5 top-4 flex items-center gap-3 ui-label">
+      <nav className="pointer-events-auto absolute right-3 top-3 flex max-w-[62vw] flex-wrap items-center justify-end gap-x-2 gap-y-1 ui-label sm:max-w-none md:right-5 md:top-4 md:gap-3">
         <Link href="/projects" className={styles.link} onMouseEnter={sfxHover} onClick={sfxClick}>{t(uiProjects)}</Link>
         <span>/</span>
         <Link href="/about" className={styles.link} onMouseEnter={sfxHover} onClick={sfxClick}>{t(ui.about)}</Link>

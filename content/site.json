@@ -1,29 +1,51 @@
 {
   "about": {
     "bio": {
-      "zh": "我是 JUNK_DOGE —— PV师 / VJ / 映像创作者。做文字与画面同频呼吸的 PV，也在演出现场跑实时视觉；同时写代码，做 after-effects-mcp 这样的创作工具，让 AI 也能参与映像制作。",
-      "en": "I'm JUNK_DOGE — PV / VJ / motion artist. I make videos where type and image breathe together, run live visuals on stage, and build creative tools like after-effects-mcp that let AI join the making of motion."
+      "zh": "👋 你好，我是 JUNK_DOGE。\n\n动效设计师 · 创意开发者 · 开源爱好者\n\n目前是一名实习中的动效设计师，专注于视频制作、视觉设计与创意工具开发。业余时间会开发 AE 插件、视觉增强工具以及 AI 工作流，希望让创作变得更高效、更有趣。\n\n💼 如果有合作或委托需求，欢迎通过 QQ / 微信 / Email 联系我。\n\n⭐ 如果我的插件或开源项目对你有所帮助，欢迎在 GitHub 上点个 Star！你的支持是我持续创作的动力。",
+      "en": "👋 Hi, I'm JUNK_DOGE.\n\nMotion Designer · Creative Developer · Open Source Enthusiast\n\nI'm currently working as a Motion Design Intern, focusing on video production, visual design, and creative tool development. In my spare time, I build After Effects plugins, visual enhancement tools, and AI-powered workflows to make content creation more efficient and enjoyable.\n\n💼 Available for collaborations and commissions. Feel free to reach out via QQ, WeChat, or Email.\n\n⭐ If you find my plugins or open-source projects helpful, I'd really appreciate a ⭐ on GitHub. Your support keeps me creating!"
     },
     "links": [
-      { "label": "BILIBILI", "href": "https://space.bilibili.com/73910418" },
-      { "label": "GITHUB", "href": "https://github.com/JUNKDOGE-JOE" },
-      { "label": "EMAIL", "href": "mailto:2814374544@qq.com" }
+      {
+        "label": "BILIBILI",
+        "href": "https://space.bilibili.com/73910418"
+      },
+      {
+        "label": "GITHUB",
+        "href": "https://github.com/JUNKDOGE-JOE"
+      },
+      {
+        "label": "EMAIL",
+        "href": "mailto:awaw2814374544@gmail.com"
+      }
     ]
   },
   "commission": {
     "lead": {
-      "zh": "文字PV、VJ 素材、PV / MV 定制映像——带着你的曲子和想法来聊，一起把它做成画面。",
-      "en": "Lyric PVs, VJ clips and custom PV / MV work — bring your track and your idea, and let's turn it into motion."
+      "zh": "提供 PV / MV / BGA 等视觉内容定制。\n欢迎带着你的音乐、企划或创意前来交流，我会与你一起将它们转化为完整的视觉表达。\n\n关于报价\n我不会以项目是否盈利来区分商业与非商业。\n报价主要取决于是否涉及保密协议（NDA）、作品版权/所有权转让，以及项目规模与制作复杂度；若不涉及任何法律协议，一律按非商业标准报价。",
+      "en": "Custom Visual Production\n\nI offer custom visual production for PV, MV, BGA, and other motion graphics projects.\n\nWhether you have a piece of music, a project concept, or just an idea, feel free to reach out. I'd love to work with you to bring it to life through compelling visuals.\n\nCommercial Project Criteria\n\nWhether a project is considered commercial depends solely on the legal agreements involved, not on whether the client makes a profit.\n\nProjects involving an NDA or copyright/ownership transfer are treated as commercial. Otherwise, they are quoted under the non-commercial standard."
     },
     "tiers": [
-      { "k": "文字PV / Lyric", "zh": "按时长与复杂度报价", "en": "Priced by length & complexity" },
-      { "k": "VJ 素材 / VJ Clips", "zh": "按场次与素材量报价", "en": "Priced by show & volume" },
-      { "k": "PV / MV", "zh": "面议", "en": "By negotiation" }
+      {
+        "k": "VJ 素材 / VJ Clips",
+        "zh": "单条/单镜头 ¥1,000 起",
+        "en": "Starting at ¥1,000 per clip"
+      },
+      {
+        "k": "PV / MV / BGA",
+        "zh": "¥80/秒起（复用镜头不计入）",
+        "en": "Starting at ¥80/sec (excluding reused shots)"
+      },
+      {
+        "k": "完全商业项目 | 移交作品法律所有权",
+        "kEn": "Full Commercial | Ownership Transfer",
+        "zh": "单项目总包 ¥10,000 起",
+        "en": "Starting at ¥10,000 / Full Buyout"
+      }
     ],
-    "contact": "QQ 2814374544 · WeChat weixinJUNKDOGE · 2814374544@qq.com"
+    "contact": "QQ 2814374544 · WeChat weixinJUNKDOGE · awaw2814374544@gmail.com"
   },
   "misc": {
     "homeTagline": "文字 × 映像 × 代码 — PV / VJ / 创意开发",
-    "bannerText": "持续施工中 · 新作陆续上架"
+    "bannerText": "施工中"
   }
 }

@@ -3,6 +3,8 @@ import { SmoothScroll } from '@/components/SmoothScroll'
 import { CornerFurniture } from '@/components/furniture/CornerFurniture'
 import { useLang } from '@/lib/i18n'
 import { Reveal, RevealUp, RevealGroup } from '@/components/Reveal'
+import { MultilineCopy } from '@/components/MultilineCopy'
+import { GhostOutline } from '@/components/GhostOutline'
 import { site } from '@/lib/site'
 import { sfxHover, sfxClick } from '@/lib/sound'
 
@@ -14,21 +16,20 @@ const steps = [
 ]
 
 export default function Commission() {
-  const { t } = useLang()
+  const { t, lang } = useLang()
   const mail = site.about.links.find((l) => l.href.startsWith('mailto:'))
   return (
     <main className="relative min-h-screen overflow-hidden bg-[var(--night)] text-[var(--paper-text)]">
       <SmoothScroll />
       <CornerFurniture />
-      <section className="relative isolate mx-auto max-w-4xl px-6 pt-32 pb-24">
-        {/* Ghost word — echoes the home slide's outline numerals */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute left-0 top-10 -z-10 select-none font-black italic leading-none"
-          style={{ fontSize: 'clamp(5rem, 14vw, 10.5rem)', color: 'transparent', WebkitTextStroke: '1.5px rgba(241,238,232,0.10)' }}
-        >
-          WORK
-        </span>
+      <section className="relative isolate mx-auto max-w-4xl px-5 pt-24 pb-20 sm:px-6 md:pt-32 md:pb-24">
+        <GhostOutline
+          text="WORK"
+          color="rgba(241,238,232,0.10)"
+          viewBoxWidth={280}
+          className="pointer-events-none absolute left-0 top-4 -z-10 hidden select-none md:block"
+          style={{ width: 'clamp(18rem, 44vw, 34rem)', height: 'auto' }}
+        />
 
         <RevealGroup>
           <Reveal><p className="ui-label opacity-55">J / D — COMMISSION</p></Reveal>
@@ -36,19 +37,19 @@ export default function Commission() {
             <h1 className="display-italic text-6xl font-bold md:text-8xl">{t({ zh: '委托', en: 'Commission' })}</h1>
           </Reveal>
           {site.commission.lead && (
-            <Reveal className="mt-8">
-              <p className="max-w-xl text-lg leading-relaxed opacity-90">{t(site.commission.lead)}</p>
-            </Reveal>
+            <RevealUp className="mt-8">
+              <MultilineCopy text={t(site.commission.lead)} className="max-w-2xl text-base leading-relaxed opacity-90 md:text-lg" />
+            </RevealUp>
           )}
 
           {/* Tiers — numbered editorial rows */}
           <div className="mt-14 border-y border-white/12">
             {site.commission.tiers.map((x, i) => (
               <Reveal key={x.k}>
-                <div className="grid grid-cols-[2.6rem_1fr_auto] items-baseline gap-x-4 border-b border-white/12 px-3 py-6 -mx-3 last:border-b-0 transition-colors duration-300 hover:bg-white/[0.045]">
+                <div className="grid grid-cols-[2.6rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-white/12 px-3 py-6 -mx-3 last:border-b-0 transition-colors duration-300 hover:bg-white/[0.045] md:grid-cols-[2.6rem_1fr_auto]">
                   <span className="ui-label opacity-40">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="text-xl">{x.k}</span>
-                  <span className="text-right text-sm opacity-75">{t({ zh: x.zh, en: x.en })}</span>
+                  <span className="text-xl">{lang === 'en' && x.kEn ? x.kEn : x.k}</span>
+                  <span className="col-start-2 text-sm opacity-75 md:col-start-3 md:text-right">{t({ zh: x.zh, en: x.en })}</span>
                 </div>
               </Reveal>
             ))}

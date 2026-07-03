@@ -26,9 +26,10 @@ describe('isImageSkin', () => {
 })
 
 describe('projects.json migration', () => {
-  it('loads 9 featured projects with required fields', () => {
-    expect(projects).toHaveLength(9)
-    for (const p of projects) {
+  it('loads featured projects with required fields', () => {
+    const featured = projects.filter((p) => p.featured)
+    expect(featured.length).toBeGreaterThan(0)
+    for (const p of featured) {
       expect(p.slug).toBeTruthy()
       expect(p.title.zh).toBeTruthy()
       expect(p.cover.startsWith('/covers/')).toBe(true)

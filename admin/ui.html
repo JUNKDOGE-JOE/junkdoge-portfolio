@@ -269,9 +269,9 @@ function ProjectRow({ p, onChange, onDelete, onMove, isFirst, isLast }) {
   </details>`
 }
 
-function Field({ label, value, onInput, area }) {
+function Field({ label, value, onInput, area, rows = 3 }) {
   return html`<div><label>${label}</label>${area
-    ? html`<textarea rows="3" value=${value} onInput=${onInput}></textarea>`
+    ? html`<textarea rows=${rows} onInput=${onInput}>${value ?? ''}</textarea>`
     : html`<input value=${value} onInput=${onInput} />`}</div>`
 }
 
@@ -359,8 +359,8 @@ function App() {
     </div>`}
 
     ${tab==='about' && html`<div class="section">
-      <${Field} label="自我介绍 · 中" area value=${s.about.bio.zh} onInput=${e=>setAbout({ bio:{ ...s.about.bio, zh:e.target.value } })} />
-      <${Field} label="自我介绍 · EN" area value=${s.about.bio.en} onInput=${e=>setAbout({ bio:{ ...s.about.bio, en:e.target.value } })} />
+      <${Field} label="自我介绍 · 中" area rows=${10} value=${s.about.bio.zh} onInput=${e=>setAbout({ bio:{ ...s.about.bio, zh:e.target.value } })} />
+      <${Field} label="自我介绍 · EN" area rows=${10} value=${s.about.bio.en} onInput=${e=>setAbout({ bio:{ ...s.about.bio, en:e.target.value } })} />
       <div>
         <label>社交链接（标签 + 地址；邮箱用 mailto:）</label>
         <div class="section" style="gap:.5rem">
@@ -375,15 +375,16 @@ function App() {
     </div>`}
 
     ${tab==='commission' && html`<div class="section">
-      <${Field} label="引言 · 中" area value=${(s.commission.lead||{}).zh||''} onInput=${e=>setComm({ lead:{ ...(s.commission.lead||{}), zh:e.target.value } })} />
-      <${Field} label="引言 · EN" area value=${(s.commission.lead||{}).en||''} onInput=${e=>setComm({ lead:{ ...(s.commission.lead||{}), en:e.target.value } })} />
+      <${Field} label="引言 · 中" area rows=${10} value=${(s.commission.lead||{}).zh||''} onInput=${e=>setComm({ lead:{ ...(s.commission.lead||{}), zh:e.target.value } })} />
+      <${Field} label="引言 · EN" area rows=${10} value=${(s.commission.lead||{}).en||''} onInput=${e=>setComm({ lead:{ ...(s.commission.lead||{}), en:e.target.value } })} />
       <div>
-        <label>服务报价（名称 / 中文报价 / 英文报价）</label>
+        <label>服务报价（名称中 / 名称英(选填) / 中文报价 / 英文报价）</label>
         <div class="section" style="gap:.5rem">
           ${s.commission.tiers.map((row,i)=>html`<div class="row">
-            <input value=${row.k} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,k:e.target.value};setComm({tiers})}} />
-            <input value=${row.zh} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,zh:e.target.value};setComm({tiers})}} />
-            <input value=${row.en} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,en:e.target.value};setComm({tiers})}} />
+            <input placeholder="名称 · 中" value=${row.k} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,k:e.target.value};setComm({tiers})}} />
+            <input placeholder="名称 · EN（留空则用中文）" value=${row.kEn||''} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,kEn:e.target.value};setComm({tiers})}} />
+            <input placeholder="报价 · 中" value=${row.zh} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,zh:e.target.value};setComm({tiers})}} />
+            <input placeholder="报价 · EN" value=${row.en} onInput=${e=>{const tiers=[...s.commission.tiers];tiers[i]={...row,en:e.target.value};setComm({tiers})}} />
             <button class="btn danger" onClick=${()=>setComm({ tiers: s.commission.tiers.filter((_,j)=>j!==i) })}>×</button>
           </div>`)}
         </div>

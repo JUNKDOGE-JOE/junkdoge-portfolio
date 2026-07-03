@@ -7,6 +7,7 @@ import { Gallery } from '@/components/Gallery'
 import { getHomeProjects } from '@/lib/projects'
 import { useLang } from '@/lib/i18n'
 import { Reveal, RevealGroup } from '@/components/Reveal'
+import { ProgressRing } from '@/components/ProgressRing'
 import type { Project } from '@/content/projects'
 import { sfxClick } from '@/lib/sound'
 
@@ -21,11 +22,6 @@ const yearRange = projectYears.length
 // Zero-pad count, e.g. 09
 const padCount = (n: number) => String(n).padStart(2, '0')
 
-// SVG constants for the progress-ring counter (mirrors ProjectCounter)
-const COUNTER_SZ   = 112   // px — 7rem
-const COUNTER_R    = 53    // arc radius (leaves ~3px margin inside 112px)
-const COUNTER_CIRC = 2 * Math.PI * COUNTER_R
-
 export default function ProjectsPage() {
   const { t } = useLang()
   const [active,      setActive]      = useState<Project | null>(null)
@@ -39,9 +35,7 @@ export default function ProjectsPage() {
     setFocalIndex(allProjects.indexOf(p))
   }
 
-  // progress arc driven by focal index
-  const progress   = count > 0 ? (focalIndex + 1) / count : 0
-  const dashOffset = COUNTER_CIRC * (1 - progress)
+  const progress = count > 0 ? (focalIndex + 1) / count : 0
 
   return (
     <main className="relative h-screen w-screen overflow-hidden"
@@ -63,138 +57,32 @@ export default function ProjectsPage() {
             mid-left label that would collide with the "Featured NN projects" header. ── */}
       <CornerFurniture variant="projects" />
 
-      {/* ── Left-centre label: "Featured (09) projects" — desktop only (collides with the
-            circle ring on phones, where the ring + on-circle names carry the page) ── */}
-      <div className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 z-10 hidden md:flex flex-col gap-0.5"
+      {/* ── Header: "Featured (11) projects" — top-left, clear of the two circle rows ── */}
+      <div className="pointer-events-none absolute left-5 top-14 z-10 hidden md:block"
            style={{ fontFamily: 'Georgia, serif' }}>
         <RevealGroup>
           <Reveal>
-            <span
-              style={{
-                fontSize: '2.8rem',
-                fontWeight: 500,
-                lineHeight: 1,
-                color: 'rgba(28,22,20,0.82)',
-                display: 'block',
-              }}
-            >
-              Featured
-            </span>
-          </Reveal>
-          <Reveal>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'rgba(28,22,20,0.45)',
-                fontFamily: 'system-ui, sans-serif',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-              }}
-            >
-              ({padCount(count)})
-            </span>
-          </Reveal>
-          <Reveal>
-            <span
-              style={{
-                fontSize: '2.8rem',
-                fontWeight: 500,
-                fontStyle: 'italic',
-                lineHeight: 1,
-                color: 'rgba(28,22,20,0.82)',
-                display: 'block',
-              }}
-            >
-              projects
+            <span style={{ fontSize: '2.1rem', fontWeight: 500, lineHeight: 1.05, color: 'rgba(28,22,20,0.82)', display: 'block' }}>
+              Featured <span style={{ fontSize: '0.95rem', letterSpacing: '0.1em', color: 'rgba(28,22,20,0.45)', fontFamily: 'system-ui, sans-serif' }}>({padCount(count)})</span> <em>projects</em>
             </span>
           </Reveal>
         </RevealGroup>
       </div>
 
-      {/* ── Bottom-left navigation circle — progress ring (⑧) ── */}
+      {/* ── Bottom-left navigation circle — same clean layout as the home counter ── */}
       <div
-        className="pointer-events-none absolute bottom-6 left-5 z-10
-                   flex h-[7rem] w-[7rem] flex-col items-center justify-center
-                   rounded-full text-center"
+        className="pointer-events-none absolute bottom-4 left-4 z-10 hidden sm:flex
+                   h-24 w-24 flex-col items-center justify-center rounded-full text-center
+                   md:bottom-6 md:left-5 md:h-[7rem] md:w-[7rem]"
         style={{ color: 'rgba(28,22,20,0.75)' }}
       >
-        {/* SVG layer: faint track + progress arc + diagonal deco line */}
-        <svg
-          viewBox={`0 0 ${COUNTER_SZ} ${COUNTER_SZ}`}
-          width={COUNTER_SZ}
-          height={COUNTER_SZ}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{ rotate: '-90deg' }}
-        >
-          {/* Faint full-circle track */}
-          <circle
-            cx={COUNTER_SZ / 2}
-            cy={COUNTER_SZ / 2}
-            r={COUNTER_R}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity={0.15}
-            strokeWidth={1.5}
-          />
-          {/* Progress arc */}
-          <circle
-            cx={COUNTER_SZ / 2}
-            cy={COUNTER_SZ / 2}
-            r={COUNTER_R}
-            fill="none"
-            stroke="currentColor"
-            strokeOpacity={0.85}
-            strokeWidth={1.5}
-            strokeLinecap="round"
-            strokeDasharray={COUNTER_CIRC}
-            strokeDashoffset={dashOffset}
-            style={{ transition: 'stroke-dashoffset 0.6s ease' }}
-          />
-          {/* Decorative diagonal line — counter-rotated to appear upright */}
-          <line
-            x1={COUNTER_SZ * 0.7}
-            y1={COUNTER_SZ * 0.2}
-            x2={COUNTER_SZ * 0.3}
-            y2={COUNTER_SZ * 0.8}
-            stroke="currentColor"
-            strokeOpacity={0.3}
-            strokeWidth={0.8}
-            style={{ transformOrigin: `${COUNTER_SZ / 2}px ${COUNTER_SZ / 2}px`, rotate: '90deg' }}
-          />
-        </svg>
-        <span className="ui-label text-[0.55rem] opacity-60 mb-1">PROJECTS</span>
-        <span className="ui-label text-[0.55rem] opacity-60 mt-1">NAVIGATION</span>
-        {/* Current number: upper-left of circle */}
-        <span
-          className="absolute"
-          style={{
-            top: '22%',
-            left: '18%',
-            fontSize: '1.1rem',
-            fontWeight: 500,
-            lineHeight: 1,
-            transition: 'opacity 0.3s',
-          }}
-        >
-          {padCount(focalIndex + 1)}
+        <ProgressRing size={96} progress={progress} className="md:hidden" />
+        <ProgressRing size={112} progress={progress} className="hidden md:block" />
+        <span className="ui-label text-[0.5rem] opacity-60 md:text-[0.55rem]">PROJECTS</span>
+        <span className="text-xl font-medium leading-none tabular-nums md:text-[1.35rem]">
+          {padCount(focalIndex + 1)}<span className="mx-0.5 opacity-35">/</span>{padCount(count)}
         </span>
-        {/* Total: lower-right of circle */}
-        <span
-          className="absolute"
-          style={{
-            bottom: '22%',
-            right: '18%',
-            fontSize: '1.1rem',
-            fontWeight: 500,
-            lineHeight: 1,
-          }}
-        >
-          {padCount(count)}
-        </span>
+        <span className="ui-label text-[0.5rem] opacity-60 md:text-[0.55rem]">NAVIGATION</span>
       </div>
 
       {/* ── Right-centre: year range — nudged UP to clear the right circle track ── */}

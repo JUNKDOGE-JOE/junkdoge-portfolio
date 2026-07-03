@@ -105,7 +105,7 @@ export function Gallery({
       onWheelCapture={stopWheel}
     >
       <div data-g="backdrop" onClick={onClose} className="absolute inset-0 bg-black/85 backdrop-blur-2xl" />
-      <div data-g="panel" className="absolute inset-0 flex flex-col gap-8 overflow-hidden p-8 md:flex-row md:p-16">
+      <div data-g="panel" className="absolute inset-0 flex flex-col gap-6 overflow-hidden p-5 md:flex-row md:gap-8 md:p-16">
 
         {/* ── ⑪ Left column: masked stagger reveal ────────────────────────── */}
         <RevealGroup className="shrink-0 md:w-1/3" delay={0.15}>
@@ -115,7 +115,7 @@ export function Gallery({
             aria-label="close gallery"
             className="ui-label mb-10 opacity-70 transition-opacity hover:opacity-100"
           >✕ CLOSE</button>
-          <Reveal><h2 className="display-italic text-4xl font-medium leading-[0.95] md:text-6xl">{t(project.title)}</h2></Reveal>
+          <Reveal><h2 className="display-italic text-3xl font-medium leading-[0.95] md:text-6xl">{t(project.title)}</h2></Reveal>
           <Reveal className="mt-4"><p className="ui-label opacity-70">{t(project.role)} / {project.year}</p></Reveal>
           <Reveal className="mt-5"><p className="max-w-xs text-sm leading-relaxed opacity-80">{t(project.desc)}</p></Reveal>
         </RevealGroup>
