@@ -315,8 +315,8 @@
       "en": "Dev · AE Automation"
     },
     "desc": {
-      "zh": "Agent 驱动的 After Effects 自动化：MCP + CEP 双端架构，30+ 工具让 AI 直接操控 AE。⭐22",
-      "en": "Agent-driven After Effects automation: MCP + CEP dual architecture, 30+ ae.* tools for AI to drive AE. ⭐22"
+      "zh": "Agent 驱动的 After Effects 自动化：MCP + CEP 双端架构，30+ 工具让 AI 直接操控 AE。",
+      "en": "Agent-driven After Effects automation: MCP + CEP dual architecture, 30+ ae.* tools for AI to drive AE."
     },
     "cover": "/covers/aemcp.jpg",
     "devVisual": "/covers/aemcp.jpg",

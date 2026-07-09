@@ -14,7 +14,7 @@ function visitHref(p: Project): string {
   return p.links.bilibili || p.links.github || p.links.external || '#'
 }
 
-export function Slide({ project }: { project: Project }) {
+export function Slide({ project, githubStars }: { project: Project; githubStars?: number }) {
   const { t, lang } = useLang()
   const dark = isImageSkin(project)
   const circleSrc = project.devVisual ?? project.cover
@@ -149,7 +149,10 @@ export function Slide({ project }: { project: Project }) {
           {/* Description mask — skipped entirely when the project has no blurb */}
           {t(project.desc) && (
             <span className="block overflow-hidden" data-reveal>
-              <p className="block max-w-[15rem] text-left text-sm leading-relaxed opacity-90">{t(project.desc)}</p>
+              <p className="block max-w-[15rem] text-left text-sm leading-relaxed opacity-90">
+                {t(project.desc)}
+                {typeof githubStars === 'number' && <> · ⭐{githubStars}</>}
+              </p>
             </span>
           )}
 
