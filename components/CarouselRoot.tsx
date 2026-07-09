@@ -12,9 +12,11 @@ import { isImageSkin } from '@/lib/projects'
 import { SlideBackground } from './SlideBackground'
 import { isGalleryOpen } from './Gallery'
 import { sfxSlide } from '@/lib/sound'
+import { fetchGitHubStarCount } from '@/lib/github'
 
 export function CarouselRoot({ projects }: { projects: Project[] }) {
   const [index, setIndex] = useState(0)
+  const [githubStars, setGitHubStars] = useState<Record<string, number>>({})
   const current = projects[index]
   const isMobile = useIsMobile()
   const lock = useRef(false)
@@ -26,6 +28,21 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
     sfxSlide(dir)
     setIndex((i) => (dir === 1 ? nextIndex(i, projects.length) : prevIndex(i, projects.length)))
   }, [projects.length])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const githubProjects = projects.filter((project) => project.links.github)
+
+    void Promise.all(githubProjects.map(async (project) => {
+      const count = await fetchGitHubStarCount(project.links.github!, { signal: controller.signal })
+      return count === null ? null : [project.slug, count] as const
+    })).then((entries) => {
+      if (controller.signal.aborted) return
+      setGitHubStars(Object.fromEntries(entries.filter((entry) => entry !== null)))
+    })
+
+    return () => controller.abort()
+  }, [projects])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -112,7 +129,7 @@ export function CarouselRoot({ projects }: { projects: Project[] }) {
           transition={{ duration: 0.55, ease: 'easeIn' }}
           className="absolute inset-0"
         >
-          <Slide project={current} />
+          <Slide project={current} githubStars={githubStars[current.slug]} />
         </motion.div>
       </AnimatePresence>
 
