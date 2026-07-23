@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { Noto_Sans_SC } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/Providers'
-import { ViewTransitions } from 'next-view-transitions'
 import { DeviceTilt } from '@/components/DeviceTilt'
 import { site } from '@/lib/site'
 
@@ -17,9 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh">
       <body className={noto.variable} style={{ fontFamily: 'var(--font-noto), system-ui, sans-serif' }}>
-        <ViewTransitions>
-          <Providers>{children}</Providers>
-        </ViewTransitions>
+        <Providers>{children}</Providers>
         {/* 全局「装修中」提示 —— 固定顶部居中,脉动点 + 文字,不挡交互 */}
         <div aria-hidden className="pointer-events-none fixed top-14 md:top-3 left-1/2 z-40 -translate-x-1/2">
           <span

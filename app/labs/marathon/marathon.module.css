@@ -86,15 +86,84 @@
 .mrNavLinkOn { color: var(--mr-acid) !important; }
 
 .mrNavCta {
+  border: 0;
   padding: 0.7em 1.3em;
   background: var(--mr-acid);
   color: #0a0a0b !important;
-  font-weight: 600;
+  font: inherit;
+  font-weight: 500;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
   transition: opacity 0.2s linear;
 }
 
 .mrNavCta:hover { opacity: 0.85; }
+
+.mrContactLauncher {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+}
+
+.mrContactOptions {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: 0;
+  display: grid;
+  width: min(18rem, calc(100vw - 2rem));
+  padding: 0.35rem;
+  border: 1px solid var(--mr-line2);
+  background: rgba(10, 10, 11, 0.96);
+  box-shadow: 0 1.25rem 4rem rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(14px);
+  animation: mr-contact-in 0.24s var(--mr-ease) both;
+}
+
+.mrContactLauncherInline .mrContactOptions {
+  top: auto;
+  right: 0;
+  bottom: calc(100% + 0.7rem);
+}
+
+@keyframes mr-contact-in {
+  from { opacity: 0; transform: translateY(-0.6rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.mrContactOption {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 3.35rem;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--mr-line2);
+  color: var(--mr-ink);
+  text-decoration: none;
+  transition: background 0.2s linear, color 0.2s linear;
+}
+
+.mrContactOption:last-child { border-bottom: 0; }
+.mrContactOption:hover { background: var(--mr-acid); color: #0a0a0b; }
+
+.mrContactOption span {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.mrContactOption small {
+  overflow: hidden;
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.68;
+}
+
+.mrContactOption b { font-size: 0.85rem; font-weight: 500; }
 
 .mrNavLang {
   display: inline-flex;
@@ -167,7 +236,7 @@
   padding: 0.95em 1.6em;
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-decoration: none;
@@ -207,7 +276,7 @@
   padding: 0.55rem 1.35rem;
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -267,13 +336,13 @@
 .mrHeroContent {
   position: absolute;
   left: 4vw;
-  bottom: 30vh;
+  bottom: 18vh;
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.4rem;
-  max-width: 40rem;
+  max-width: min(36rem, 88vw);
 }
 
 /* miracool 式 SCROLL 提示 */
@@ -297,7 +366,7 @@
 .mrScrollLabel {
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.62rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.28em;
   text-transform: uppercase;
 }
@@ -316,38 +385,15 @@
 
 .mrHeroStatement {
   margin: 0;
-  font-size: clamp(1.25rem, 2.4vw, 1.9rem);
+  white-space: pre-line;
+  font-size: clamp(1.35rem, 3.2vw, 2.35rem);
   font-weight: 700;
-  line-height: 1.55;
+  line-height: 1.45;
   letter-spacing: 0.02em;
   color: var(--mr-ink);
 }
 
 .mrHeroStatement b { color: var(--mr-acid); font-weight: 700; }
-
-/* 唯一焦点:贴底巨标,下缘被视口裁切。
-   font-size 由 JS 实测字宽换算(整词 ≤92vw,左右各 ≥4vw),此处仅为首帧回退值 */
-.mrHeroWord {
-  position: absolute;
-  left: 4vw;
-  bottom: -0.16em;
-  z-index: 1;
-  margin: 0;
-  font-family: var(--font-mr-anton), var(--font-noto), sans-serif;
-  font-size: 15vw;
-  line-height: 0.82;
-  letter-spacing: 0.002em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--mr-ink);
-  user-select: none;
-  animation: mr-word-in 0.9s var(--mr-ease) 0.3s both;
-}
-
-@keyframes mr-word-in {
-  from { transform: translateY(0.42em); opacity: 0; }
-  to { transform: none; opacity: 1; }
-}
 
 /* ============================================================
    区块节奏 — kicker + 巨型陈述标题 + 正文,大留白
@@ -379,6 +425,7 @@
 
 .mrAbout {
   position: relative;
+  scroll-margin-top: 3.5rem;
   padding: clamp(7rem, 15vw, 13rem) 4vw;
 }
 
@@ -417,86 +464,133 @@
 .mrSpecVal { color: #e8e8ec; font-weight: 500; }
 
 /* ============================================================
-   STICKY WORKS TRACK — 垂直滚动驱动横向轨道(lerp 平滑)
+   HORIZONTAL WORKS — 一屏一作：画面滚轮横切作品，右侧槽位纵滚页面
    ============================================================ */
 
-.mrStickyWorks { position: relative; }
-
-.mrStickyWrap {
-  position: sticky;
-  top: 0;
+.mrHWorks {
+  position: relative;
   height: 100svh;
+  min-height: 560px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  scroll-margin-top: 0;
   border-block: 1px solid var(--mr-line2);
+  background: var(--mr-bg);
 }
 
-.mrTickerEdgeTop,
-.mrTickerEdgeB {
+.mrHHead {
   position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 6;
-}
-
-.mrTickerEdgeTop { top: 0; }
-.mrTickerEdgeB { bottom: 0; }
-
-/* ---- 轨道背景肌理:扫一眼几乎察觉不到,细看才有 ---- */
-
-.mrTrackBg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background:
-    radial-gradient(58% 46% at 72% 42%, rgba(216, 255, 61, 0.03), transparent 70%),
-    repeating-linear-gradient(to right, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 8rem),
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 8rem);
-}
-
-.mrTrackBgWord {
-  position: absolute;
-  left: 2vw;
-  top: 6%;
-  font-family: var(--font-mr-anton), var(--font-noto), sans-serif;
-  font-size: 21vw;
-  line-height: 0.8;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.05);
-  user-select: none;
-}
-
-.mrTrackBgWordB {
-  position: absolute;
-  right: 3vw;
-  bottom: 8%;
-  font-family: var(--font-mr-anton), var(--font-noto), sans-serif;
-  font-size: 10vw;
-  line-height: 0.8;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.03);
-  user-select: none;
-}
-
-.mrTrackHead {
-  position: absolute;
-  top: 3.1rem;
-  left: 6vw;
-  right: 6vw;
-  z-index: 5;
+  top: 4.5rem;
+  left: 4vw;
+  right: 5.5rem;
+  z-index: 8;
   display: flex;
   align-items: center;
   gap: 1.5rem;
   pointer-events: none;
 }
+
+.mrHRail {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.mrHRail::-webkit-scrollbar { display: none; }
+
+.mrHHud {
+  position: absolute;
+  left: 4vw;
+  right: 5.5rem;
+  bottom: 1.35rem;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--mr-dim);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.mrHHud b {
+  color: var(--mr-acid);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.mrTrackProgWrap {
+  flex: 1;
+  height: 2px;
+  background: var(--mr-line2);
+}
+
+.mrTrackProg {
+  width: 0;
+  height: 100%;
+  background: var(--mr-acid);
+}
+
+.mrPageLane {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 4.8rem;
+  height: 100%;
+  padding: 1rem 0.35rem;
+  color: #0a0a0b;
+  cursor: ns-resize;
+  user-select: none;
+}
+
+.mrPageLane::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: 3.7rem;
+  height: min(15rem, 42vh);
+  background: var(--mr-acid);
+  clip-path: polygon(0 1.2rem, 1.2rem 0, 100% 0, 100% calc(100% - 1.2rem), calc(100% - 1.2rem) 100%, 0 100%);
+  transform: translate(-50%, -50%);
+}
+
+.mrPageLane span,
+.mrPageLane small {
+  position: relative;
+  z-index: 1;
+  writing-mode: vertical-rl;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.mrPageLane b {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.mrPageLane small { opacity: 0.72; }
 
 .mrTrackMeta {
   margin-left: auto;
@@ -509,204 +603,242 @@
   white-space: nowrap;
 }
 
-.mrTrack {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: clamp(1.5rem, 3vw, 3rem);
-  width: max-content;
-  height: 100%;
-  padding: 6.5rem 6vw 5.5rem;
-  will-change: transform;
-}
-
-.mrTrackHud {
-  position: absolute;
-  left: 6vw;
-  right: 6vw;
-  bottom: 3.1rem;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  font-family: var(--font-noto), system-ui, sans-serif;
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--mr-dim);
-  pointer-events: none;
-}
-
-.mrTrackHud b { color: var(--mr-acid); font-weight: 600; font-variant-numeric: tabular-nums; }
-
-.mrTrackProgWrap {
-  flex: 1;
-  height: 2px;
-  background: var(--mr-line2);
-}
-
-.mrTrackProg {
-  height: 100%;
-  width: 0;
-  background: var(--mr-acid);
-}
-
-/* ---- track cards:截图是绝对主角,信息区在图下方 ---- */
-
-.mrCard {
+.mrPanel {
   --mr-acc: var(--mr-acid);
   position: relative;
   flex: none;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--mr-line2);
-  background: var(--mr-panel);
-  transition: border-color 0.25s linear;
-}
-
-.mrCard:hover { border-color: color-mix(in srgb, var(--mr-acc) 55%, transparent); }
-
-/* 桌面宽度分级 34–56vw */
-.mrCardL { width: min(46rem, 56vw); }
-.mrCardM { width: min(34rem, 44vw); }
-.mrCardS { width: min(26rem, 34vw); }
-
-.mrCardUp { align-self: flex-start; }
-.mrCardMid { align-self: center; }
-.mrCardDown { align-self: flex-end; }
-
-.mrCardBar { height: 2px; background: var(--mr-acc); flex: none; }
-
-/* 图区:统一 16:9,占卡高 ≥65%,不参与 flex 压缩 */
-.mrCardImg {
-  position: relative;
-  flex: none;
+  width: 100vw;
+  height: 100%;
+  scroll-snap-align: start;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
-  background: #0a0a0b;
+  isolation: isolate;
   border-bottom: 1px solid var(--mr-line2);
 }
 
-.mrCardImg img {
+.mrPanelBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.mrPanelBg img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform:
+    translate3d(var(--mr-bg-x, 0px), var(--mr-bg-y, 0px), 0)
+    scale(1.14);
+  filter: blur(14px) saturate(1.32) brightness(1.16);
+  opacity: 0.96;
+  transition: transform 0.38s ease-out;
+  will-change: transform;
 }
 
-/* 降饱和罩层 — hover/扫过后显彩色,opacity 切换 */
-.mrCardImg::before {
-  content: "";
+.mrPanelScrim {
   position: absolute;
   inset: 0;
+  background:
+    linear-gradient(90deg, rgba(10, 10, 11, 0.84) 0%, rgba(10, 10, 11, 0.66) 44%, rgba(10, 10, 11, 0.34) 100%),
+    linear-gradient(180deg, rgba(10, 10, 11, 0.46) 0%, rgba(10, 10, 11, 0.14) 48%, rgba(10, 10, 11, 0.62) 100%);
+}
+
+.mrPanelInner {
+  position: relative;
   z-index: 1;
-  background: rgb(132 132 140 / 0.55);
-  mix-blend-mode: saturation;
-  transition: opacity 0.3s linear;
-  pointer-events: none;
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.78fr) minmax(0, 1.42fr);
+  align-items: center;
+  gap: clamp(1.25rem, 3vw, 3.5rem);
+  height: 100%;
+  padding: 7.5rem 6.5rem 4.5rem 4vw;
+  perspective: 1100px;
 }
 
-.mrCard.mrScanned .mrCardImg::before,
-.mrCard:hover .mrCardImg::before { opacity: 0; }
+.mrPanelCopyTilt,
+.mrPanelFigTilt {
+  align-self: center;
+  width: 100%;
+  transform-origin: center;
+}
 
-/* accent 扫描线 — 进入视口一次 + hover 重放,顺滑缓动 */
-.mrCardImg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: linear-gradient(
-    180deg,
-    transparent 40%,
-    color-mix(in srgb, var(--mr-acc) 30%, transparent) 50%,
-    transparent 60%
+.mrPanelFigTilt {
+  justify-self: stretch;
+}
+
+.mrPanelCopy {
+  padding: 1px;
+  background: linear-gradient(135deg, var(--mr-acc), rgba(255, 255, 255, 0.18) 42%, rgba(255, 255, 255, 0.06));
+  clip-path: polygon(
+    0 0,
+    calc(100% - 3.2rem) 0,
+    100% 3.2rem,
+    100% calc(100% - 1.6rem),
+    calc(100% - 1.6rem) 100%,
+    2.25rem 100%,
+    0 calc(100% - 2.25rem)
   );
-  transform: translateY(-101%);
-  pointer-events: none;
+  transform-style: preserve-3d;
 }
 
-.mrCard.mrScanned .mrCardImg::after { animation: mr-scan 0.8s var(--mr-ease) both; }
-.mrCard:hover .mrCardImg::after { animation: mr-scan 0.6s var(--mr-ease) both; }
-
-@keyframes mr-scan {
-  to { transform: translateY(101%); }
-}
-
-.mrCardBody {
+.mrPanelCopyInner {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.9rem 1.1rem 1.05rem;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: clamp(29rem, 68vh, 38rem);
+  padding: clamp(2rem, 4vw, 3.75rem);
+  background: rgba(12, 12, 14, 0.9);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 3.2rem) 0,
+    100% 3.2rem,
+    100% calc(100% - 1.6rem),
+    calc(100% - 1.6rem) 100%,
+    2.25rem 100%,
+    0 calc(100% - 2.25rem)
+  );
+  transform: translateZ(18px);
 }
 
-.mrCardFile {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
+.mrPanelFile {
+  margin: 0.4rem 0 0;
   font-family: var(--font-noto), system-ui, sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.66rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mr-acc);
+}
+
+.mrPanelTitle {
+  margin: 0.2rem 0 0;
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--mr-ink);
+}
+
+.mrPanelEn {
+  margin: 0;
+  font-family: var(--font-noto), system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--mr-dim);
-  white-space: nowrap;
-  overflow: hidden;
 }
 
-.mrCardNo { color: var(--mr-acc); font-weight: 600; }
-
-.mrCardTitle {
-  margin: 0.1rem 0 0;
-  font-weight: 900;
-  line-height: 1.2;
-  letter-spacing: 0.01em;
-}
-
-.mrCardL .mrCardTitle { font-size: 1.7rem; }
-.mrCardM .mrCardTitle { font-size: 1.3rem; }
-.mrCardS .mrCardTitle { font-size: 1.05rem; }
-
-.mrCardEn {
-  font-family: var(--font-noto), system-ui, sans-serif;
-  font-size: 0.62rem;
+.mrPanelMeta {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mr-dim);
+  letter-spacing: 0.06em;
+  color: var(--mr-acid);
 }
 
-.mrCardDesc {
-  font-size: 0.8rem;
-  line-height: 1.7;
+.mrPanelDesc {
+  margin: 0.7rem 0 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.75;
   color: #c9c9cf;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.mrCardFoot {
+.mrPanelFoot {
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
   flex-wrap: wrap;
-  margin-top: 0.35rem;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
 }
 
-.mrChip {
-  padding: 0.28em 0.7em;
-  border: 1px solid var(--mr-line);
-  color: var(--mr-dim);
-  font-family: var(--font-noto), system-ui, sans-serif;
+.mrPanelScrollHint {
+  margin-top: auto;
+  padding-top: 2rem;
   font-size: 0.6rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  white-space: nowrap;
+  color: var(--mr-dim);
+}
+
+.mrPanelFig {
+  position: relative;
+  z-index: 2;
+  justify-self: stretch;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 1px;
+  border: 0;
+  background: linear-gradient(315deg, var(--mr-acc), rgba(255, 255, 255, 0.22) 38%, rgba(255, 255, 255, 0.06));
+  overflow: hidden;
+  cursor: pointer;
+  clip-path: polygon(
+    4rem 0,
+    100% 0,
+    100% calc(100% - 3rem),
+    calc(100% - 3rem) 100%,
+    0 100%,
+    0 4rem
+  );
+  transition: filter 0.25s linear, transform 0.35s var(--mr-ease);
+  transform-style: preserve-3d;
+}
+
+.mrPanelFig:hover {
+  filter: saturate(1.08) brightness(1.05);
+}
+
+.mrPanelFig img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: translateZ(16px) scale(1.015);
+  clip-path: polygon(
+    4rem 0,
+    100% 0,
+    100% calc(100% - 3rem),
+    calc(100% - 3rem) 100%,
+    0 100%,
+    0 4rem
+  );
+}
+
+.mrPanelFigMeta {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.15rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(10, 10, 11, 0.78);
+  color: var(--mr-ink);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  transform: translateZ(32px);
+}
+
+.mrPanelFigMeta b {
+  color: var(--mr-acc);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mrPanelDev .mrPanelFig {
+  aspect-ratio: 16 / 10;
 }
 
 .mrCardLink {
@@ -718,7 +850,7 @@
   color: var(--mr-acid);
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.6rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
@@ -727,54 +859,6 @@
 
 .mrCardLink:hover { background: var(--mr-acid); color: #0a0a0b; }
 
-/* 整卡点击(stretched-button),链接/角色行在其上层 */
-.mrCardHit {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-/* dev 项目:竖版 UI 截图 — 16:10 + 顶部对齐 + 减弱罩层保可读 */
-.mrCardDev .mrCardImg { aspect-ratio: 16 / 10; }
-.mrCardDev .mrCardImg::before { background: rgb(132 132 140 / 0.28); }
-
-/* ---- 轨道终止卡 ---- */
-
-.mrCardEnd {
-  width: min(19rem, 26vw);
-  align-self: center;
-  border-style: dashed;
-}
-
-.mrCardEndBody {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  padding: 2.2rem 1.2rem 2.4rem;
-}
-
-.mrCardEndWord {
-  font-family: var(--font-mr-anton), var(--font-noto), sans-serif;
-  font-size: 1.7rem;
-  line-height: 1;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.mrCardEndMeta {
-  font-family: var(--font-noto), system-ui, sans-serif;
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--mr-dim);
-}
-
 /* ============================================================
    COMMISSION — 纯白反转:巨型黑标题 + 细线价目 + 黑色 CTA 条
    ============================================================ */
@@ -782,6 +866,7 @@
 .mrWhite {
   background: #ffffff;
   color: #0a0a0b;
+  scroll-margin-top: 3.5rem;
   padding: clamp(7rem, 15vw, 13rem) 4vw;
 }
 
@@ -824,7 +909,7 @@
   color: #8a8a8e;
 }
 
-.mrTierName { font-size: clamp(1.05rem, 2vw, 1.4rem); font-weight: 900; letter-spacing: 0.01em; }
+.mrTierName { font-size: clamp(1.05rem, 2vw, 1.4rem); font-weight: 700; letter-spacing: -0.01em; }
 
 .mrTierNameEn {
   margin-top: 0.3rem;
@@ -839,7 +924,7 @@
 .mrTierPrice {
   text-align: right;
   font-size: clamp(1.1rem, 2.4vw, 1.75rem);
-  font-weight: 900;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -865,7 +950,7 @@
   color: #ffffff;
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: clamp(0.78rem, 1.6vw, 1rem);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.06em;
 }
 
@@ -873,7 +958,7 @@
   display: block;
   margin-bottom: 0.5em;
   font-size: 0.6rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
@@ -901,7 +986,7 @@
   margin: 0 0 0.5rem;
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.64rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--mr-dim);
@@ -974,12 +1059,32 @@
   background: #0c0c0e;
   border: 1px solid var(--mr-line2);
   overflow: hidden;
-  animation: mr-ov-in 0.55s var(--mr-ease) both;
+  animation: mr-ov-in 0.46s var(--mr-ease) both;
 }
 
 @keyframes mr-ov-in {
-  from { opacity: 0; transform: translateY(26px); clip-path: inset(0 0 100% 0); }
-  to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+  from { opacity: 0; transform: translateY(2rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.mrOvClosing { pointer-events: none; }
+
+.mrOvClosing .mrOvBackdrop {
+  animation: mr-ov-fade-out 0.34s ease both;
+}
+
+.mrOvClosing .mrOvPanel {
+  animation: mr-ov-out 0.34s ease both;
+}
+
+@keyframes mr-ov-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes mr-ov-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(1.5rem); }
 }
 
 /* 左栏信息 */
@@ -1001,7 +1106,7 @@
   color: var(--mr-dim);
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   cursor: pointer;
@@ -1013,9 +1118,9 @@
 .mrOvTitle {
   margin: 0;
   font-size: clamp(1.9rem, 3.4vw, 3.2rem);
-  font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
 }
 
 .mrOvEn {
@@ -1030,7 +1135,7 @@
 .mrOvMeta {
   font-family: var(--font-noto), system-ui, sans-serif;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--mr-acid);
@@ -1038,6 +1143,7 @@
 
 .mrOvDesc {
   font-size: 0.86rem;
+  font-weight: 400;
   line-height: 1.9;
   color: #c9c9cf;
 }
@@ -1069,23 +1175,66 @@
   overflow-y: auto;
   scrollbar-width: none;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-content: start;
   gap: 1rem;
 }
 
+.mrOvFigSlot {
+  flex: none;
+  width: 100%;
+  perspective: 900px;
+}
+
 .mrOvFig {
+  --mr-ov-cut: clamp(1.1rem, 2.2vw, 2.2rem);
+  width: 100%;
   overflow: hidden;
   border: 1px solid var(--mr-line2);
   background: var(--mr-panel);
+  clip-path: polygon(
+    var(--mr-ov-cut) 0,
+    100% 0,
+    100% calc(100% - var(--mr-ov-cut)),
+    calc(100% - var(--mr-ov-cut)) 100%,
+    0 100%,
+    0 var(--mr-ov-cut)
+  );
 }
 
-.mrOvGallery .mrOvFig { aspect-ratio: 16 / 9; }
-.mrOvFigDev { aspect-ratio: 5 / 11; }
-
-.mrOvTilt { width: 100%; height: 100%; }
+.mrOvTilt {
+  width: 100%;
+  height: auto;
+}
 
 .mrOvTilt img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.mrOvMorph {
+  --mr-ov-cut: clamp(1.1rem, 2.2vw, 2.2rem);
+  position: fixed;
+  z-index: 95;
+  overflow: hidden;
+  border: 1px solid var(--mr-line2);
+  background: var(--mr-panel);
+  opacity: 0;
+  pointer-events: none;
+  will-change: top, left, width, height;
+  clip-path: polygon(
+    var(--mr-ov-cut) 0,
+    100% 0,
+    100% calc(100% - var(--mr-ov-cut)),
+    calc(100% - var(--mr-ov-cut)) 100%,
+    0 100%,
+    0 var(--mr-ov-cut)
+  );
+}
+
+.mrOvMorph img {
   display: block;
   width: 100%;
   height: 100%;
@@ -1111,41 +1260,19 @@
   .mrAboutGrid { grid-template-columns: 1fr; }
   .mrFootGrid { grid-template-columns: 1fr 1fr; }
   .mrFootMotto { grid-column: 1 / -1; }
-}
 
-@media (max-width: 760px), (prefers-reduced-motion: reduce) {
-  .mrStickyWorks { height: auto !important; }
-
-  .mrStickyWrap {
-    position: static;
-    height: auto;
-    overflow: visible;
-    display: block;
+  .mrPanelInner {
+    grid-template-columns: minmax(16rem, 0.85fr) minmax(0, 1.15fr);
+    gap: 1.25rem;
+    padding: 7rem 5rem 4rem 3vw;
   }
 
-  .mrTickerEdgeTop,
-  .mrTickerEdgeB { position: static; }
-
-  .mrTrackHead { position: static; padding: 1.1rem 1.25rem 0; }
-
-  .mrTrack {
-    width: auto;
-    height: auto;
-    transform: none !important;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 1.25rem 1.25rem 1.75rem;
-    -webkit-overflow-scrolling: touch;
+  .mrPanelFig {
+    justify-self: stretch;
+    width: 100%;
   }
 
-  .mrCard {
-    scroll-snap-align: center;
-    width: 82vw !important;
-    max-width: 22rem;
-    align-self: auto;
-  }
-
-  .mrTrackHud { display: none; }
+  .mrPanelCopyInner { min-height: clamp(25rem, 66vh, 32rem); }
 }
 
 @media (max-width: 760px) {
@@ -1154,11 +1281,42 @@
   .mrNavLinks a:not(.mrNavCta):nth-child(3) { display: none; }
 
   .mrHero { min-height: 560px; }
-  .mrHeroContent { left: 5vw; right: 5vw; bottom: 32vh; gap: 1.1rem; }
-  .mrHeroWord { left: 4vw; }
+  .mrHeroContent { left: 5vw; right: 5vw; bottom: 14vh; gap: 1.1rem; }
   .mrScrollCue { bottom: 1.25rem; }
 
-  .mrTrackBg { display: none; }
+  .mrHHead {
+    top: 3.45rem;
+    left: 5vw;
+    right: 5vw;
+    min-height: 3.5rem;
+  }
+  .mrTrackMeta { display: none; }
+  .mrPanel { min-height: auto; }
+  .mrPanelInner {
+    grid-template-columns: 1fr;
+    align-content: start;
+    gap: 1rem;
+    overflow-y: auto;
+    padding: 6.5rem 5vw 4rem;
+  }
+  .mrPanelCopyInner {
+    min-height: auto;
+    padding: 1.75rem 1.5rem 2rem;
+  }
+  .mrPageLane { display: none; }
+  .mrHHud { right: 5vw; }
+  .mrPanelFig,
+  .mrPanelFig img {
+    clip-path: polygon(
+      2.4rem 0,
+      100% 0,
+      100% calc(100% - 2rem),
+      calc(100% - 2rem) 100%,
+      0 100%,
+      0 2.4rem
+    );
+  }
+  .mrPanelDesc { -webkit-line-clamp: 3; }
 
   .mrSpecRow { grid-template-columns: 1fr; gap: 0.3rem; }
 
@@ -1183,26 +1341,25 @@
   .mrTickerTrack,
   .mrSwap,
   .mrScrollLine,
+  .mrPanelFig,
   .mrOvBackdrop,
   .mrOvPanel,
-  .mrOvItem {
+  .mrOvItem,
+  .mrContactOptions {
     animation: none !important;
   }
+
+  .mrHRail { scroll-behavior: auto; }
 
   .mrOvItem { opacity: 1 !important; }
 
   .mrReveal { opacity: 1 !important; transform: none !important; }
 
-  .mrCardImg::after { display: none; }
-
-  .mrCardImg::before { opacity: 0; }
-
-  .mrCard,
-  .mrCardImg::before,
   .mrBtn,
   .mrCardLink,
   .mrNav,
-  .mrFootLink {
+  .mrFootLink,
+  .mrPanelFig {
     transition: none !important;
   }
 }

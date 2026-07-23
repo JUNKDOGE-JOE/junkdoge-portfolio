@@ -1,7 +1,7 @@
 'use client'
 /* eslint-disable @next/next/no-img-element */
 // MARATHON — 准上线候选：showreel 首屏 + 作品 / 关于 / 委托单页锚点
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react'
 import { projects, type Localized } from '@/content/projects'
 import { site } from '@/lib/site'
 import { LangProvider, useLang, ui } from '@/lib/i18n'
@@ -21,8 +21,8 @@ const MR = {
   ctaWorks: { zh: '查看作品 ↓', en: 'VIEW WORKS ↓' },
   ctaCollab: { zh: '委托合作 ↗', en: 'COMMISSION ↗' },
   heroStatement: {
-    zh: '动效设计师 & 创意开发者 —— 以文字、映像与代码构建视觉。',
-    en: 'Motion designer & creative developer — building visuals with type, image and code.',
+    zh: '你好，我是 JUNK_DOGE。\nMotion Designer & 创意开发',
+    en: "Hi, I'm JUNK_DOGE.\nMotion Designer & Creative Developer",
   },
   aboutTitle: { zh: '文字 × 映像 × 代码', en: 'TYPE × IMAGE × CODE' },
   secAbout: { zh: '02 / 关于', en: '02 / ABOUT' },
@@ -48,6 +48,70 @@ function Swap({ children, className = '' }: { children: ReactNode; className?: s
     <span key={lang} className={`${styles.mrSwap} ${className}`}>
       {children}
     </span>
+  )
+}
+
+/* ---------------- 联系方式展开菜单 ---------------- */
+
+function ContactLauncher({ inline = false }: { inline?: boolean }) {
+  const { t } = useLang()
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const menuId = useId()
+
+  useEffect(() => {
+    if (!open) return
+    const onPointerDown = (event: PointerEvent) => {
+      if (!wrapRef.current?.contains(event.target as Node)) setOpen(false)
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  return (
+    <div
+      ref={wrapRef}
+      className={`${styles.mrContactLauncher} ${inline ? styles.mrContactLauncherInline : ''}`}
+    >
+      <button
+        type="button"
+        className={inline ? `${styles.mrBtn} ${styles.mrBtnAcid}` : styles.mrNavCta}
+        aria-expanded={open}
+        aria-controls={menuId}
+        onClick={() => setOpen((value) => !value)}
+      >
+        <Swap>{t(MR.ctaCollab)}</Swap>
+      </button>
+      {open ? (
+        <div id={menuId} className={styles.mrContactOptions} role="menu">
+          {site.commission.channels.map((channel) => {
+            const external = channel.href.startsWith('http')
+            return (
+              <a
+                key={channel.label}
+                className={styles.mrContactOption}
+                href={channel.href}
+                role="menuitem"
+                target={external ? '_blank' : undefined}
+                rel={external ? 'noreferrer' : undefined}
+                onClick={() => setOpen(false)}
+              >
+                <span>{channel.label}</span>
+                <small>{channel.value}</small>
+                <b aria-hidden>{'↗'}</b>
+              </a>
+            )
+          })}
+        </div>
+      ) : null}
+    </div>
   )
 }
 
@@ -87,7 +151,6 @@ function Nav() {
     return () => io.disconnect()
   }, [])
 
-  const email = site.about.links.find((l) => l.label === 'EMAIL')
   const linkClass = (id: SectionId) =>
     `${styles.mrNavLink} ${active === id ? styles.mrNavLinkOn : ''}`
 
@@ -116,40 +179,19 @@ function Nav() {
           <span aria-hidden>{' / '}</span>
           <span className={lang === 'en' ? styles.mrNavLangOn : undefined}>{'EN'}</span>
         </button>
-        {email ? (
-          <a className={styles.mrNavCta} href={email.href}>
-            <Swap>{t(MR.ctaCollab)}</Swap>
-          </a>
-        ) : null}
+        <ContactLauncher />
       </nav>
     </header>
   )
 }
 
-/* ---------------- HERO: showreel 全 bleed + 贴底巨标 ---------------- */
+/* ---------------- HERO: showreel 全 bleed + 自我介绍 ---------------- */
 
 function Hero() {
   const { t } = useLang()
   const visualRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const wordRef = useRef<HTMLHeadingElement>(null)
   const { src, poster } = site.showreel
-
-  // 巨标精确拟合:实测 100px 基准字宽 → 换算 font-size,整词永远 ≤92vw
-  useEffect(() => {
-    const el = wordRef.current
-    if (!el) return
-    const fit = () => {
-      el.style.fontSize = '100px'
-      const w = el.scrollWidth || 1
-      const px = Math.min((window.innerWidth * 0.92 * 100) / w, window.innerHeight * 0.28)
-      el.style.fontSize = `${px.toFixed(1)}px`
-    }
-    fit()
-    window.addEventListener('resize', fit)
-    document.fonts.ready.then(fit).catch(() => undefined)
-    return () => window.removeEventListener('resize', fit)
-  }, [])
 
   // 视差 + reduced-motion 时停视差并暂停自动播放
   useEffect(() => {
@@ -212,9 +254,9 @@ function Hero() {
 
       <div className={styles.mrHeroContent}>
         <Reveal delay={90}>
-          <p className={styles.mrHeroStatement}>
+          <h1 className={styles.mrHeroStatement}>
             <Swap>{t(MR.heroStatement)}</Swap>
-          </p>
+          </h1>
         </Reveal>
         <Reveal delay={180}>
           <a className={`${styles.mrBtn} ${styles.mrBtnAcid}`} href="#mr-works">
@@ -222,10 +264,6 @@ function Hero() {
           </a>
         </Reveal>
       </div>
-
-      <h1 ref={wordRef} className={styles.mrHeroWord}>
-        {'JUNK_DOGE'}
-      </h1>
 
       <a className={styles.mrScrollCue} href="#mr-works" aria-label={t(MR.scroll)}>
         <span className={styles.mrScrollLabel}>
@@ -304,7 +342,6 @@ function About() {
 
 function Commission() {
   const { t, lang } = useLang()
-  const email = site.about.links.find((l) => l.label === 'EMAIL')
   return (
     <section id="mr-commission" className={styles.mrWhite}>
       <Reveal>
@@ -360,11 +397,7 @@ function Commission() {
             <small>{'CONTACT // 联系方式'}</small>
             {site.commission.contact}
           </div>
-          {email ? (
-            <a className={`${styles.mrBtn} ${styles.mrBtnAcid}`} href={email.href}>
-              <Swap>{t(MR.ctaCollab)}</Swap>
-            </a>
-          ) : null}
+          <ContactLauncher inline />
         </div>
       </Reveal>
     </section>
@@ -419,10 +452,180 @@ function Footer({ today }: { today: string }) {
 
 /* ---------------- root ---------------- */
 
+function useMarathonPageMotion(rootRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let autoScrolling = false
+    let scrollRaf = 0
+    let snapSuppressedUntil = 0
+    let lastY = window.scrollY
+    let lastScrollTime = performance.now()
+    let scrollVelocity = 0
+    let direction = 0
+
+    const cancelAutoScroll = () => {
+      const wasActive = autoScrolling || scrollRaf !== 0
+      if (scrollRaf) cancelAnimationFrame(scrollRaf)
+      scrollRaf = 0
+      autoScrolling = false
+      if (wasActive) snapSuppressedUntil = performance.now() + 420
+      lastY = window.scrollY
+      lastScrollTime = performance.now()
+    }
+
+    const scrollToSection = (
+      target: HTMLElement,
+      hash?: string,
+      kind: 'anchor' | 'snap' = 'anchor',
+    ) => {
+      if (scrollRaf) cancelAnimationFrame(scrollRaf)
+      autoScrolling = true
+      if (hash && window.location.hash !== hash) {
+        window.history.pushState(null, '', hash)
+      }
+
+      const startY = window.scrollY
+      const targetTop = target.getBoundingClientRect().top + startY
+      const scrollMargin = Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0
+      const targetY = Math.max(0, targetTop - scrollMargin)
+      const distance = targetY - startY
+
+      if (reduceMotion.matches || Math.abs(distance) < 1) {
+        window.scrollTo(0, targetY)
+        autoScrolling = false
+        lastY = window.scrollY
+        return
+      }
+
+      // 自动吸附比导航更慢；Hermite 曲线将滚轮末速度接进动画，
+      // 起点不顿、终点速度归零，形成逐渐收拢的“磁吸”。
+      const duration =
+        kind === 'snap'
+          ? Math.min(720, 460 + Math.abs(distance) * 0.32)
+          : Math.min(850, 560 + Math.abs(distance) * 0.14)
+      const carriedVelocity = Math.sign(scrollVelocity) === Math.sign(distance) ? scrollVelocity : 0
+      const startSlope = Math.min(
+        2.35,
+        Math.max(0.42, Math.abs(distance) > 1 ? Math.abs((carriedVelocity * duration) / distance) : 0.42),
+      )
+      const startedAt = performance.now()
+
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - startedAt) / duration)
+        const t2 = t * t
+        const t3 = t2 * t
+        const progress = -2 * t3 + 3 * t2 + startSlope * (t3 - 2 * t2 + t)
+        window.scrollTo(0, startY + distance * progress)
+
+        if (t < 1) {
+          scrollRaf = requestAnimationFrame(tick)
+          return
+        }
+        scrollRaf = 0
+        window.scrollTo(0, targetY)
+        autoScrolling = false
+        lastY = window.scrollY
+        lastScrollTime = performance.now()
+        scrollVelocity = 0
+      }
+
+      scrollRaf = requestAnimationFrame(tick)
+    }
+
+    const onAnchorClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return
+      }
+      const anchor = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]')
+      if (!anchor || !root.contains(anchor)) return
+      const hash = anchor.getAttribute('href')
+      if (!hash || hash === '#') return
+      const target = document.getElementById(hash.slice(1))
+      if (!target) return
+      event.preventDefault()
+      scrollToSection(target, hash)
+    }
+
+    const evaluateSnap = () => {
+      if (
+        autoScrolling ||
+        performance.now() < snapSuppressedUntil ||
+        document.body.style.overflow === 'hidden'
+      ) {
+        return
+      }
+      const hero = document.getElementById('mr-top')
+      const works = document.getElementById('mr-works')
+      const about = document.getElementById('mr-about')
+      if (!hero || !works || !about || direction === 0) return
+
+      const y = window.scrollY
+      const anchors = [hero, works, about]
+      for (let i = 0; i < anchors.length - 1; i++) {
+        const current = anchors[i]
+        const next = anchors[i + 1]
+        const currentTop = current.offsetTop
+        const nextTop = next.offsetTop
+        if (y <= currentTop + 2 || y >= nextTop - 2) continue
+
+        const midpoint = currentTop + (nextTop - currentTop) / 2
+        if (direction > 0 && y >= midpoint) {
+          scrollToSection(next, undefined, 'snap')
+        } else if (direction < 0 && y <= midpoint) {
+          scrollToSection(current, undefined, 'snap')
+        }
+        break
+      }
+    }
+
+    const onScroll = () => {
+      const y = window.scrollY
+      const now = performance.now()
+      if (!autoScrolling && Math.abs(y - lastY) > 1) {
+        direction = y > lastY ? 1 : -1
+        const elapsed = Math.max(8, now - lastScrollTime)
+        const instantVelocity = (y - lastY) / elapsed
+        scrollVelocity = scrollVelocity * 0.55 + instantVelocity * 0.45
+      }
+      lastY = y
+      lastScrollTime = now
+      if (autoScrolling) return
+      // 越过一半阈值的同一帧就接管，不等待“滚动停止”，
+      // Hermite 起始斜率会直接续上刚刚测得的滚轮速度。
+      evaluateSnap()
+    }
+
+    root.addEventListener('click', onAnchorClick)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('wheel', cancelAutoScroll, { passive: true })
+    window.addEventListener('touchstart', cancelAutoScroll, { passive: true })
+    return () => {
+      root.removeEventListener('click', onAnchorClick)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', cancelAutoScroll)
+      window.removeEventListener('touchstart', cancelAutoScroll)
+      if (scrollRaf) cancelAnimationFrame(scrollRaf)
+    }
+  }, [rootRef])
+}
+
 function Page() {
   const today = useToday()
+  const rootRef = useRef<HTMLElement>(null)
+  useMarathonPageMotion(rootRef)
+
   return (
-    <main className={`${styles.mrRoot} ${anton.variable}`}>
+    <main ref={rootRef} className={`${styles.mrRoot} ${anton.variable}`}>
       <Nav />
       <Hero />
       <StickyWorks />

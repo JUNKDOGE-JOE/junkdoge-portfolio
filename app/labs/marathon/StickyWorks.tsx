@@ -1,11 +1,12 @@
 'use client'
 /* eslint-disable @next/next/no-img-element */
-// MARATHON — sticky 粘性区：桌面竖滚驱动横移；≤760px / reduced-motion 降级为横向触控滑轨
+// MARATHON — 作品区：横向单排作品 + 左侧信息槽 / 右侧大图槽 + 独立页面纵滚槽
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { projects, type Project, type ProjectType } from '@/content/projects'
 import { useLang } from '@/lib/i18n'
-import { Ticker, pad2 } from './bits'
-import { ProjectOverlay, isMrOverlayOpen } from './ProjectOverlay'
+import { pad2 } from './bits'
+import { ProjectOverlay } from './ProjectOverlay'
+import { TiltCard } from '@/components/TiltCard'
 import styles from './marathon.module.css'
 
 const WORKS = projects.filter((p) => p.featured).sort((a, b) => a.order - b.order)
@@ -18,63 +19,91 @@ const LINK_LABEL: Record<keyof Project['links'], string> = {
   external: 'Website ↗',
 }
 
-// 大中小混排 + 上下错位，形成拼贴节奏
-const SIZES = ['L', 'M', 'S', 'M', 'L', 'S', 'M', 'L', 'M', 'S', 'M'] as const
-const STAGGER = ['Up', 'Mid', 'Down'] as const
-
-const EDGE_ITEMS = [
-  'WORKS TRACK — A',
-  `( ${pad2(WORKS.length)} ) FILES`,
-  'SCROLL = DRIVE',
-  'PV // VJ // DEV',
-  'TAU CETI IV // SURFACE DATA',
-]
-
-function Card({ p, index, onOpen }: { p: Project; index: number; onOpen: () => void }) {
+function Panel({
+  p,
+  index,
+  onOpen,
+}: {
+  p: Project
+  index: number
+  onOpen: (originRect?: DOMRect) => void
+}) {
+  const { t } = useLang()
+  const figRef = useRef<HTMLButtonElement>(null)
   const nn = pad2(index + 1)
-  const size = SIZES[index % SIZES.length]
-  const stagger = STAGGER[index % STAGGER.length]
   const isDev = p.type === 'dev'
   const links = (Object.keys(p.links) as (keyof Project['links'])[]).filter((k) => p.links[k])
+  const figSrc = p.devVisual ?? p.cover
+
   return (
     <article
-      data-mr-card
-      className={`${styles.mrCard} ${styles[`mrCard${size}`]} ${styles[`mrCard${stagger}`]} ${isDev ? styles.mrCardDev : ''}`}
+      data-mr-panel
+      className={`${styles.mrPanel} ${isDev ? styles.mrPanelDev : ''}`}
       style={{ '--mr-acc': p.accent ?? '#D8FF3D' } as CSSProperties}
     >
-      <span className={styles.mrCardBar} aria-hidden />
-      <div className={styles.mrCardImg}>
-        <img
-          src={p.cover}
-          alt={p.title.zh}
-          loading="lazy"
-          decoding="async"
-          style={isDev ? { objectPosition: 'top' } : undefined}
-        />
+      {/* 氛围底只负责定调；右侧槽位保留清晰原图 */}
+      <div className={styles.mrPanelBg} aria-hidden>
+        <img src={p.cover} alt="" loading="lazy" decoding="async" />
+        <span className={styles.mrPanelScrim} />
       </div>
-      <div className={styles.mrCardBody}>
-        <div className={styles.mrCardFile}>
-          <span className={styles.mrCardNo}>{`( ${nn} )`}</span>
-          <span>{`FILE_${nn} // ${TYPE_LABEL[p.type]} — ${p.year}`}</span>
-        </div>
-        <h3 className={styles.mrCardTitle}>{p.title.zh}</h3>
-        <p className={styles.mrCardEn}>{p.title.en}</p>
-        {p.desc.zh && size !== 'S' ? <p className={styles.mrCardDesc}>{p.desc.zh}</p> : null}
-        <div className={styles.mrCardFoot}>
-          <span className={styles.mrChip}>{p.role.zh}</span>
-          {links.map((k) => (
-            <a key={k} className={styles.mrCardLink} href={p.links[k]} target="_blank" rel="noreferrer">
-              {LINK_LABEL[k]}
-            </a>
-          ))}
-        </div>
+
+      <div className={styles.mrPanelInner}>
+        <TiltCard className={styles.mrPanelCopyTilt} maxDeg={5}>
+          <div className={styles.mrPanelCopy}>
+            <div className={styles.mrPanelCopyInner}>
+              <div className={styles.mrKicker}>
+                <span>{`01 / ${TYPE_LABEL[p.type]} — ${p.year}`}</span>
+              </div>
+              <p className={styles.mrPanelFile}>{`( ${nn} ) FILE_${nn}`}</p>
+              <h3 className={styles.mrPanelTitle}>{t(p.title)}</h3>
+              <p className={styles.mrPanelEn}>{p.title.en}</p>
+              <p className={styles.mrPanelMeta}>{`${t(p.role)} / ${p.year}`}</p>
+              {t(p.desc) ? <p className={styles.mrPanelDesc}>{t(p.desc)}</p> : null}
+              <div className={styles.mrPanelFoot}>
+                {links.map((k) => (
+                  <a key={k} className={styles.mrCardLink} href={p.links[k]} target="_blank" rel="noreferrer">
+                    {LINK_LABEL[k]}
+                  </a>
+                ))}
+                <button
+                  type="button"
+                  className={`${styles.mrBtn} ${styles.mrBtnAcid}`}
+                  onClick={() => onOpen()}
+                >
+                  {t({ zh: '查看详情', en: 'OPEN FILE' })}
+                </button>
+              </div>
+              <span className={styles.mrPanelScrollHint}>
+                {index === WORKS.length - 1
+                  ? t({ zh: '右侧页面槽 · 关于 ↓', en: 'PAGE LANE · ABOUT ↓' })
+                  : t({ zh: '滚动 · 下一作品 →', en: 'SCROLL · NEXT FILE →' })}
+              </span>
+            </div>
+          </div>
+        </TiltCard>
+
+        <TiltCard className={styles.mrPanelFigTilt} maxDeg={6}>
+          <button
+            ref={figRef}
+            type="button"
+            className={styles.mrPanelFig}
+            onClick={() => onOpen(figRef.current?.getBoundingClientRect())}
+            aria-label={`${t({ zh: '打开', en: 'Open' })} ${t(p.title)}`}
+          >
+            <img
+              src={figSrc}
+              alt={t(p.title)}
+              loading="lazy"
+              decoding="async"
+              style={isDev ? { objectPosition: 'top' } : undefined}
+            />
+            <span className={styles.mrPanelFigMeta} aria-hidden>
+              <b>{nn}</b>
+              <span>{`${TYPE_LABEL[p.type]} // ${p.year}`}</span>
+            </span>
+          </button>
+        </TiltCard>
       </div>
-      <button
-        type="button"
-        className={styles.mrCardHit}
-        onClick={onOpen}
-        aria-label={`OPEN FILE_${nn} — ${p.title.zh}`}
-      />
     </article>
   )
 }
@@ -82,160 +111,188 @@ function Card({ p, index, onOpen }: { p: Project; index: number; onOpen: () => v
 export function StickyWorks() {
   const { lang } = useLang()
   const sectionRef = useRef<HTMLElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
+  const railRef = useRef<HTMLDivElement>(null)
   const progRef = useRef<HTMLDivElement>(null)
   const pctRef = useRef<HTMLElement>(null)
-  const [openIdx, setOpenIdx] = useState<number | null>(null)
-  const secLabel = lang === 'zh' ? '01 / 作品 — 竖滚驱动横轨' : '01 / WORKS — SCROLL TO DRIVE'
+  const [openProject, setOpenProject] = useState<{ index: number; originRect?: DOMRect } | null>(null)
+  const secLabel = lang === 'zh' ? '01 / 作品 — 横向切换' : '01 / WORKS — SCROLL SIDEWAYS'
 
-  // 垂直滚动 → 横向位移。全部走 ref 直改 DOM，不触发 React 重渲染。
   useEffect(() => {
     const section = sectionRef.current
-    const track = trackRef.current
-    if (!section || !track) return
+    if (!section || window.matchMedia('(pointer: coarse)').matches) return
 
-    const mqMobile = window.matchMedia('(max-width: 760px)')
-    const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const isFallback = () => mqMobile.matches || mqReduce.matches
     let raf = 0
-    let current = 0
-    let target = 0
-
-    const maxShift = () => Math.max(0, track.scrollWidth - window.innerWidth)
-
-    const measure = () => {
-      if (isFallback()) {
-        section.style.height = ''
-        return
-      }
-      section.style.height = `${window.innerHeight + maxShift()}px`
+    let nextX = 0.5
+    let nextY = 0.5
+    const commit = () => {
+      raf = 0
+      section.style.setProperty('--mx', String(nextX))
+      section.style.setProperty('--my', String(nextY))
+      section.style.setProperty('--mr-bg-x', `${(nextX - 0.5) * -72}px`)
+      section.style.setProperty('--mr-bg-y', `${(nextY - 0.5) * -56}px`)
+    }
+    const onMove = (e: PointerEvent) => {
+      nextX = e.clientX / window.innerWidth
+      nextY = e.clientY / window.innerHeight
+      if (!raf) raf = requestAnimationFrame(commit)
+    }
+    const onLeave = () => {
+      nextX = 0.5
+      nextY = 0.5
+      if (!raf) raf = requestAnimationFrame(commit)
     }
 
-    const apply = (p: number) => {
-      track.style.transform = `translate3d(${-Math.round(p * maxShift())}px, 0, 0)`
-      if (progRef.current) progRef.current.style.width = `${p * 100}%`
-      if (pctRef.current) pctRef.current.textContent = `${String(Math.round(p * 100)).padStart(3, '0')}%`
-    }
-
-    const readTarget = () => {
-      if (isFallback()) {
-        target = 0
-        return
-      }
-      const total = section.offsetHeight - window.innerHeight
-      const rect = section.getBoundingClientRect()
-      target = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0
-    }
-
-    const tick = () => {
-      if (isFallback()) {
-        raf = 0
-        return
-      }
-      const diff = target - current
-      if (Math.abs(diff * maxShift()) < 0.5) {
-        current = target
-        apply(current)
-        raf = 0
-        return
-      }
-      current += diff * 0.14
-      apply(current)
-      raf = requestAnimationFrame(tick)
-    }
-
-    const wake = () => {
-      if (isMrOverlayOpen()) return
-      readTarget()
-      if (!raf) raf = requestAnimationFrame(tick)
-    }
-    const onResize = () => {
-      measure()
-      wake()
-    }
-
-    measure()
-    readTarget()
-    current = target
-    apply(current)
-    window.addEventListener('scroll', wake, { passive: true })
-    window.addEventListener('resize', onResize)
-    mqMobile.addEventListener('change', onResize)
-    mqReduce.addEventListener('change', onResize)
+    section.addEventListener('pointermove', onMove, { passive: true })
+    section.addEventListener('pointerleave', onLeave)
     return () => {
-      window.removeEventListener('scroll', wake)
-      window.removeEventListener('resize', onResize)
-      mqMobile.removeEventListener('change', onResize)
-      mqReduce.removeEventListener('change', onResize)
+      section.removeEventListener('pointermove', onMove)
+      section.removeEventListener('pointerleave', onLeave)
       if (raf) cancelAnimationFrame(raf)
     }
   }, [])
 
   useEffect(() => {
-    const cards = trackRef.current?.querySelectorAll('[data-mr-card]')
-    if (!cards || cards.length === 0) return
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add(styles.mrScanned)
-            io.unobserve(e.target)
-          }
-        })
-      },
-      { threshold: 0.3 },
-    )
-    cards.forEach((c) => io.observe(c))
-    return () => io.disconnect()
+    const rail = railRef.current
+    if (!rail) return
+
+    const mqMobile = window.matchMedia('(max-width: 760px)')
+    const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let raf = 0
+    let wheelAccum = 0
+    let wheelReset = 0
+    let wheelUnlock = 0
+    let wheelLocked = false
+
+    const syncHud = () => {
+      raf = 0
+      const max = rail.scrollWidth - rail.clientWidth
+      const p = max > 0 ? rail.scrollLeft / max : 0
+      if (progRef.current) progRef.current.style.width = `${p * 100}%`
+      if (pctRef.current) pctRef.current.textContent = `${String(Math.round(p * 100)).padStart(3, '0')}%`
+    }
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(syncHud)
+    }
+
+    const onWheel = (e: WheelEvent) => {
+      // 手机/窄屏保留原生触控滑动；右侧“页面滚动槽”是 rail 的兄弟元素，
+      // 不会进入这里，因此用户随时可以把鼠标移过去继续上下翻页。
+      if (mqMobile.matches) return
+      const max = rail.scrollWidth - rail.clientWidth
+      if (max <= 0) return
+
+      // 触控板横向手势由原生横轨处理。
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
+
+      const atStart = rail.scrollLeft <= 1
+      const atEnd = rail.scrollLeft >= max - 1
+      if ((e.deltaY < 0 && atStart) || (e.deltaY > 0 && atEnd)) return
+
+      e.preventDefault()
+      if (wheelLocked) return
+
+      const unit =
+        e.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? 16
+          : e.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? window.innerHeight
+            : 1
+      wheelAccum += e.deltaY * unit
+
+      window.clearTimeout(wheelReset)
+      wheelReset = window.setTimeout(() => {
+        wheelAccum = 0
+      }, 180)
+
+      if (Math.abs(wheelAccum) < 24) return
+
+      const direction = Math.sign(wheelAccum)
+      wheelAccum = 0
+      const stops = Array.from(rail.querySelectorAll<HTMLElement>('[data-mr-panel]'))
+        .map((panel) => panel.offsetLeft)
+        .concat(max)
+        .filter((left, index, all) => index === 0 || left !== all[index - 1])
+      const target =
+        direction > 0
+          ? (stops.find((left) => left > rail.scrollLeft + 4) ?? max)
+          : ([...stops].reverse().find((left) => left < rail.scrollLeft - 4) ?? 0)
+
+      wheelLocked = true
+      rail.scrollTo({ left: target, behavior: mqReduce.matches ? 'auto' : 'smooth' })
+      onScroll()
+
+      window.clearTimeout(wheelUnlock)
+      wheelUnlock = window.setTimeout(() => {
+        wheelLocked = false
+      }, mqReduce.matches ? 0 : 520)
+    }
+
+    syncHud()
+    rail.addEventListener('scroll', onScroll, { passive: true })
+    rail.addEventListener('wheel', onWheel, { passive: false })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      rail.removeEventListener('scroll', onScroll)
+      rail.removeEventListener('wheel', onWheel)
+      window.removeEventListener('resize', onScroll)
+      window.clearTimeout(wheelReset)
+      window.clearTimeout(wheelUnlock)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [])
 
-  const openProject = openIdx !== null ? WORKS[openIdx] : null
-
   return (
-    <section id="mr-works" ref={sectionRef} className={styles.mrStickyWorks} aria-label="作品轨道">
-      <div className={styles.mrStickyWrap}>
-        <div aria-hidden className={styles.mrTrackBg}>
-          <span className={styles.mrTrackBgWord}>{'WORKS'}</span>
-          <span className={styles.mrTrackBgWordB}>{'// ARCHIVE'}</span>
+    <section
+      id="mr-works"
+      ref={sectionRef}
+      className={styles.mrHWorks}
+      aria-label="作品列表"
+      style={{ '--mx': '0.5', '--my': '0.5' } as CSSProperties}
+    >
+      <div className={styles.mrHHead}>
+        <div className={styles.mrKicker}>
+          <span key={lang}>{secLabel}</span>
         </div>
-
-        <Ticker items={EDGE_ITEMS} className={styles.mrTickerEdgeTop} />
-
-        <div className={styles.mrTrackHead}>
-          <div className={styles.mrKicker}>
-            <span key={lang}>{secLabel}</span>
-          </div>
-          <span className={styles.mrTrackMeta}>{`( ${pad2(WORKS.length)} ) FILES — 2024 / 2026`}</span>
-        </div>
-
-        <div ref={trackRef} className={styles.mrTrack}>
-          {WORKS.map((p, i) => (
-            <Card key={p.slug} p={p} index={i} onOpen={() => setOpenIdx(i)} />
-          ))}
-          <div className={`${styles.mrCard} ${styles.mrCardEnd}`} aria-hidden>
-            <span className={styles.mrCardBar} />
-            <div className={styles.mrCardEndBody}>
-              <span className={styles.mrCardEndWord}>{'END OF TRACK ▮'}</span>
-              <span className={styles.mrCardEndMeta}>{`${pad2(WORKS.length)} FILES — ALL CLEAR // CONTINUE ↓`}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className={styles.mrTrackHud} aria-hidden>
-          <span>
-            {'TRACK_A // '} <b ref={pctRef}>{'000%'}</b>
-          </span>
-          <div className={styles.mrTrackProgWrap}>
-            <div ref={progRef} className={styles.mrTrackProg} />
-          </div>
-          <span>{'END ▮'}</span>
-        </div>
-
-        <Ticker items={EDGE_ITEMS} reverse className={styles.mrTickerEdgeB} />
+        <span className={styles.mrTrackMeta}>{`( ${pad2(WORKS.length)} ) FILES — 2024 / 2026`}</span>
       </div>
 
-      {openProject && openIdx !== null ? (
-        <ProjectOverlay project={openProject} index={openIdx} onClose={() => setOpenIdx(null)} />
+      <div ref={railRef} className={styles.mrHRail}>
+        {WORKS.map((p, i) => (
+          <Panel
+            key={p.slug}
+            p={p}
+            index={i}
+            onOpen={(originRect) => setOpenProject({ index: i, originRect })}
+          />
+        ))}
+      </div>
+
+      <div className={styles.mrHHud} aria-hidden>
+        <span>{lang === 'zh' ? '画面滚轮 // 切换作品' : 'CANVAS WHEEL // SWITCH WORK'}</span>
+        <div className={styles.mrTrackProgWrap}>
+          <div ref={progRef} className={styles.mrTrackProg} />
+        </div>
+        <b ref={pctRef}>{'000%'}</b>
+      </div>
+
+      <aside
+        data-mr-page-lane
+        className={styles.mrPageLane}
+        aria-label={lang === 'zh' ? '页面上下滚动区域' : 'Vertical page scroll area'}
+      >
+        <span>{lang === 'zh' ? '页面' : 'PAGE'}</span>
+        <b aria-hidden>{'↑ ↓'}</b>
+        <small>{lang === 'zh' ? '在此滚动' : 'SCROLL HERE'}</small>
+      </aside>
+
+      {openProject ? (
+        <ProjectOverlay
+          project={WORKS[openProject.index]}
+          index={openProject.index}
+          originRect={openProject.originRect}
+          onClose={() => setOpenProject(null)}
+        />
       ) : null}
     </section>
   )

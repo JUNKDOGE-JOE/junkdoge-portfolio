@@ -9,6 +9,7 @@ export interface SiteData {
     lead?: { zh: string; en: string }
     tiers: { k: string; kEn?: string; zh: string; en: string }[]
     contact: string
+    channels: { label: string; value: string; href: string }[]
   }
   misc: {
     homeTagline: string
