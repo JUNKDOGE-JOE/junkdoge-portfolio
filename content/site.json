@@ -42,7 +42,24 @@
         "en": "Starting at ¥10,000 / Full Buyout"
       }
     ],
-    "contact": "QQ 2814374544 · WeChat weixinJUNKDOGE · awaw2814374544@gmail.com"
+    "contact": "QQ 2814374544 · WeChat weixinJUNKDOGE · awaw2814374544@gmail.com",
+    "channels": [
+      {
+        "label": "QQ",
+        "value": "2814374544",
+        "href": "tencent://message/?uin=2814374544&Site=&Menu=yes"
+      },
+      {
+        "label": "WECHAT",
+        "value": "weixinJUNKDOGE",
+        "href": "weixin://dl/chat?weixinJUNKDOGE"
+      },
+      {
+        "label": "EMAIL",
+        "value": "awaw2814374544@gmail.com",
+        "href": "mailto:awaw2814374544@gmail.com"
+      }
+    ]
   },
   "misc": {
     "homeTagline": "文字 × 映像 × 代码 — PV / VJ / 创意开发",
