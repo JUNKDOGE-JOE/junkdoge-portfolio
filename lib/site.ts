@@ -14,6 +14,11 @@ export interface SiteData {
     homeTagline: string
     bannerText: string
   }
+  /** 马拉松准上线长页首屏；成片放 public/，建议 1080p + 合理码率 */
+  showreel: {
+    src: string
+    poster: string
+  }
 }
 
 // Source of truth is content/site.json — edit it via `npm run admin`.

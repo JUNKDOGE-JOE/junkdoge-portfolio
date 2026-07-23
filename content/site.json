@@ -47,5 +47,9 @@
   "misc": {
     "homeTagline": "文字 × 映像 × 代码 — PV / VJ / 创意开发",
     "bannerText": "施工中"
+  },
+  "showreel": {
+    "src": "/showreel.mp4",
+    "poster": "/covers/fusang.jpg"
   }
 }

@@ -24,6 +24,11 @@
 .DS_Store
 *.pem
 
+# Showreel is too large for GitHub (<100MB limit). Keep local at public/showreel.mp4
+# and deploy via CDN / Pages Assets separately. Poster fallback: site.showreel.poster
+/public/showreel.mp4
+/public/showreel.webm
+
 # debug
 npm-debug.log*
 yarn-debug.log*

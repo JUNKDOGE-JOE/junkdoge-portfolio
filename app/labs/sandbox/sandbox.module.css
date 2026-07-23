@@ -1,0 +1,534 @@
+/* ————————————————————————————————————————
+   纸感展册 · 可翻页的展览图录 — sandbox
+   书页模型：封面 → 目录 → 对开图版页 → 展言 → 委制 → 封底
+———————————————————————————————————————— */
+
+.page {
+  --paper: #f4f1ea;
+  --paper-2: #faf8f2;
+  --ink: #1a1815;
+  --ink-soft: rgba(26, 24, 21, 0.62);
+  --ink-faint: rgba(26, 24, 21, 0.38);
+  --vermilion: #c8442c;
+  --hairline: rgba(0, 0, 0, 0.12);
+  --serif: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --sans: var(--font-noto, inherit), system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.85;
+  overflow: hidden;
+}
+
+/* 极淡纸纹噪点 */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* —— 展签页眉 —— */
+.masthead {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.3rem 1rem;
+  margin: 0 clamp(1rem, 4vw, 3.5rem);
+  padding: clamp(0.7rem, 1.6vh, 1.1rem) 0 0.8rem;
+  border-bottom: 1px solid var(--ink);
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
+  color: var(--ink-soft);
+}
+.mastDot { color: var(--vermilion); font-size: 0.5rem; }
+
+/* —— 书本容器 —— */
+.bookWrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.75rem, 2.5vh, 2rem) clamp(1rem, 4vw, 3.5rem);
+}
+.book {
+  position: relative;
+  width: min(1120px, 100%);
+  height: 100%;
+  max-height: 760px;
+  background: var(--paper-2);
+  border: 1px solid var(--hairline);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 22px 50px rgba(26, 24, 21, 0.14),
+    0 4px 12px rgba(26, 24, 21, 0.08);
+}
+
+/* 书脊中线（桌面） */
+.crease {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--hairline) 8%,
+    var(--hairline) 92%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* 单页（纸张） */
+.sheet {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  background: var(--paper-2);
+}
+.enterNext { animation: sandboxTurnNext 0.55s cubic-bezier(0.25, 0.8, 0.3, 1) both; }
+.enterPrev { animation: sandboxTurnPrev 0.55s cubic-bezier(0.25, 0.8, 0.3, 1) both; }
+
+@keyframes sandboxTurnNext {
+  from { opacity: 0; transform: translateX(42px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes sandboxTurnPrev {
+  from { opacity: 0; transform: translateX(-42px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* —— 翻页控制 —— */
+.controls {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 clamp(1rem, 4vw, 3.5rem);
+  padding: 0.8rem 0 clamp(0.8rem, 2vh, 1.3rem);
+  border-top: 1px solid var(--hairline);
+}
+.turnBtn, .pager {
+  font-family: var(--sans);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  padding: 0.35rem 0.1rem;
+  transition: color 0.25s ease;
+}
+.turnBtn:hover:not(:disabled), .pager:hover { color: var(--vermilion); }
+.turnBtn:disabled { color: var(--ink-faint); cursor: default; }
+.pager {
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* —— 页内通用 —— */
+.leaf {
+  position: relative;
+  min-height: 100%;
+  padding: clamp(1.5rem, 4.5vh, 3rem) clamp(1.25rem, 4.5vw, 3.75rem);
+  display: flex;
+  flex-direction: column;
+}
+.sheetHead {
+  display: flex;
+  align-items: baseline;
+  gap: 1.2rem;
+  padding-bottom: 0.9rem;
+  margin-bottom: clamp(1.2rem, 3vh, 2rem);
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--hairline);
+  padding-top: 0.9rem;
+}
+.sheetHeadTitle {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.sheetHeadEn {
+  font-size: 0.64rem;
+  letter-spacing: 0.24em;
+  color: var(--ink-faint);
+}
+
+/* —— 封面 —— */
+.cover { justify-content: center; }
+.heroMeta {
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-faint);
+  margin-bottom: clamp(1.5rem, 5vh, 3.5rem);
+}
+.coverTitle {
+  font-family: var(--serif);
+  font-weight: 900;
+  font-size: clamp(2.7rem, 9.5vw, 7.5rem);
+  line-height: 1;
+  letter-spacing: -0.015em;
+}
+.coverUnderscore { color: var(--vermilion); }
+.coverSub { margin-top: clamp(1.2rem, 3vh, 2rem); }
+.coverTagline {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  letter-spacing: 0.14em;
+}
+.coverEn {
+  margin-top: 0.45rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+}
+.coverFoot {
+  margin-top: clamp(2rem, 6vh, 4rem);
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.64rem;
+  letter-spacing: 0.24em;
+  color: var(--ink-faint);
+}
+.coverSide {
+  position: absolute;
+  top: clamp(1.5rem, 4.5vh, 3rem);
+  right: clamp(1.25rem, 4.5vw, 3.75rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--serif);
+  font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+}
+.coverSide i { width: 1px; height: 2em; background: var(--ink-faint); margin: 0.35em 0; }
+
+/* 朱红印章 */
+.seal {
+  width: 2.9rem;
+  height: 2.9rem;
+  background: var(--vermilion);
+  color: var(--paper-2);
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  transform: rotate(-4deg);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+.seal span { transform: translateY(-1px); }
+.cover .seal {
+  position: absolute;
+  right: clamp(3.4rem, 8vw, 6rem);
+  bottom: clamp(3.4rem, 9vh, 5.5rem);
+}
+
+/* —— 目录 —— */
+.tocList { list-style: none; margin: 0; padding: 0; flex: 1; }
+.tocRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  padding: clamp(0.55rem, 1.6vh, 0.95rem) 0.1rem;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+  font-family: var(--sans);
+  transition: padding-left 0.25s ease, color 0.25s ease;
+}
+.tocRow:hover { padding-left: 0.6rem; color: var(--vermilion); }
+.tocNo {
+  flex: none;
+  width: 3.2rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.tocRow:hover .tocNo { color: var(--vermilion); }
+.tocTitle {
+  flex: none;
+  font-family: var(--serif);
+  font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+  letter-spacing: 0.05em;
+}
+.tocTitleEn {
+  margin-left: 0.8em;
+  font-family: var(--sans);
+  font-style: italic;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+.tocDots {
+  flex: 1;
+  border-bottom: 1px dotted var(--ink-faint);
+  transform: translateY(-0.3em);
+}
+.tocPage {
+  flex: none;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* —— 作品对开页 —— */
+.spread {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+.plate { margin: 0; }
+.plateFrame {
+  background: #fff;
+  padding: clamp(0.6rem, 1.4vw, 1rem);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 10px 26px rgba(26, 24, 21, 0.12);
+}
+.plateFrame img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  filter: saturate(0.92) contrast(0.98);
+}
+.plateCap {
+  margin-top: 0.7rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+  text-align: center;
+}
+.entry { position: relative; }
+.entryKicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: var(--vermilion);
+  margin-bottom: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+.entryTitle {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3.4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
+}
+.entryTitleEn {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin-top: 0.35rem;
+}
+.entrySeal {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin-top: 1rem;
+  color: var(--paper-2);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  transform: rotate(-3deg);
+}
+.entryTable {
+  margin: 1.4rem 0 0;
+  border-top: 1px solid var(--ink);
+}
+.entryRow {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.entryRow dt {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+  padding-top: 0.25em;
+}
+.entryRow dd { margin: 0; font-size: 0.86rem; }
+.entryLinks { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+.entryLinks a {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--ink-faint);
+  transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+.entryLinks a:hover { color: var(--vermilion); text-decoration-color: var(--vermilion); }
+
+/* —— 展言 —— */
+.aboutGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(11rem, 20vw, 15rem);
+  gap: clamp(1.5rem, 5vw, 4rem);
+}
+.aboutBio p { max-width: 36em; font-size: 0.9rem; }
+.aboutBio p + p { margin-top: 1.05em; }
+.aboutName {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+.aboutNameEn {
+  display: block;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+  margin-top: 0.4rem;
+}
+.aboutAside { position: relative; }
+.aboutAsideLabel {
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  color: var(--vermilion);
+  margin-bottom: 0.6rem;
+}
+.aboutLinks { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.aboutLinks li { border-bottom: 1px solid var(--hairline); }
+.aboutLinks a {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0.1rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.25s ease, padding-left 0.25s ease;
+}
+.aboutLinks a:hover { color: var(--vermilion); padding-left: 0.45rem; }
+.aboutVert {
+  margin-top: 2rem;
+  writing-mode: vertical-rl;
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.4em;
+  color: var(--ink-faint);
+}
+
+/* —— 委制 —— */
+.commLead { max-width: 38em; font-size: 0.88rem; }
+.commLead p + p { margin-top: 1em; }
+.rateTable {
+  width: 100%;
+  max-width: 46em;
+  margin-top: clamp(1.2rem, 3vh, 2rem);
+  border-collapse: collapse;
+  border-top: 1px solid var(--ink);
+}
+.rateTable tr { border-bottom: 1px solid var(--hairline); }
+.rateTable th, .rateTable td {
+  text-align: left;
+  vertical-align: baseline;
+  padding: 0.85rem 0.5rem 0.85rem 0;
+  font-weight: 400;
+}
+.rateTable th {
+  font-family: var(--serif);
+  font-size: 0.92rem;
+  letter-spacing: 0.05em;
+  width: 52%;
+}
+.rateSub {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+  margin-top: 0.2rem;
+}
+.rateTable td { font-size: 0.86rem; }
+.commContact {
+  margin-top: auto;
+  padding-top: clamp(1rem, 3vh, 1.8rem);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  border-top: 1px solid var(--ink);
+}
+.commContactLabel {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.24em;
+  color: var(--vermilion);
+  margin-bottom: 0.3rem;
+}
+
+/* —— 版权页 / 封底 —— */
+.colophon { justify-content: center; text-align: center; }
+.colophonInner { display: grid; justify-items: center; gap: 0.55rem; }
+.colophonInner .seal { margin-bottom: 1rem; }
+.colophonMain {
+  font-family: var(--serif);
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  letter-spacing: 0.22em;
+}
+.colophonSub {
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+.colophonRule { width: 3rem; height: 2px; background: var(--vermilion); margin: 0.8rem 0; }
+.colophonEnd {
+  margin-top: 2.2rem;
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+}
+
+/* —— 动效降级 —— */
+@media (prefers-reduced-motion: reduce) {
+  .enterNext, .enterPrev { animation: none !important; }
+  .turnBtn, .pager, .tocRow, .entryLinks a, .aboutLinks a { transition: none; }
+}
+
+/* —— 移动端：跨页堆叠为单页 —— */
+@media (max-width: 860px) {
+  .book { max-height: none; }
+  .crease { display: none; }
+  .spread { grid-template-columns: 1fr; align-items: start; }
+  .coverSide { display: none; }
+  .aboutGrid { grid-template-columns: 1fr; }
+  .aboutVert { writing-mode: horizontal-tb; margin-top: 1.4rem; }
+  .tocTitleEn { display: block; margin-left: 0; }
+}

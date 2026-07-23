@@ -1,15 +1,12 @@
-import { CarouselRoot } from '@/components/CarouselRoot'
-import { CornerFurniture } from '@/components/furniture/CornerFurniture'
-import { Preloader } from '@/components/Preloader'
-import { getHomeProjects } from '@/lib/projects'
+import type { Metadata } from 'next'
+import { Marathon } from './labs/marathon/Marathon'
+
+export const metadata: Metadata = {
+  title: 'JUNK_DOGE — 文字 × 映像 × 代码',
+  description:
+    'JUNK_DOGE 的个人主页：Showreel、作品、简介与委托。Motion design, PV / VJ and creative development.',
+}
 
 export default function Home() {
-  const projects = getHomeProjects()
-  return (
-    <main>
-      <Preloader assets={projects.map((p) => p.cover)} />
-      <CarouselRoot projects={projects} />
-      <CornerFurniture variant="home" />
-    </main>
-  )
+  return <Marathon />
 }
